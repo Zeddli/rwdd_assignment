@@ -20,7 +20,7 @@ function addNewWorkspace() {
     const workspaceHTML = `
         <div class="workspace-item" data-workspace-id="${workspaceId}">
             <div class="workspace-header-item">
-                <img src="navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
+                <img src="../navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
                 <span class="workspace-name" data-editable="true">New Workspace</span>
                 <div class="workspace-actions">
                     <button class="add-task-btn" aria-label="Add new task">
@@ -48,7 +48,7 @@ function addNewWorkspace() {
             </div>
             <div class="workspace-submenu" data-visible="true">
                 <div class="submenu-item">
-                    <img src="navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
+                    <img src="../navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
                     <span class="submenu-label">Goal</span>
                 </div>
             </div>
@@ -80,7 +80,7 @@ function handleAddTask(workspaceItem) {
     
     const taskHTML = `
         <div class="task-item" data-task-id="${taskId}" data-pinned="false">
-            <img src="navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
+            <img src="../navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
             <span class="task-name" data-editable="true">New Task</span>
             <div class="dropdown">
                 <button class="dropdown-toggle" aria-label="Task options">

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="./logo/logo.png">
     <title>Navigation Sidebar</title>
-    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="navbarBase.css">
     <link rel="stylesheet" href="navbar.css">
 </head>
 <body>
@@ -15,35 +15,35 @@
         <div class="sidebar-header">
             <div class="logo">logo</div>
             <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
-                <img src="navbar-icon/closed.svg" alt="Toggle sidebar" class="toggle-icon-left" width="16" height="16">
-                <img src="navbar-icon/arrow-right.svg" alt="Toggle sidebar" class="toggle-icon-right" width="16" height="16">
+                <img src="../navbar-icon/closed.svg" alt="Toggle sidebar" class="toggle-icon-left" width="16" height="16">
+                <img src="../navbar-icon/arrow-right.svg" alt="Toggle sidebar" class="toggle-icon-right" width="16" height="16">
             </button>
         </div>
 
         <!-- Main Navigation Items -->
         <div class="nav-section">
             <a href="#" class="nav-item">
-                <img src="navbar-icon/home.svg" alt="Home" class="nav-icon" width="18" height="18">
+                <img src="../navbar-icon/home.svg" alt="Home" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Home</span>
             </a>
             
             <a href="#" class="nav-item">
-                <img src="navbar-icon/notification.svg" alt="Notification" class="nav-icon" width="18" height="18">
+                <img src="../navbar-icon/notification.svg" alt="Notification" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Notification</span>
             </a>
             
             <a href="#" class="nav-item">
-                <img src="navbar-icon/calender.svg" alt="Calendar" class="nav-icon" width="18" height="18">
+                <img src="../navbar-icon/calender.svg" alt="Calendar" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Calendar</span>
             </a>
             
             <a href="#" class="nav-item">
-                <img src="navbar-icon/analytics.svg" alt="Analytics" class="nav-icon" width="18" height="18">
+                <img src="../navbar-icon/analytics.svg" alt="Analytics" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Analytics</span>
             </a>
             
             <a href="#" class="nav-item">
-                <img src="navbar-icon/search.svg" alt="Search" class="nav-icon" width="18" height="18">
+                <img src="../navbar-icon/search.svg" alt="Search" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Search</span>
             </a>
         </div>
@@ -65,7 +65,7 @@
                 <!-- Example Workspace -->
                 <div class="workspace-item" data-workspace-id="1">
                     <div class="workspace-header-item">
-                        <img src="navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
+                        <img src="../navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
                         <span class="workspace-name" data-editable="true">Workspace 1</span>
                         <div class="workspace-actions">
                             <button class="add-task-btn" aria-label="Add new task">
@@ -96,12 +96,12 @@
                     <!-- Workspace Submenu (Goals + Tasks) -->
                     <div class="workspace-submenu" data-visible="true">
                         <div class="submenu-item">
-                            <img src="navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
+                            <img src="../navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
                             <span class="submenu-label">Goal</span>
                         </div>
                         
                         <div class="task-item" data-task-id="1">
-                            <img src="navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
+                            <img src="../navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
                             <span class="task-name" data-editable="true">Task</span>
                             <div class="dropdown">
                                 <button class="dropdown-toggle" aria-label="Task options">
@@ -127,7 +127,7 @@
         <!-- Profile Section -->
         <div class="profile-section">
             <a href="#" class="nav-item">
-                <img src="navbar-icon/profile.svg" alt="Profile" class="nav-icon" width="18" height="18">
+                <img src="../navbar-icon/profile.svg" alt="Profile" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Profile</span>
             </a>
         </div>
