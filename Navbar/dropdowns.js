@@ -98,7 +98,11 @@ function handleDropdownAction(item, dropdown) {
             handlePinTask(taskItem);
             break;
         case 'delete':
-            handleDeleteTask(taskItem);
+            if (taskItem) {
+                handleDeleteTask(taskItem);
+            } else if (workspaceItem) {
+                handleDeleteWorkSpace(workspaceItem);
+            }
             break;
     }
     

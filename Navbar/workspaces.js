@@ -159,7 +159,22 @@ function handleHideUnhide(workspaceItem) {
     console.log(`Workspace submenu ${isVisible ? 'hidden' : 'shown'}`);
 }
 
+
+/**
+    * handle deleting tasks
+ */
+function handleDeleteWorkSpace(workspaceItem) {
+    if (!workspaceItem) return;
+
+    if (confirm('Are you sure you want to delete this workspace?')) {
+        workspaceItem.remove();
+        console.log('Workspace deleted');
+    }
+}
+
+
 // export to other file
 window.addNewWorkspace = addNewWorkspace;
 window.handleAddTask = handleAddTask;
 window.handleHideUnhide = handleHideUnhide;
+window.handleDeleteWorkSpace = handleDeleteWorkSpace;
