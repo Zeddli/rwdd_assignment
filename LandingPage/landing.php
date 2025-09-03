@@ -3,7 +3,7 @@
     if(isset($_COOKIE["loginInfo"])){
         $info = json_decode($_COOKIE["loginInfo"],true);
         $_SESSION["userInfo"] = $info;
-        header("Location: ../home/home.php");
+        header("Location: ../HomePage/home.html");
     }
 ?>
 
