@@ -1,0 +1,520 @@
+/* Sidebar CSS - Navigation and Sidebar Styles */
+
+/* sidebar container */
+.sidebar {
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    width: 200px; 
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: width 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* closed state styling */
+.sidebar.closed {
+    width: 50px;
+}
+
+/* sidebar header section */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 12px; 
+    border-bottom: 1px solid #f0f0f0;
+    min-height: 50px; 
+    position: relative; 
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 14px; 
+    color: #333;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    position: absolute; 
+    left: 12px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+}
+
+.sidebar.closed .logo {
+    opacity: 0;
+    pointer-events: none; 
+}
+
+.sidebar.closed .sidebar-header {
+    justify-content: flex-end; /* Center the toggle button when logo is hidden */
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute; 
+    right: 12px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+}
+
+.sidebar-toggle:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.sidebar.closed .sidebar-toggle {
+    right: 12px; 
+}
+
+/* Toggle button icons */
+.toggle-icon-right {
+    display: none; 
+}
+
+.sidebar.closed .toggle-icon-left {
+    display: none; 
+}
+
+.sidebar.closed .toggle-icon-right {
+    display: block; 
+}
+
+/* navigation section */
+.nav-section {
+    padding: 8px 0; 
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px; 
+    color: #666;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-item:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.nav-icon {
+    color: #666;
+    min-width: 16px; 
+    margin-right: 8px; 
+    transition: margin 0.3s ease;
+}
+
+.sidebar.closed .nav-icon {
+    margin-right: 0;
+}
+
+.nav-label {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    font-size: 12px; 
+}
+
+.sidebar.closed .nav-label {
+    opacity: 0;
+}
+
+/* workspace section */
+.workspace-section {
+    flex: 1;
+    padding: 12px 0; 
+    border-bottom: 1px solid #f0f0f0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0; 
+    position: relative; /* Ensure proper positioning */
+    z-index: 1; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; /* Ensure full height */
+}
+
+.sidebar.closed .workspace-section {
+    overflow-y: auto; /* Allow vertical scrolling when closed */
+    overflow-x: hidden;
+}
+
+.workspace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12px 8px; 
+}
+
+.section-title {
+    font-size: 11px; 
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.closed .section-title {
+    opacity: 0;
+}
+
+.add-workspace-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-workspace-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* workspaces container */
+.workspaces-container {
+    flex: 1; /* Take all available space */
+    overflow-y: auto;
+    padding: 0 6px; 
+    min-height: 0; /* Allow shrinking */
+}
+
+.sidebar.closed .workspaces-container {
+    overflow-y: auto; /* Allow vertical scrolling when closed */
+    overflow-x: hidden;
+}
+
+.workspace-item {
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 0.5;
+}
+
+.workspace-header-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 6px; 
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.workspace-header-item:hover {
+    background-color: #f8f9fa;
+}
+
+.workspace-icon {
+    color: #666;
+    min-width: 16px; 
+    margin-right: 8px; 
+    transition: margin 0.3s ease;
+}
+
+.sidebar.closed .workspace-icon {
+    margin-right: 0;
+}
+
+.workspace-name {
+    flex: 1;
+    font-size: 12px; 
+    color: #333;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.closed .workspace-name {
+    opacity: 0;
+}
+
+.workspace-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.closed .workspace-actions {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+}
+
+.add-task-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.add-task-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* dropdown styles */
+.dropdown {
+    position: relative; /* Create positioning context for absolute dropdown */
+    /* z-index: 99999; Much higher z-index/ */
+}
+
+.dropdown-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 0.5;
+}
+
+.dropdown-toggle:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.dropdown-menu {
+    position: fixed; /* Use fixed positioning to escape sidebar stacking context */
+    background: #f8f9fa !important; 
+    background-color: #f8f9fa !important;
+    background-image: none !important; 
+    border: 2px solid #e0e0e0; 
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    z-index: 999999; 
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+
+    padding: 4px 0; 
+    overflow: visible; 
+    isolation: isolate; 
+    backdrop-filter: none !important; 
+    -webkit-backdrop-filter: none !important; 
+    mix-blend-mode: normal !important; 
+    filter: none !important; 
+    opacity: 1 !important;
+    background-clip: padding-box !important;
+    -webkit-opacity: 1 !important;
+    -moz-opacity: 1 !important;
+    -ms-opacity: 1 !important;
+    position: fixed !important;
+    z-index: 999999 !important;
+}
+
+.dropdown.active .dropdown-menu {
+    opacity: 1 !important;
+    visibility: visible;
+    transform: translateY(0);
+    background: #f8f9fa !important; 
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: #f8f9fa !important; 
+    background-color: #f8f9fa !important; 
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #e0e0e0; 
+    mix-blend-mode: normal !important; 
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 6px 6px;
+    border-bottom: none; /* Remove border from last item */
+}
+
+/* Force complete opacity with pseudo-element approach */
+.dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f8f9fa !important;
+    z-index: -1;
+    border-radius: 6px;
+}
+
+/* workspace submenu */
+.workspace-submenu {
+    margin-left: 24px; 
+    opacity: 1;
+    max-height: none; 
+    overflow: visible; /* Allow content to flow naturally */
+    transition: all 0.3s ease;
+}
+
+.sidebar.closed .workspace-submenu {
+    margin-left: 0;
+    overflow-y: auto; /* Allow vertical scrolling when closed */
+    overflow-x: hidden;
+}
+
+.workspace-submenu[data-visible="false"] {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px; 
+    margin: 1px 0; 
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.submenu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.submenu-icon {
+    color: #666;
+    min-width: 14px; 
+    margin-right: 8px; 
+    transition: margin 0.3s ease;
+}
+
+.sidebar.closed .submenu-icon {
+    margin-right: 0;
+}
+
+.submenu-label {
+    font-size: 11px; 
+    color: #666;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.closed .submenu-label {
+    opacity: 0;
+}
+
+/* task items */
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px; 
+    margin: 1px 0; 
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.task-item:hover {
+    background-color: #f8f9fa;
+}
+
+.task-name {
+    flex: 1;
+    font-size: 11px; 
+    color: #666;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.closed .task-name {
+    opacity: 0;
+}
+
+/* profile section - fixed at bottom */
+.profile-section {
+    margin-top: auto; 
+    padding: 12px 0; 
+    border-top: 1px solid #f0f0f0;
+    flex-shrink: 0; /* Prevent shrinking */
+    background: white; /* Ensure it's visible */
+}
+
+/* Editable Text Styles */
+[data-editable="true"] {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+[data-editable="true"]:hover {
+    background-color: #f0f0f0;
+}
+
+[data-editable="true"].editing {
+    background-color: #e3f2fd;
+    outline: 2px solid #2196f3;
+    padding: 2px 4px;
+}
+
+/* scrollbar styling */ 
+.workspaces-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.workspaces-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.workspaces-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.workspaces-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
