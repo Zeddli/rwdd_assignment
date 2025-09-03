@@ -1,6 +1,0 @@
-[submodule "LoginSignup"]
-	path = LoginSignup
-	url = https://github.com/rwdd-assignment/LoginSignup.git
-[submodule "navbar"]
-	path = navbar
-	url = https://github.com/rwdd-assignment/navbar.git
