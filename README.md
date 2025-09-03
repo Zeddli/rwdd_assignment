@@ -1,16 +1,11 @@
-copy to top of html code
-
-'''html
+<!-- CSS Links -->
 <link rel="stylesheet" href="../Navbar/base.css">
 <link rel="stylesheet" href="../Navbar/navbar.css">
-'''
 
-
-'''php
+<!-- PHP Include -->
 <?php include "../Navbar/navbar.php"; ?>
-'''
 
-'''html
+<!-- JavaScript Files -->
 <script src="../Navbar/core.js"></script>
 <script src="../Navbar/dropdowns.js"></script>
 <script src="../Navbar/editing.js"></script>
@@ -18,4 +13,3 @@ copy to top of html code
 <script src="../Navbar/tasks.js"></script>
 <script src="../Navbar/sidebar.js"></script>
 <script src="../Navbar/main.js"></script>
-'''
