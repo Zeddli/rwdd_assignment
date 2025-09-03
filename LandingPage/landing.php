@@ -10,14 +10,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../assets/logo.png">
-    <title>ProTask</title>
+    <?php
+        include("../Head/Head.php");
+    ?>
 </head>
 <body>
-    <img src="../assets/logo.png" alt="ProTask Logo">
+    <img src="../Assets/logo.png" alt="ProTask Logo">
     <h1>Welcome to ProTask</h1>
-    <button onclick="window.location.href='login/login.php'">Log In</button>
+    <button onclick="window.location.href='../LoginSignup/landing/login/login.php'">Log In</button>
 </body>
 </html>

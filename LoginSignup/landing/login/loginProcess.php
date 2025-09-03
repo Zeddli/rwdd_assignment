@@ -1,5 +1,5 @@
 <?php
-    include "../../database/database.php";
+    include "../../../Database/Database.php";
 
     // $_SESSION["emailError"] = "*Email Do Not Exists"
     // $_SESSION["email"] = $_POST["email"]   
@@ -82,7 +82,7 @@
                     "pictureName" => $row["PictureName"],
                     "picturePath" => $row["PicturePath"]
                 ];
-                header("Location: ../../home/home.php");
+                header("Location: ../../../HomePage/Home.html");
             } else{
                 //wrong pass
                 $_SESSION["passwordError"] = "*Wrong Password";

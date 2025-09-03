@@ -1,5 +1,5 @@
 <?php
-    include("../../database/database.php");
+    include "../../../Database/Database.php";
     session_start();
 
     // $_SESSION["emailError"] = "*Email Exists"
