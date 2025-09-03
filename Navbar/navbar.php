@@ -22,27 +22,27 @@
 
         <!-- Main Navigation Items -->
         <div class="nav-section">
-            <a href="#" class="nav-item">
+            <a href="../HomePage/home.php" class="nav-item">
                 <img src="../navbar-icon/home.svg" alt="Home" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Home</span>
             </a>
             
-            <a href="#" class="nav-item">
+            <a href="../NotificationPage/notification.php" class="nav-item">
                 <img src="../navbar-icon/notification.svg" alt="Notification" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Notification</span>
             </a>
-            
-            <a href="#" class="nav-item">
+
+            <a href="../CalenderPage/calendar.php" class="nav-item">
                 <img src="../navbar-icon/calender.svg" alt="Calendar" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Calendar</span>
             </a>
             
-            <a href="#" class="nav-item">
+            <a href="../AnalyticsPage/analytics.php" class="nav-item">
                 <img src="../navbar-icon/analytics.svg" alt="Analytics" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Analytics</span>
             </a>
             
-            <a href="#" class="nav-item">
+            <a href="../SearchPage/search.php" class="nav-item">
                 <img src="../navbar-icon/search.svg" alt="Search" class="nav-icon" width="18" height="18">
                 <span class="nav-label">Search</span>
             </a>
