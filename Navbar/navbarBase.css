@@ -16,7 +16,7 @@ body {
 
 /* Main Content Area */
 .main-content {
-    margin-left: 200px; /* Updated to match new sidebar width */
+    margin-left: 220px; 
     padding: 40px;
     flex: 1;
     transition: margin-left 0.3s ease;
