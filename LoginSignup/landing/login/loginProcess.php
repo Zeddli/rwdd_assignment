@@ -77,6 +77,7 @@
                 mysqli_close($conn);
                 unset($_SESSION["password"]);
                 $_SESSION["userInfo"] = [
+                    "userID" => $row["UserID"],
                     "email" => $row["Email"],
                     "username" => $row["Username"],
                     "pictureName" => $row["PictureName"],
