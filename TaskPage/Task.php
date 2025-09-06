@@ -25,7 +25,7 @@
 
         </div>
         <div class="description-section">
-            <textarea readonly class="description-text">This is a detailed description of the task. It provides all the necessary information that the user needs to understand what the task entails. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Possimus minima reiciendis enim aliquid, quos voluptates maiores. Nisi adipisci maiores ut. Fugiat rem voluptatibus necessitatibus magnam atque ab, saepe sequi illo.</textarea>
+            <textarea readonly class="description-text">REMEMBER TO CHANGE DESCRIPTION, TIME, TASKID FOR READ/SENDCOMMENT AND FILESHARED!!!!!!!!!!!!!!!!!!</textarea>
             <div class="time">
                 <span id="start-time" class="start-time">
                     Start Time:
@@ -53,7 +53,7 @@
             </div>
             <div class="comment-container">
                 <div class="comment" id="comment">
-                    "comment container"
+                    
                 </div>
                 
                 <div class="comment-section" id="comment-section">
@@ -65,8 +65,109 @@
 
     </div>
 
-
+    
     <script>
+        //send comment
+        document.getElementById("send").addEventListener("click", () => {
+            const text = document.getElementById("comment-box").value.trim();
+
+            if(text === "") return; //No empty comment
+
+            fetch("AddComment.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    comment: text,
+                    taskID: 1 //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                })
+            }).then(response => response.json())
+              .then(data => {
+                if(data.success){
+                    document.getElementById("comment-box").value = ""; //clear box
+                } else {
+                    alert("Failed to add comment");
+                }
+            })
+        });
+
+
+
+        // listen to comment
+        const commentSource = new EventSource("FetchComment.php");
+
+        commentSource.onmessage = (e) => {
+            const comments = JSON.parse(e.data);
+            const commentContainer = document.getElementById("comment");
+
+            commentContainer.innerHTML = ""; //Clear
+
+            //No comment
+            if(comments.length == 0){
+                const noComment = document.createElement("p");
+                noComment.className = "no-comment";
+                noComment.textContent = "No Comment";
+                commentContainer.appendChild(noComment);
+                return;
+            }
+            
+            //have comment
+            comments.forEach((comment) =>{
+                //CommentID UserID TaskID Comment CreatedAt Username PictureName PicturePath
+
+                //pic name time
+                const commentHeader = document.createElement("div");
+                commentHeader.className = "comment-item-header";
+
+                //each comment
+                const commentItem = document.createElement("div");
+                commentItem.className = "comment-item";
+
+                //picture
+                const profilePic = document.createElement("img");
+                profilePic.className = "profile-pic";
+                if(comment.PicturePath === null || comment.PicturePath === ""){
+                    profilePic.src = "/RWDD_ASSIGNMENT/Assets/ProfilePic/anonymous.jpg";
+                } else {
+                    profilePic.src = `/RWDD_ASSIGNMENT/Assets/ProfilePic/${comment.PicturePath}`;
+                }
+                
+                //Name 
+                const username = document.createElement("strong");
+                username.className = "username";
+                username.textContent = comment.Username;
+
+                //time
+                const createdAt = document.createElement("small");
+                createdAt.className = "created-at";
+                createdAt.textContent = comment.CreatedAt
+
+                //comment
+                const commentText = document.createElement("p");
+                commentText.className = "comment-text";
+                commentText.textContent = comment.Comment;
+
+                const horiLine = document.createElement("hr");
+
+                commentHeader.appendChild(profilePic);
+                commentHeader.appendChild(username);
+                commentHeader.appendChild(createdAt);
+                commentItem.appendChild(commentText);
+                commentItem.appendChild(horiLine);
+
+                commentContainer.appendChild(commentHeader);
+                commentContainer.appendChild(commentItem);
+            });
+        }
+
+
+
+
+
+
+
+
     // Set the target date and time
     const targetDate = new Date("2025-09-10T00:00:00").getTime(); // example: Sept 10, 2025
 
@@ -98,6 +199,7 @@
     const timer = setInterval(updateCountdown, 1000);
     updateCountdown(); // run once immediately
     </script>
+
     <!-- JavaScript Files -->
     <script src="../Navbar/core.js"></script>
     <script src="../Navbar/dropdowns.js"></script>
