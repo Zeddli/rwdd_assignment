@@ -1,6 +1,5 @@
 <?php
-// <!-- 需要filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS); -->
-// <!-- fetch 多一轮comment刷新 -->
+// <!-- filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS); -->
 // <!-- expecting the all comment with taskID 1 -->
 // .success set to true
     include "../Database/Database.php";

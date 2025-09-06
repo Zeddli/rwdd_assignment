@@ -92,8 +92,6 @@
             })
         });
 
-
-
         // listen to comment
         const commentSource = new EventSource("FetchComment.php");
 

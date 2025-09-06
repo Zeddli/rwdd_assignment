@@ -1,7 +1,5 @@
-<!-- 需要filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS); -->
+<!-- filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS); -->
 <!-- If no comment return "No Comment" -->
-
-
 
 <!-- expecting the all comment with taskID 1 -->
 <!-- CommentID UserID TaskID Comment CreatedAt Username PictureName PicturePath -->
