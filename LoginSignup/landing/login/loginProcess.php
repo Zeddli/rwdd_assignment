@@ -68,6 +68,7 @@
                 //correct pass
                 //setCookie
                 $cookieValue = [
+                    "userID" => $row["UserID"],
                     "email" => $row["Email"],
                     "username" => $row["Username"],
                     "pictureName" => $row["PictureName"],
@@ -83,7 +84,7 @@
                     "pictureName" => $row["PictureName"],
                     "picturePath" => $row["PicturePath"]
                 ];
-                header("Location: ../../../HomePage/Home.html");
+                header("Location: ../../../HomePage/Home.php");
             } else{
                 //wrong pass
                 $_SESSION["passwordError"] = "*Wrong Password";
