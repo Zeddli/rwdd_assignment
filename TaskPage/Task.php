@@ -1,9 +1,8 @@
-<!-- Need to get task ID -->
-<!-- Need the task status to be in progress?? -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Need to get task ID -->
+    <!-- Need the task status to be in progress?? -->
     <?php include "../Head/Head.php"?>
     
     <link rel="stylesheet" href="../Navbar/base.css">
@@ -25,7 +24,7 @@
 
         </div>
         <div class="description-section">
-            <textarea readonly class="description-text">REMEMBER TO CHANGE DESCRIPTION, TIME, TASKID FOR READ/SENDCOMMENT AND FILESHARED!!!!!!!!!!!!!!!!!!</textarea>
+            <textarea readonly class="description-text">REMEMBER TO CHANGE DESCRIPTION, TIME, TASKID FOR READ/SENDCOMMENT AND FILESHARED, SEARCH "CHANGE" will see!!!!!!!!!!!!!!!!!!</textarea>
             <div class="time">
                 <span id="start-time" class="start-time">
                     Start Time:
@@ -46,14 +45,14 @@
         <div class="content-section">
             <div class="file-sharing-container">
                 <div class="file" id="file">
-                    "file-sharing-container"
+                    <!-- "file-sharing-container" -->
                 </div>
-                
+                <input type="file" id="choose-file" style="display:none;"> 
                 <button id="new-file" class="new-file">Add A New File</button>
             </div>
             <div class="comment-container">
                 <div class="comment" id="comment">
-                    
+                    <!-- comment -->
                 </div>
                 
                 <div class="comment-section" id="comment-section">
@@ -67,6 +66,39 @@
 
     
     <script>
+        // add file
+        document.getElementById("new-file").addEventListener("click", () => {
+            document.getElementById("choose-file").click();
+        });
+
+        document.getElementById("choose-file").addEventListener("change", (event) => {
+            const file = event.target.files[0]; //first file only
+            if(!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("taskID", 1); //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            console.log(Object.fromEntries(formData.entries()));
+            
+
+            fetch("AddFile.php", {
+                method: "POST",
+                body: formData
+            }).then(response => response.json())
+              .then(data => {
+                if(data.success){
+                    // Optionally, you can refresh the file list here
+                    alert("File uploaded successfully");
+                } else {
+                    alert("File upload failed");
+                }
+            })
+        });
+
+
+
+
+
         //send comment
         document.getElementById("send").addEventListener("click", () => {
             const text = document.getElementById("comment-box").value.trim();
@@ -112,7 +144,7 @@
             
             //have comment
             comments.forEach((comment) =>{
-                //CommentID UserID TaskID Comment CreatedAt Username PictureName PicturePath
+                //CommentID UserID TaskID Comment CreatedAt Username PictureName 
 
                 //pic name time
                 const commentHeader = document.createElement("div");
@@ -125,10 +157,10 @@
                 //picture
                 const profilePic = document.createElement("img");
                 profilePic.className = "profile-pic";
-                if(comment.PicturePath === null || comment.PicturePath === ""){
+                if(comment.PictureName === null || comment.PictureName === ""){
                     profilePic.src = "/RWDD_ASSIGNMENT/Assets/ProfilePic/anonymous.jpg";
                 } else {
-                    profilePic.src = `/RWDD_ASSIGNMENT/Assets/ProfilePic/${comment.PicturePath}`;
+                    profilePic.src = `/RWDD_ASSIGNMENT/Assets/ProfilePic/${comment.PictureName}`;
                 }
                 
                 //Name 
