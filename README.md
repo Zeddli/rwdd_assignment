@@ -1,3 +1,8 @@
+<!-- HEAD FOR PROTECTED PAGE FOR COOKIE CHECKING AND SETTING SESSION -->
+<?php include "Head folder 的Head.php"; ?>
+
+
+<!-- NAVBAR -->
 <!-- CSS Links -->
 <link rel="stylesheet" href="../Navbar/base.css">
 <link rel="stylesheet" href="../Navbar/navbar.css">

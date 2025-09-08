@@ -17,8 +17,8 @@
     $TaskID = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     $currentID = 0;
     $newID = 0;
-    while (true) {
-        $query = "SELECT comment.CommentID, comment.UserID, comment.Comment, comment.CreatedAt, user.Username, user.PictureName, user.PicturePath 
+    // while (true) {
+        $query = "SELECT comment.CommentID, comment.UserID, comment.Comment, comment.CreatedAt, user.Username, user.PictureName 
                 FROM comment 
                 JOIN user ON comment.UserID = user.UserID
                 WHERE TaskID=$TaskID 
@@ -39,5 +39,5 @@
             flush(); //send data to client
             sleep(2); // wait 2s before next push
         }
-    }
+    // }
 ?>
