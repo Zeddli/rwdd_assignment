@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2025 at 09:07 AM
+-- Generation Time: Sep 10, 2025 at 09:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,7 +53,7 @@ CREATE TABLE `fileshared` (
   `UserID` int(11) NOT NULL,
   `TaskID` int(11) NOT NULL,
   `FileName` varchar(255) NOT NULL,
-  `FilePath` varchar(255) NOT NULL,
+  `Extension` varchar(255) NOT NULL,
   `CreatedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -61,7 +61,7 @@ CREATE TABLE `fileshared` (
 -- Dumping data for table `fileshared`
 --
 
-INSERT INTO `fileshared` (`FileID`, `UserID`, `TaskID`, `FileName`, `FilePath`, `CreatedAt`) VALUES
+INSERT INTO `fileshared` (`FileID`, `UserID`, `TaskID`, `FileName`, `Extension`, `CreatedAt`) VALUES
 (1, 1, 1, 'q', '', '2025-09-10 14:40:36');
 
 -- --------------------------------------------------------
@@ -183,24 +183,23 @@ CREATE TABLE `user` (
   `Username` varchar(255) NOT NULL,
   `Email` varchar(255) NOT NULL,
   `HasedPassword` varchar(255) NOT NULL,
-  `PictureName` varchar(255) DEFAULT NULL,
-  `PicturePath` varchar(255) DEFAULT NULL
+  `PictureName` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`UserID`, `Username`, `Email`, `HasedPassword`, `PictureName`, `PicturePath`) VALUES
-(1, 'eee', 'jj@g.co', 'jhtrdvbjytrdcvbhtfvff5654ewsdvbrdccdcdd', NULL, NULL),
-(2, 'b', 'b@g.co', '$2y$10$c4W2oP9pk7YVHRgRRizd0O5GZJz4Rw0zgaJfbO25v49UXgon1UWSW', NULL, NULL),
-(3, 'c', 'c@g.co', '$2y$10$DhvDKrKe/P6Yrp3WEHbH4.EAtcw431tJ1OD1PG6oyFFsTMgOzDyEK', NULL, NULL),
-(5, 'e', 'e!!!@g.co', '$2y$10$VVEUM2rdx/qEo50c8rJwAezajqOiW889k453QDEcSDe8XMOco0HjW', NULL, NULL),
-(6, '&#60;script&#62;alert(&#34;You have virus&#34;)d&#60;/script&#62;', 'd@g.co', '$2y$10$ZEiq5Tul2NtBB0xzbZBF..rMMMXNQVFgIOm08Vpk67nVrZOwDarPO', NULL, NULL),
-(7, 'w', 'w@g.co', '$2y$10$mwSvl9XRsOaS3l09FC8R.O5Vs0t4AIzVCRkn63KuLLX5I68RANK4S', NULL, NULL),
-(8, 'f', 'f@g.co', '$2y$10$.Lrmri6kNTJD3A1S8UPqY.ie5H8ktLGC0tte3YJOeX1IaX8ixaozm', NULL, NULL),
-(10, 'a', 'a@g.co', '$2y$10$PojV.2f1SFLNVuhfBrytquWuYhuJ96FVuCD3Sa.gMICsnCaEbpMVi', NULL, NULL),
-(11, '3p', 'p@g.co', '$2y$10$27I3yzd8m6n8NKtCdnXir.RvNP/GQRDIElhm/WoNqpXNvCWoN1pve', NULL, NULL);
+INSERT INTO `user` (`UserID`, `Username`, `Email`, `HasedPassword`, `PictureName`) VALUES
+(1, 'eee', 'jj@g.co', 'jhtrdvbjytrdcvbhtfvff5654ewsdvbrdccdcdd', NULL),
+(2, 'b', 'b@g.co', '$2y$10$c4W2oP9pk7YVHRgRRizd0O5GZJz4Rw0zgaJfbO25v49UXgon1UWSW', NULL),
+(3, 'c', 'c@g.co', '$2y$10$DhvDKrKe/P6Yrp3WEHbH4.EAtcw431tJ1OD1PG6oyFFsTMgOzDyEK', NULL),
+(5, 'e', 'e!!!@g.co', '$2y$10$VVEUM2rdx/qEo50c8rJwAezajqOiW889k453QDEcSDe8XMOco0HjW', NULL),
+(6, '&#60;script&#62;alert(&#34;You have virus&#34;)d&#60;/script&#62;', 'd@g.co', '$2y$10$ZEiq5Tul2NtBB0xzbZBF..rMMMXNQVFgIOm08Vpk67nVrZOwDarPO', NULL),
+(7, 'w', 'w@g.co', '$2y$10$mwSvl9XRsOaS3l09FC8R.O5Vs0t4AIzVCRkn63KuLLX5I68RANK4S', NULL),
+(8, 'f', 'f@g.co', '$2y$10$.Lrmri6kNTJD3A1S8UPqY.ie5H8ktLGC0tte3YJOeX1IaX8ixaozm', NULL),
+(10, 'a', 'a@g.co', '$2y$10$PojV.2f1SFLNVuhfBrytquWuYhuJ96FVuCD3Sa.gMICsnCaEbpMVi', NULL),
+(11, '3p', 'p@g.co', '$2y$10$27I3yzd8m6n8NKtCdnXir.RvNP/GQRDIElhm/WoNqpXNvCWoN1pve', NULL);
 
 -- --------------------------------------------------------
 
