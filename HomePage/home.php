@@ -1,4 +1,6 @@
 <?php
+include "../Head/Head.php";
+include "../Database/Database.php";
 // ===== FAKE DATA FOR DEMO =====
 // Workspaces
 $workspaces = [
