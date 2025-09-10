@@ -3,8 +3,7 @@
     if(isset($_COOKIE["loginInfo"])){
         $info = json_decode($_COOKIE["loginInfo"],true);
         $_SESSION["userInfo"] = $info;
-        header("Location: ../HomePage/home.php");
-        exit();
+        header("Location: ../HomePage/home.html");
     }
 ?>
 
@@ -14,8 +13,6 @@
     <?php
         include("../Head/Head.php");
     ?>
-    <link rel="stylesheet" href="landing.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Sticky Navbar -->
