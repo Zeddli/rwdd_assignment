@@ -2,6 +2,7 @@
 include "../Head/Head.php";
 include "../Database/Database.php";
 
+// Get userID from session
 $userID = $_SESSION["userInfo"]["userID"] ?? null;
 
 // Get selected workspace from GET (for switching)
