@@ -10,9 +10,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-        include("../Head/Head.php");
-    ?>
 </head>
 <body>
     <!-- Sticky Navbar -->
