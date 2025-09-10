@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2025 at 08:00 AM
+-- Generation Time: Sep 10, 2025 at 09:07 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,30 +40,7 @@ CREATE TABLE `comment` (
 --
 
 INSERT INTO `comment` (`CommentID`, `UserID`, `TaskID`, `Comment`, `CreatedAt`) VALUES
-(18, 7, 1, 'Hello bro', '2025-09-06 16:13:02'),
-(19, 7, 1, 'Bye bye', '2025-09-06 16:13:21'),
-(20, 7, 1, 'test textContext', '2025-09-06 16:15:29'),
-(21, 7, 1, 'testing', '2025-09-06 16:19:49'),
-(22, 7, 1, 'test1', '2025-09-06 16:21:56'),
-(23, 7, 1, 'a', '2025-09-06 16:29:14'),
-(24, 7, 1, 'b', '2025-09-06 16:30:06'),
-(25, 7, 1, 'c', '2025-09-06 16:32:32'),
-(26, 7, 1, 'a', '2025-09-06 16:33:08'),
-(27, 7, 1, 'd', '2025-09-06 16:34:12'),
-(28, 7, 1, 'qq', '2025-09-06 16:38:34'),
-(29, 7, 1, 'aa', '2025-09-06 16:39:05'),
-(30, 7, 1, 'cc', '2025-09-06 17:01:02'),
-(31, 7, 1, 'bb', '2025-09-06 19:52:49'),
-(32, 7, 1, 'qq', '2025-09-06 19:52:55'),
-(33, 7, 1, 'qwerty', '2025-09-06 20:09:45'),
-(34, 7, 1, 'test2', '2025-09-06 20:14:18'),
-(35, 7, 1, 'test3', '2025-09-06 20:14:42'),
-(36, 7, 1, 'test4', '2025-09-08 20:04:46'),
-(37, 7, 1, 'test5', '2025-09-08 20:04:56'),
-(38, 7, 1, 'test6', '2025-09-08 20:08:05'),
-(39, 7, 1, 'test7', '2025-09-08 20:26:55'),
-(40, 7, 1, 'test2', '2025-09-10 13:57:47'),
-(41, 7, 1, 'hhh', '2025-09-10 13:57:54');
+(1, 1, 1, 'wwwwwwwwwwwwwwwwwwwwwwwwwwwww', '2025-09-10 14:39:56');
 
 -- --------------------------------------------------------
 
@@ -76,7 +53,7 @@ CREATE TABLE `fileshared` (
   `UserID` int(11) NOT NULL,
   `TaskID` int(11) NOT NULL,
   `FileName` varchar(255) NOT NULL,
-  `Extension` varchar(255) NOT NULL,
+  `FilePath` varchar(255) NOT NULL,
   `CreatedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -84,11 +61,8 @@ CREATE TABLE `fileshared` (
 -- Dumping data for table `fileshared`
 --
 
-INSERT INTO `fileshared` (`FileID`, `UserID`, `TaskID`, `FileName`, `Extension`, `CreatedAt`) VALUES
-(4, 7, 1, 'test', 'txt', '2025-09-08 19:51:10'),
-(6, 7, 1, 'superstore', 'csv', '2025-09-09 12:41:40'),
-(7, 7, 1, 'test', 'html', '2025-09-09 20:42:26'),
-(8, 7, 1, 'd', 'docx', '2025-09-10 13:58:04');
+INSERT INTO `fileshared` (`FileID`, `UserID`, `TaskID`, `FileName`, `FilePath`, `CreatedAt`) VALUES
+(1, 1, 1, 'q', '', '2025-09-10 14:40:36');
 
 -- --------------------------------------------------------
 
@@ -107,6 +81,13 @@ CREATE TABLE `goal` (
   `Progress` enum('Pending','InProgress','Completed','') NOT NULL DEFAULT 'Pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `goal`
+--
+
+INSERT INTO `goal` (`GoalID`, `WorkSpaceID`, `Description`, `Type`, `StartTime`, `EndTime`, `Deadline`, `Progress`) VALUES
+(1, 1, 'rrrrr', 'Short', '2025-09-10 08:40:52', '2025-09-10 08:40:52', '2025-09-10 08:40:52', 'Pending');
+
 -- --------------------------------------------------------
 
 --
@@ -122,6 +103,13 @@ CREATE TABLE `notification` (
   `Description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`NotificationID`, `CreatedAt`, `RelatedID`, `RelatedTable`, `Title`, `Description`) VALUES
+(1, '2025-09-10 14:42:02', 1, 'goal', 'eeeeeeeee', 'wwwwwwwwwww');
+
 -- --------------------------------------------------------
 
 --
@@ -132,6 +120,13 @@ CREATE TABLE `receiver` (
   `NotificationID` int(11) NOT NULL,
   `UserID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `receiver`
+--
+
+INSERT INTO `receiver` (`NotificationID`, `UserID`) VALUES
+(1, 2);
 
 -- --------------------------------------------------------
 
@@ -156,8 +151,7 @@ CREATE TABLE `task` (
 --
 
 INSERT INTO `task` (`TaskID`, `WorkSpaceID`, `Title`, `Description`, `StartTime`, `EndTime`, `Deadline`, `Priority`, `Status`) VALUES
-(1, 1, 'PHP', 'Making backend of a website', '2025-09-06 09:48:25', '0000-00-00 00:00:00', '2025-09-09 09:48:25', 'High', 'Pending'),
-(2, 1, 'PHP', 'Making backend of a website', '2025-09-06 09:48:25', '2025-09-06 09:48:25', '2025-09-06 09:48:25', 'High', 'Pending');
+(1, 1, 'hhhhhhh', 'hgfertghgfrdfghgr', '2025-09-10 08:10:00', '2025-09-10 08:10:00', '2025-09-10 08:10:00', '', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -175,8 +169,8 @@ CREATE TABLE `taskaccess` (
 --
 
 INSERT INTO `taskaccess` (`UserID`, `TaskID`) VALUES
-(7, 1),
-(7, 1);
+(1, 1),
+(2, 1);
 
 -- --------------------------------------------------------
 
@@ -189,21 +183,24 @@ CREATE TABLE `user` (
   `Username` varchar(255) NOT NULL,
   `Email` varchar(255) NOT NULL,
   `HasedPassword` varchar(255) NOT NULL,
-  `PictureName` varchar(255) DEFAULT NULL
+  `PictureName` varchar(255) DEFAULT NULL,
+  `PicturePath` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`UserID`, `Username`, `Email`, `HasedPassword`, `PictureName`) VALUES
-(2, 'b', 'b@g.co', '$2y$10$c4W2oP9pk7YVHRgRRizd0O5GZJz4Rw0zgaJfbO25v49UXgon1UWSW', NULL),
-(3, 'c', 'c@g.co', '$2y$10$DhvDKrKe/P6Yrp3WEHbH4.EAtcw431tJ1OD1PG6oyFFsTMgOzDyEK', NULL),
-(5, 'e', 'e!!!@g.co', '$2y$10$VVEUM2rdx/qEo50c8rJwAezajqOiW889k453QDEcSDe8XMOco0HjW', NULL),
-(6, '&#60;script&#62;alert(&#34;You have virus&#34;)d&#60;/script&#62;', 'd@g.co', '$2y$10$ZEiq5Tul2NtBB0xzbZBF..rMMMXNQVFgIOm08Vpk67nVrZOwDarPO', NULL),
-(7, 'w', 'w@g.co', '$2y$10$mwSvl9XRsOaS3l09FC8R.O5Vs0t4AIzVCRkn63KuLLX5I68RANK4S', '7.png'),
-(8, 'f', 'f@g.co', '$2y$10$.Lrmri6kNTJD3A1S8UPqY.ie5H8ktLGC0tte3YJOeX1IaX8ixaozm', NULL),
-(10, 'a', 'a@g.co', '$2y$10$PojV.2f1SFLNVuhfBrytquWuYhuJ96FVuCD3Sa.gMICsnCaEbpMVi', NULL);
+INSERT INTO `user` (`UserID`, `Username`, `Email`, `HasedPassword`, `PictureName`, `PicturePath`) VALUES
+(1, 'eee', 'jj@g.co', 'jhtrdvbjytrdcvbhtfvff5654ewsdvbrdccdcdd', NULL, NULL),
+(2, 'b', 'b@g.co', '$2y$10$c4W2oP9pk7YVHRgRRizd0O5GZJz4Rw0zgaJfbO25v49UXgon1UWSW', NULL, NULL),
+(3, 'c', 'c@g.co', '$2y$10$DhvDKrKe/P6Yrp3WEHbH4.EAtcw431tJ1OD1PG6oyFFsTMgOzDyEK', NULL, NULL),
+(5, 'e', 'e!!!@g.co', '$2y$10$VVEUM2rdx/qEo50c8rJwAezajqOiW889k453QDEcSDe8XMOco0HjW', NULL, NULL),
+(6, '&#60;script&#62;alert(&#34;You have virus&#34;)d&#60;/script&#62;', 'd@g.co', '$2y$10$ZEiq5Tul2NtBB0xzbZBF..rMMMXNQVFgIOm08Vpk67nVrZOwDarPO', NULL, NULL),
+(7, 'w', 'w@g.co', '$2y$10$mwSvl9XRsOaS3l09FC8R.O5Vs0t4AIzVCRkn63KuLLX5I68RANK4S', NULL, NULL),
+(8, 'f', 'f@g.co', '$2y$10$.Lrmri6kNTJD3A1S8UPqY.ie5H8ktLGC0tte3YJOeX1IaX8ixaozm', NULL, NULL),
+(10, 'a', 'a@g.co', '$2y$10$PojV.2f1SFLNVuhfBrytquWuYhuJ96FVuCD3Sa.gMICsnCaEbpMVi', NULL, NULL),
+(11, '3p', 'p@g.co', '$2y$10$27I3yzd8m6n8NKtCdnXir.RvNP/GQRDIElhm/WoNqpXNvCWoN1pve', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -222,7 +219,7 @@ CREATE TABLE `workspace` (
 --
 
 INSERT INTO `workspace` (`WorkSpaceID`, `Name`, `UserID`) VALUES
-(1, 'Web Development', 7);
+(1, 'wwwwwwwwww', 1);
 
 -- --------------------------------------------------------
 
@@ -237,6 +234,14 @@ CREATE TABLE `workspacemember` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `workspacemember`
+--
+
+INSERT INTO `workspacemember` (`WorkSpaceID`, `UserID`, `UserRole`) VALUES
+(1, 1, 'Manager'),
+(1, 2, 'Employee');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -244,19 +249,24 @@ CREATE TABLE `workspacemember` (
 -- Indexes for table `comment`
 --
 ALTER TABLE `comment`
-  ADD PRIMARY KEY (`CommentID`);
+  ADD PRIMARY KEY (`CommentID`),
+  ADD KEY `have` (`UserID`),
+  ADD KEY `for` (`TaskID`);
 
 --
 -- Indexes for table `fileshared`
 --
 ALTER TABLE `fileshared`
-  ADD PRIMARY KEY (`FileID`);
+  ADD PRIMARY KEY (`FileID`),
+  ADD KEY `TaskID` (`TaskID`),
+  ADD KEY `UserID` (`UserID`);
 
 --
 -- Indexes for table `goal`
 --
 ALTER TABLE `goal`
-  ADD PRIMARY KEY (`GoalID`);
+  ADD PRIMARY KEY (`GoalID`),
+  ADD KEY `WorkSpaceID` (`WorkSpaceID`);
 
 --
 -- Indexes for table `notification`
@@ -265,10 +275,25 @@ ALTER TABLE `notification`
   ADD PRIMARY KEY (`NotificationID`);
 
 --
+-- Indexes for table `receiver`
+--
+ALTER TABLE `receiver`
+  ADD KEY `NotificationID` (`NotificationID`),
+  ADD KEY `UserID` (`UserID`);
+
+--
 -- Indexes for table `task`
 --
 ALTER TABLE `task`
-  ADD PRIMARY KEY (`TaskID`);
+  ADD PRIMARY KEY (`TaskID`),
+  ADD KEY `WorkSpaceID` (`WorkSpaceID`);
+
+--
+-- Indexes for table `taskaccess`
+--
+ALTER TABLE `taskaccess`
+  ADD KEY `TaskID` (`TaskID`),
+  ADD KEY `UserID` (`UserID`);
 
 --
 -- Indexes for table `user`
@@ -282,7 +307,15 @@ ALTER TABLE `user`
 -- Indexes for table `workspace`
 --
 ALTER TABLE `workspace`
-  ADD PRIMARY KEY (`WorkSpaceID`);
+  ADD PRIMARY KEY (`WorkSpaceID`),
+  ADD KEY `UserID` (`UserID`);
+
+--
+-- Indexes for table `workspacemember`
+--
+ALTER TABLE `workspacemember`
+  ADD KEY `UserID` (`UserID`),
+  ADD KEY `WorkSpaceID` (`WorkSpaceID`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -292,43 +325,100 @@ ALTER TABLE `workspace`
 -- AUTO_INCREMENT for table `comment`
 --
 ALTER TABLE `comment`
-  MODIFY `CommentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `CommentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `fileshared`
 --
 ALTER TABLE `fileshared`
-  MODIFY `FileID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `FileID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `goal`
 --
 ALTER TABLE `goal`
-  MODIFY `GoalID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `GoalID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `NotificationID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `NotificationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `task`
 --
 ALTER TABLE `task`
-  MODIFY `TaskID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `TaskID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `workspace`
 --
 ALTER TABLE `workspace`
-  MODIFY `WorkSpaceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `WorkSpaceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `for` FOREIGN KEY (`TaskID`) REFERENCES `task` (`TaskID`),
+  ADD CONSTRAINT `have` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`);
+
+--
+-- Constraints for table `fileshared`
+--
+ALTER TABLE `fileshared`
+  ADD CONSTRAINT `fileshared_ibfk_1` FOREIGN KEY (`TaskID`) REFERENCES `task` (`TaskID`),
+  ADD CONSTRAINT `fileshared_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`);
+
+--
+-- Constraints for table `goal`
+--
+ALTER TABLE `goal`
+  ADD CONSTRAINT `goal_ibfk_1` FOREIGN KEY (`WorkSpaceID`) REFERENCES `workspace` (`WorkSpaceID`);
+
+--
+-- Constraints for table `receiver`
+--
+ALTER TABLE `receiver`
+  ADD CONSTRAINT `receiver_ibfk_1` FOREIGN KEY (`NotificationID`) REFERENCES `notification` (`NotificationID`),
+  ADD CONSTRAINT `receiver_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`);
+
+--
+-- Constraints for table `task`
+--
+ALTER TABLE `task`
+  ADD CONSTRAINT `task_ibfk_1` FOREIGN KEY (`WorkSpaceID`) REFERENCES `workspace` (`WorkSpaceID`);
+
+--
+-- Constraints for table `taskaccess`
+--
+ALTER TABLE `taskaccess`
+  ADD CONSTRAINT `taskaccess_ibfk_1` FOREIGN KEY (`TaskID`) REFERENCES `task` (`TaskID`),
+  ADD CONSTRAINT `taskaccess_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`);
+
+--
+-- Constraints for table `workspace`
+--
+ALTER TABLE `workspace`
+  ADD CONSTRAINT `workspace_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`);
+
+--
+-- Constraints for table `workspacemember`
+--
+ALTER TABLE `workspacemember`
+  ADD CONSTRAINT `workspacemember_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`),
+  ADD CONSTRAINT `workspacemember_ibfk_2` FOREIGN KEY (`WorkSpaceID`) REFERENCES `workspace` (`WorkSpaceID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
