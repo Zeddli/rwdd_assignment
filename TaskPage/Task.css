@@ -270,6 +270,10 @@ body:has(.sidebar.closed) .main-content {
     gap: 8px;
 } 
 
+.file-sharing-container .file::-webkit-scrollbar{
+    display: none;
+}
+
 .file-item-container{
     width: 100%;
     border: none;
