@@ -12,18 +12,31 @@
     ob_end_flush(); 
     flush(); //send header first
 
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+
     include "../Database/Database.php";
 
     $TaskID = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     $currentID = 0;
     $newID = 0;
-    // while (true) {
-        $query = "SELECT comment.CommentID, comment.UserID, comment.Comment, comment.CreatedAt, user.Username, user.PictureName 
-                FROM comment 
-                JOIN user ON comment.UserID = user.UserID
-                WHERE TaskID=$TaskID 
-                ORDER BY CreatedAt DESC";
+    $query = "SELECT comment.CommentID, comment.UserID, comment.Comment, comment.CreatedAt, user.Username, user.PictureName 
+            FROM comment 
+            JOIN user ON comment.UserID = user.UserID
+            WHERE TaskID=$TaskID 
+            ORDER BY CreatedAt DESC";
+    while (true) {
+
         $result = mysqli_query($conn, $query);
+
+        if ($result === false) {
+            // Send error as SSE event
+            echo "event: error\n";
+            echo "data: " . json_encode(["error" => mysqli_error($conn)]) . "\n\n";
+            flush();
+            sleep(2);
+            continue;
+        }
 
         $comments = [];
         while($row = mysqli_fetch_assoc($result)) {
@@ -31,13 +44,18 @@
         }
         if(!empty($comments)){
             $newID = $comments[0]['CommentID'];
+            if($newID != $currentID){
+                $currentID = $newID;
+                echo "data: " . json_encode($comments) . "\n\n";
+                flush(); //send data to client
+            }
         }
-
-        if($newID != $currentID){
-            $currentID = $newID;
-            echo "data: " . json_encode($comments) . "\n\n";
-            flush(); //send data to client
-            sleep(2); // wait 2s before next push
+        else {
+            // Always send at least an empty array so client can clear UI if needed
+            echo "data: []\n\n";
+            flush();
         }
-    // }
+        sleep(2);
+    }
+    mysqli_close($conn);    
 ?>

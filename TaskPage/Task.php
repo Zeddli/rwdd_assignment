@@ -66,6 +66,92 @@
 
     
     <script>
+        //download file
+        // listen to file
+        const fileSource = new EventSource("FetchFile.php");
+        fileSource.onmessage = (e) => {
+            const files = JSON.parse(e.data);
+            // FileID(for finding file, need to combine with FileName extension name) FileName(for showing and download name) Extension CreatedAt Username
+            const filesContainer = document.getElementById("file");
+
+            //main container
+            filesContainer.innerHTML = "";
+
+            //No file
+            if(files.length == 0){
+                const noFile = document.createElement("p");
+                noFile.className = "no-file";
+                noFile.textContent = "No File Shared";
+                filesContainer.appendChild(noFile);
+                return;
+            }
+
+            //have file
+            files.forEach((file) => {
+                // each file container
+                const fileContainer = document.createElement("div");
+                fileContainer.className = "file-item-container";
+
+                //file name and download icon (pressing file name go to new tab?, pressing dl icon download)
+                const fileHead = document.createElement("div");
+                fileHead.className = "file-head";
+                
+                const filename = document.createElement("strong");
+                filename.className = "file-name";
+                filename.textContent = `${file.FileName}.${file.Extension}`;
+
+                const dlIcon = document.createElement("img");
+                dlIcon.className = "download-icon";
+                dlIcon.src = "/RWDD_ASSIGNMENT/Assets/download-icon.png"
+                dlIcon.alt = "download-icon.png"
+                
+                // dlIcon.addEventListener("click", ()=>{
+                //     fetch(`CheckFile.php?id=${file.fileID}`)
+                //         .then(res => res.json())
+                //         .then(data => {
+                //             if (data.success){
+                //                 window.location.href = `DownloadFile.php?id=${file.FileID}`;
+                //             } else {
+                //                 alert(data.error || "File not found");
+                //             }
+                //         })
+                //         .catch(() => {
+                //             alert("An error occured when checking the file");
+                //         })
+                        
+                // });
+                dlIcon.addEventListener("click", ()=>{
+                    window.location.href = `DownloadFile.php?id=${file.FileID}`;
+                });
+
+                fileHead.appendChild(filename);
+                fileHead.appendChild(dlIcon);
+
+                //By username and created at
+                const fileBottom = document.createElement("div");
+                fileBottom.className = "file-bottom";
+
+                const username = document.createElement("p");
+                username.className = "file-username";
+                username.textContent = `by ${file.Username}`;
+
+                const fileCreatedAt = document.createElement("p");
+                fileCreatedAt.className = "file-created-at";
+                fileCreatedAt.textContent = file.CreatedAt;
+
+                fileBottom.appendChild(username);
+                fileBottom.appendChild(fileCreatedAt);
+
+                fileContainer.appendChild(fileHead);
+                fileContainer.appendChild(fileBottom);
+
+                filesContainer.appendChild(fileContainer);
+            });
+
+            
+
+        }
+
         // add file
         document.getElementById("new-file").addEventListener("click", () => {
             document.getElementById("choose-file").click();
@@ -95,11 +181,14 @@
             })
         });
 
-
-
-
-
         //send comment
+        document.getElementById("comment-box").addEventListener("keydown", (event) => {
+            if(event.key === "Enter" && !event.shiftKey){
+                event.preventDefault(); //prevent new line
+                document.getElementById("send").click();
+            }
+        });
+
         document.getElementById("send").addEventListener("click", () => {
             const text = document.getElementById("comment-box").value.trim();
 
