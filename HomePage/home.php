@@ -35,7 +35,7 @@ $tasksByStatus = [
 
 if ($selectedWorkspaceID) {
     $taskQuery = "
-        SELECT task.TaskID, task.Title, task.Deadline, goal.Type
+        SELECT task.TaskID, task.Title, task.Description, task.Deadline, task.Priority
         FROM task
         LEFT JOIN goal ON goal.GoalID = task.WorkSpaceID
         WHERE task.WorkSpaceID = $selectedWorkspaceID
@@ -100,8 +100,9 @@ mysqli_close($conn);
                              onclick="window.location.href='../TaskPage/Task.php?taskid=<?= $task['TaskID'] ?>'">
                             <div class="task-card-content">
                                 <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
-                                Due: <?= htmlspecialchars(date("Y-m-d", strtotime($task['Deadline']))) ?><br>
-                                Goal Type: <?= htmlspecialchars($task['Type'] ?? 'N/A') ?>
+                                Description: <?= htmlspecialchars($task['Description'] ?? 'No description') ?><br>
+                                Due: <?= htmlspecialchars(date("Y-m-d H:i:s", strtotime($task['Deadline']))) ?><br>
+                                Priority: <?= htmlspecialchars($task['Priority'] ?? 'N/A') ?>
                             </div>
                         </div>
                     <?php endforeach; ?>

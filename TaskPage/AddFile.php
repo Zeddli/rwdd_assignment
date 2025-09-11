@@ -12,16 +12,17 @@
         //UserID TaskID FileName CreatedAt 
         $userID = $_SESSION["userInfo"]["userID"];
         $taskID = intval($_POST["taskID"]);
-        $originalName = basename($_FILES["file"]["name"]);
+        $originalName = basename($_FILES["file"]["name"]); //with extension
+        $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
+        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
         $uploadDir = __DIR__ . "/FileSharing/";
 
         //insert
-        $stmt = $conn->prepare("INSERT into fileshared (UserID, TaskID, FileName) 
-                                VALUES (?, ?, ?)");
-        $stmt->bind_param("iis", $userID, $taskID, $originalName);
+        $stmt = $conn->prepare("INSERT into fileshared (UserID, TaskID, FileName, Extension) 
+                                VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("iiss", $userID, $taskID, $filenameWithoutExt, $extension);
         if($stmt->execute()){
             $fileID = $conn->insert_id;
-            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
             $newFileName = $fileID . ($extension? ".". $extension : "");
             $uploadPath = $uploadDir . $newFileName;
 
