@@ -1,81 +1,54 @@
 <?php
 include "../Head/Head.php";
 include "../Database/Database.php";
-// ===== FAKE DATA FOR DEMO =====
-// Workspaces
-$workspaces = [
-    ['WorkSpaceID' => 1, 'Name' => 'Frontend Team'],
-    ['WorkSpaceID' => 2, 'Name' => 'Backend Team'],
-    ['WorkSpaceID' => 3, 'Name' => 'Design Team']
-];
 
-// Get selected workspace (simulate GET param)
-$selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : $workspaces[0]['WorkSpaceID'];
-// Tasks (by workspace)
-$tasks = [
-    // workspace 1
-    1 => [
-        [
-            'TaskID' => 101,
-            'Title' => 'Design Login UI',
-            'Deadline' => '2025-09-09 18:00',
-            'GoalType' => 'Short',
-            'Status' => 'Pending'
-        ],
-        [
-            'TaskID' => 102,
-            'Title' => 'Implement Sidebar',
-            'Deadline' => '2025-09-10 20:00',
-            'GoalType' => 'Long',
-            'Status' => 'InProgress'
-        ],
-        [
-            'TaskID' => 103,
-            'Title' => 'Fix CSS Bugs',
-            'Deadline' => '2025-09-08 12:00',
-            'GoalType' => 'Short',
-            'Status' => 'Completed'
-        ]
-    ],
-    // workspace 2
-    2 => [
-        [
-            'TaskID' => 201,
-            'Title' => 'API Auth',
-            'Deadline' => '2025-09-15 10:00',
-            'GoalType' => 'Long',
-            'Status' => 'Pending'
-        ]
-    ],
-    // workspace 3
-    3 => [
-        [
-            'TaskID' => 301,
-            'Title' => 'Logo Design',
-            'Deadline' => '2025-09-18 16:00',
-            'GoalType' => 'Short',
-            'Status' => 'Pending'
-        ],
-        [
-            'TaskID' => 302,
-            'Title' => 'Banner Illustration',
-            'Deadline' => '2025-09-20 14:00',
-            'GoalType' => 'Long',
-            'Status' => 'InProgress'
-        ]
-    ]
-];
+// Get userID from session
+$userID = $_SESSION["userInfo"]["userID"] ?? null;
 
-// Group tasks by status for selected workspace
-$statuses = [
+// Get selected workspace from GET (for switching)
+$selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : null;
+
+// Fetch all workspaces for this user
+$workspaceQuery = "
+    SELECT workspace.WorkSpaceID, workspace.Name
+    FROM workspace
+    JOIN workspacemember ON workspace.WorkSpaceID = workspacemember.WorkSpaceID
+    WHERE workspacemember.UserID = $userID
+";
+$workspaceResult = mysqli_query($conn, $workspaceQuery);
+$workspaces = [];
+while ($row = mysqli_fetch_assoc($workspaceResult)) {
+    $workspaces[] = $row;
+}
+
+// If no workspace selected, default to first one
+if (!$selectedWorkspaceID && count($workspaces) > 0) {
+    $selectedWorkspaceID = $workspaces[0]['WorkSpaceID'];
+}
+
+// Fetch tasks for selected workspace grouped by status
+$tasksByStatus = [
     "Pending" => [],
     "InProgress" => [],
     "Completed" => []
 ];
 
-foreach ($tasks[$selectedWorkspaceID] ?? [] as $task) {
-    $statuses[$task['Status']][] = $task;
+if ($selectedWorkspaceID) {
+    $taskQuery = "
+        SELECT task.TaskID, task.Title, task.Description, task.Deadline, task.Priority
+        FROM task
+        LEFT JOIN goal ON goal.GoalID = task.WorkSpaceID
+        WHERE task.WorkSpaceID = $selectedWorkspaceID
+        ORDER BY task.Deadline ASC
+    ";
+    $taskResult = mysqli_query($conn, $taskQuery);
+    while ($row = mysqli_fetch_assoc($taskResult)) {
+        $status = $row['Status'] ?? 'Pending'; // default fallback
+        $tasksByStatus[$status][] = $row;
+    }
 }
+
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -111,20 +84,25 @@ foreach ($tasks[$selectedWorkspaceID] ?? [] as $task) {
         <h2 style="text-align:center;">Recent Tasks</h2>
         <div class="task-board">
             <?php
-            foreach (["Pending", "InProgress", "Completed"] as $statusKey):
-            $statusLabel = $statusKey === "InProgress" ? "In Progress" : $statusKey;
+            $statuses = [
+                "Pending" => "Pending",
+                "InProgress" => "In Progress",
+                "Completed" => "Completed"
+            ];
+            foreach ($statuses as $statusKey => $statusLabel):
             ?>
             <div class="task-column">
                 <div class="task-column-header"><?= $statusLabel ?></div>
                 <div class="task-list">
-                <?php if (!empty($statuses[$statusKey])): ?>
-                    <?php foreach ($statuses[$statusKey] as $task): ?>
+                <?php if (!empty($tasksByStatus[$statusKey])): ?>
+                    <?php foreach ($tasksByStatus[$statusKey] as $task): ?>
                         <div class="task-card"
                              onclick="window.location.href='../TaskPage/Task.php?taskid=<?= $task['TaskID'] ?>'">
                             <div class="task-card-content">
                                 <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
-                                Due: <?= htmlspecialchars(date("Y-m-d H:i", strtotime($task['Deadline']))) ?><br>
-                                Goal Type: <?= htmlspecialchars($task['GoalType'] ?? 'N/A') ?>
+                                Description: <?= htmlspecialchars($task['Description'] ?? 'No description') ?><br>
+                                Due: <?= htmlspecialchars(date("Y-m-d H:i:s", strtotime($task['Deadline']))) ?><br>
+                                Priority: <?= htmlspecialchars($task['Priority'] ?? 'N/A') ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
