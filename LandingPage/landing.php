@@ -10,6 +10,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="landing.css    ">
 </head>
 <body>
     <!-- Sticky Navbar -->
