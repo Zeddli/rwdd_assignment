@@ -95,6 +95,10 @@ function createWorkspace($userID, $workspaceName) {
     
     // Start transaction to ensure all operations succeed or fail together
     mysqli_begin_transaction($conn);
+
+    /**
+     * transaction = mysql query
+     */
     
     try {
         // Create the workspace first
