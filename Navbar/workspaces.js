@@ -13,7 +13,7 @@ function addNewWorkspace() {
     console.log('Creating new workspace...');
     
     // Create workspace via API
-    fetch('../Navbar/navbar_api.php', {
+    fetch('/protask/Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -130,7 +130,7 @@ function handleAddTask(workspaceItem) {
     console.log('Creating new task for workspace:', workspaceID);
     
     // Create task via API
-    fetch('../Navbar/navbar_api.php', {
+    fetch('/protask/Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -252,7 +252,7 @@ function handleDeleteWorkSpace(workspaceItem) {
 
     if (confirm(`Are you sure you want to delete workspace "${workspaceName}"? This will also delete all tasks in this workspace.`)) {
         // Delete via API
-        fetch('../Navbar/navbar_api.php', {
+        fetch('/protask/Navbar/navbar_api.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
