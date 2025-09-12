@@ -1,6 +1,7 @@
 /**
- * Task Management
- * Handles task actions like pinning, deleting and access control
+ * Task Management System
+ * This handles individual task operations like pinning to top, deleting tasks,
+ * and managing who has access to tasks. Each task belongs to a workspace.
  */
 
 /**
@@ -61,7 +62,7 @@ function handleDeleteTask(taskItem) {
     
     if (confirm(`Are you sure you want to delete task "${taskName}"?`)) {
         // Delete via API
-        fetch('navbar_api.php', {
+        fetch('../Navbar/navbar_api.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

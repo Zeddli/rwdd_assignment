@@ -1,23 +1,43 @@
 /**
- * workspace management
- * workspace creation, tasks and workspace actions
+ * Workspace Management System
+ * This handles creating new workspaces, adding tasks to them, and managing workspace actions
+ * All operations talk to the database via AJAX calls to the navbar_api.php endpoint
  */
 
 /**
- * Add new workspace via database
+ * Create a brand new workspace for the user
+ * This sends a request to the server to create a workspace in the database,
+ * then adds the new workspace HTML to the sidebar so user can see it immediately
  */
 function addNewWorkspace() {
     console.log('Creating new workspace...');
     
     // Create workspace via API
-    fetch('navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'action=create_workspace&workspace_name=New Workspace'
     })
-    .then(response => response.json())
+    .then(response => {
+        // Better error handling - check if response is actually JSON
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Check if response is JSON by looking at content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            // If it's not JSON, get the text to see what went wrong
+            return response.text().then(text => {
+                console.error('Server returned non-JSON response:', text);
+                throw new Error('Server returned HTML instead of JSON. Check console for details.');
+            });
+        }
+        
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             console.log('Workspace created successfully:', data);
@@ -99,7 +119,9 @@ function addNewWorkspace() {
 }
 
 /**
- * Add new task to a workspace via database
+ * Add a new task to an existing workspace
+ * This gets called when user clicks the "+" button next to a workspace name
+ * It creates the task in the database, then adds the task HTML under the workspace
  */
 function handleAddTask(workspaceItem) {
     if (!workspaceItem) return;
@@ -108,14 +130,31 @@ function handleAddTask(workspaceItem) {
     console.log('Creating new task for workspace:', workspaceID);
     
     // Create task via API
-    fetch('navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: `action=create_task&workspace_id=${workspaceID}&task_name=New Task`
     })
-    .then(response => response.json())
+    .then(response => {
+        // Better error handling - check if response is actually JSON
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Check if response is JSON by looking at content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            // If it's not JSON, get the text to see what went wrong
+            return response.text().then(text => {
+                console.error('Server returned non-JSON response:', text);
+                throw new Error('Server returned HTML instead of JSON. Check console for details.');
+            });
+        }
+        
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             console.log('Task created successfully:', data);
@@ -179,7 +218,9 @@ function handleAddTask(workspaceItem) {
 }
 
 /**
- *  hide/unhide workspace submenu
+ * Toggle workspace submenu visibility (show/hide tasks and goals)
+ * This is called when user clicks "Hide" or "Unhide" from workspace dropdown
+ * It just toggles the CSS visibility - doesn't affect the database
  */
 function handleHideUnhide(workspaceItem) {
     if (!workspaceItem) return;
@@ -199,7 +240,9 @@ function handleHideUnhide(workspaceItem) {
 
 
 /**
- * Handle deleting workspace
+ * Delete an entire workspace (dangerous!)
+ * This removes the workspace from the database along with all its tasks and goals
+ * Shows a confirmation dialog first because this action can't be undone
  */
 function handleDeleteWorkSpace(workspaceItem) {
     if (!workspaceItem) return;
@@ -209,7 +252,7 @@ function handleDeleteWorkSpace(workspaceItem) {
 
     if (confirm(`Are you sure you want to delete workspace "${workspaceName}"? This will also delete all tasks in this workspace.`)) {
         // Delete via API
-        fetch('navbar_api.php', {
+        fetch('../Navbar/navbar_api.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -246,7 +289,8 @@ function handleDeleteWorkSpace(workspaceItem) {
 }
 
 
-// export to other file
+// Export these functions so other JavaScript files can use them
+// This makes them available globally via the window object
 window.addNewWorkspace = addNewWorkspace;
 window.handleAddTask = handleAddTask;
 window.handleHideUnhide = handleHideUnhide;
