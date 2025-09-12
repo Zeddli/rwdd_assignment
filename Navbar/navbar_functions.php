@@ -6,7 +6,7 @@
  */
 
 // Start session and connect to database - need these for everything
-session_start();
+
 require_once '../Database/Database.php';
 
 /**

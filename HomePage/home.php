@@ -48,7 +48,7 @@ if ($selectedWorkspaceID) {
     }
 }
 
-mysqli_close($conn);
+// mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
