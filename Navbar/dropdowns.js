@@ -15,25 +15,41 @@ function initializeDropdowns() {
     
     // Set up each dropdown menu
     dropdowns.forEach(dropdown => {
-        // Find the button that opens the menu (the three dots)
-        const toggle = dropdown.querySelector('.dropdown-toggle');
-        const menu = dropdown.querySelector('.dropdown-menu');
-        
-        // When user clicks the three dots, open/close the menu
-        toggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Don't let this click bubble up to parent elements
-            toggleDropdown(dropdown);
-        });
-        
-        // Handle clicks on menu items (like "Rename", "Delete", etc.)
-        const items = dropdown.querySelectorAll('.dropdown-item');
-        items.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.stopPropagation(); // Don't let this click bubble up
-                handleDropdownAction(item, dropdown);
-            });
+        initializeSingleDropdown(dropdown);
+    });
+}
+
+/**
+ * Initialize a single dropdown menu
+ * This is used for both initial setup and when new dropdowns are added dynamically
+ */
+function initializeSingleDropdown(dropdown) {
+    // Skip if this dropdown already has event listeners
+    if (dropdown.dataset.initialized === 'true') {
+        return;
+    }
+    
+    // Find the button that opens the menu (the three dots)
+    const toggle = dropdown.querySelector('.dropdown-toggle');
+    const menu = dropdown.querySelector('.dropdown-menu');
+    
+    // When user clicks the three dots, open/close the menu
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation(); // Don't let this click bubble up to parent elements
+        toggleDropdown(dropdown);
+    });
+    
+    // Handle clicks on menu items (like "Rename", "Delete", etc.)
+    const items = dropdown.querySelectorAll('.dropdown-item');
+    items.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation(); // Don't let this click bubble up
+            handleDropdownAction(item, dropdown);
         });
     });
+    
+    // Mark this dropdown as initialized to prevent duplicate listeners
+    dropdown.dataset.initialized = 'true';
 }
 
 /**
@@ -176,6 +192,7 @@ function handleDropdownAction(item, dropdown) {
 
 // Export these functions so other JavaScript files can use them
 window.initializeDropdowns = initializeDropdowns;
+window.initializeSingleDropdown = initializeSingleDropdown;
 window.toggleDropdown = toggleDropdown;
 window.closeAllDropdowns = closeAllDropdowns;
 window.handleDropdownAction = handleDropdownAction;

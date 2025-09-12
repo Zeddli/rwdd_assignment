@@ -103,8 +103,30 @@ function addNewWorkspace() {
             
             DOM.workspacesContainer.insertAdjacentHTML('beforeend', workspaceHTML);
             
-            // Re-initialize dropdown functionality
-            initializeDropdowns();
+            // Initialize dropdown functionality only for the new workspace
+            const newWorkspace = document.querySelector(`[data-workspace-id="${data.workspaceID}"]`);
+            const dropdown = newWorkspace.querySelector('.dropdown');
+            
+            // Check if initializeSingleDropdown is available, otherwise use fallback
+            if (typeof window.initializeSingleDropdown === 'function') {
+                window.initializeSingleDropdown(dropdown);
+            } else {
+                console.warn('initializeSingleDropdown not available, using fallback');
+                // Fallback: manually initialize just this dropdown
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.toggleDropdown(dropdown);
+                });
+                
+                const items = dropdown.querySelectorAll('.dropdown-item');
+                items.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.handleDropdownAction(item, dropdown);
+                    });
+                });
+            }
             
             console.log(`New workspace added with ID: ${data.workspaceID}`);
         } else {
@@ -188,22 +210,27 @@ function handleAddTask(workspaceItem) {
             // Get the new task element and initialize dropdown
             const newTask = document.querySelector(`[data-task-id="${data.taskID}"]`);
             const dropdown = newTask.querySelector('.dropdown');
-            const toggle = dropdown.querySelector('.dropdown-toggle');
             
-            // Add click event to toggle
-            toggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleDropdown(dropdown);
-            });
-            
-            // Add click events to dropdown items
-            const items = dropdown.querySelectorAll('.dropdown-item');
-            items.forEach(item => {
-                item.addEventListener('click', (e) => {
+            // Check if initializeSingleDropdown is available, otherwise use fallback
+            if (typeof window.initializeSingleDropdown === 'function') {
+                window.initializeSingleDropdown(dropdown);
+            } else {
+                console.warn('initializeSingleDropdown not available, using fallback');
+                // Fallback: manually initialize just this dropdown
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                toggle.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    handleDropdownAction(item, dropdown);
+                    window.toggleDropdown(dropdown);
                 });
-            });
+                
+                const items = dropdown.querySelectorAll('.dropdown-item');
+                items.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.handleDropdownAction(item, dropdown);
+                    });
+                });
+            }
             
             console.log(`New task added with ID: ${data.taskID}`);
         } else {
