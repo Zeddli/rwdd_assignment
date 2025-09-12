@@ -1,51 +1,46 @@
 /**
- * Core State and DOM Management
- * This is like the "brain" of the sidebar - keeps track of what's happening
- * and stores references to important HTML elements so we don't have to find them every time
+ * keeps track of all the important HTML pieces so we don't lose them
  */
 
-// Global state management - this keeps track of the current sidebar state
+// remembers what state everything is in
 const SidebarState = {
-    isOpen: true,                    // Is the sidebar currently expanded or collapsed?
-    activeDropdown: null,            // Which dropdown menu is currently open? (only one at a time)
-    editingElement: null,            // Which element is currently being renamed? (workspace/task name)
-    workspaceCounter: 1,             // Counter for creating new workspaces (legacy - now uses database IDs)
-    taskCounter: 1,                  // Counter for creating new tasks (legacy - now uses database IDs)
-    allowProgrammaticEdit: false     // Security flag - only allow renaming when triggered from dropdown
+    isOpen: true,                    // Is the sidebar wide open or squished closed?
+    activeDropdown: null,            // Which three-dot menu is currently showing? 
+    editingElement: null,            // What are we currently renaming? 
+    workspaceCounter: 1,             // Old counter for new workspaces 
+    taskCounter: 1,                  // Old counter for new tasks 
+    allowProgrammaticEdit: false     // Security thing - only let renaming happen fro
 };
 
-// DOM elements cache - store references to important HTML elements
-// This is faster than using document.getElementById every time we need them
+// Our "phonebook" of important HTML elements 
 const DOM = {
-    sidebar: null,                   // The main sidebar container
-    sidebarToggle: null,             // The button that expands/collapses sidebar
-    workspacesContainer: null,       // The container that holds all workspaces
-    addWorkspaceBtn: null            // The "+" button to add new workspace
+    sidebar: null,                   // whole sidebar container
+    sidebarToggle: null,             //  little arrow button that opens/closes the sidebar
+    workspacesContainer: null,       // scrollable area where all workspaces live
+    addWorkspaceBtn: null            // "+" button to make new workspaces
 };
 
 /**
- * Initialize DOM element references
- * This runs once when the page loads to find and store all the important HTML elements
- * It's like creating a phonebook of elements so we can call them quickly later
+ * Find and remember all important HTML elements
+ * This runs once when the page loads
  */
 function initializeDOM() {
-    // Find and store the main sidebar container
+    // Go find the main sidebar and remember where it is
     DOM.sidebar = document.getElementById('sidebar');
     
-    // Find and store the collapse/expand button
+    // Find that collapse/expand button and remember it
     DOM.sidebarToggle = document.getElementById('sidebarToggle');
     
-    // Find and store the container that holds all workspaces
+    // Find where all the workspaces live and remember that spot
     DOM.workspacesContainer = document.getElementById('workspacesContainer');
     
-    // Find and store the "+" button for adding new workspaces
+    // Find the "+" button for making new workspaces
     DOM.addWorkspaceBtn = document.getElementById('addWorkspaceBtn');
     
-    console.log('DOM elements initialized');
+    console.log('Found and remembered all our important HTML elements!');
 }
 
-// Export these to the global scope so other JavaScript files can use them
-// Think of this like making these variables "public" for other files
+// Make these available to other js files - like sharing your toys with friends
 window.SidebarState = SidebarState;
 window.DOM = DOM;
 window.initializeDOM = initializeDOM;

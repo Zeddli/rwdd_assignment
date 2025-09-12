@@ -1,18 +1,16 @@
 /**
- * Workspace Management System
- * This handles creating new workspaces, adding tasks to them, and managing workspace actions
- * All operations talk to the database via AJAX calls to the navbar_api.php endpoint
+ * workspace management system
+ * handles creating new workspaces, adding tasks and managing workspace actions
+ * interacts with the database via AJAX calls to the navbar_api.php endpoint
  */
 
 /**
- * Create a brand new workspace for the user
- * This sends a request to the server to create a workspace in the database,
- * then adds the new workspace HTML to the sidebar so user can see it immediately
+ * create a brand new workspace for the user
  */
 function addNewWorkspace() {
     console.log('Creating new workspace...');
     
-    // Create workspace via API
+    // create workspace via API
     fetch('/protask/Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
@@ -21,15 +19,15 @@ function addNewWorkspace() {
         body: 'action=create_workspace&workspace_name=New Workspace'
     })
     .then(response => {
-        // Better error handling - check if response is actually JSON
+        // check if response is actually JSON
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        // Check if response is JSON by looking at content type
+        // check if response is JSON by looking at content type
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            // If it's not JSON, get the text to see what went wrong
+            // if it's not JSON, get the infp
             return response.text().then(text => {
                 console.error('Server returned non-JSON response:', text);
                 throw new Error('Server returned HTML instead of JSON. Check console for details.');
@@ -42,7 +40,7 @@ function addNewWorkspace() {
         if (data.success) {
             console.log('Workspace created successfully:', data);
             
-            // Remove "no workspace" message if it exists
+            // remove "no workspace", if iworlspacet exists
             const noWorkspaceMsg = document.querySelector('.no-workspace-message');
             if (noWorkspaceMsg) {
                 noWorkspaceMsg.remove();
@@ -103,16 +101,16 @@ function addNewWorkspace() {
             
             DOM.workspacesContainer.insertAdjacentHTML('beforeend', workspaceHTML);
             
-            // Initialize dropdown functionality only for the new workspace
+            // init dropdown functionality only for the new workspace
             const newWorkspace = document.querySelector(`[data-workspace-id="${data.workspaceID}"]`);
             const dropdown = newWorkspace.querySelector('.dropdown');
             
-            // Check if initializeSingleDropdown is available, otherwise use fallback
+            // init dropdown functionality only for the new workspace
             if (typeof window.initializeSingleDropdown === 'function') {
                 window.initializeSingleDropdown(dropdown);
             } else {
                 console.warn('initializeSingleDropdown not available, using fallback');
-                // Fallback: manually initialize just this dropdown
+                // init dropdown functionality only for the new workspace
                 const toggle = dropdown.querySelector('.dropdown-toggle');
                 toggle.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -142,7 +140,7 @@ function addNewWorkspace() {
 
 /**
  * Add a new task to an existing workspace
- * This gets called when user clicks the "+" button next to a workspace name
+ * gets called when user clicks the "+" button next to a workspace name
  * It creates the task in the database, then adds the task HTML under the workspace
  */
 function handleAddTask(workspaceItem) {
@@ -151,7 +149,7 @@ function handleAddTask(workspaceItem) {
     const workspaceID = workspaceItem.dataset.workspaceId;
     console.log('Creating new task for workspace:', workspaceID);
     
-    // Create task via API
+    // create task via API
     fetch('/protask/Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
@@ -160,15 +158,15 @@ function handleAddTask(workspaceItem) {
         body: `action=create_task&workspace_id=${workspaceID}&task_name=New Task`
     })
     .then(response => {
-        // Better error handling - check if response is actually JSON
+        // check if response is actually JSON
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        // Check if response is JSON by looking at content type
+        // check if response is JSON by looking at content type
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            // If it's not JSON, get the text to see what went wrong
+            // if it's not JSON, get the text to see what went wrong
             return response.text().then(text => {
                 console.error('Server returned non-JSON response:', text);
                 throw new Error('Server returned HTML instead of JSON. Check console for details.');
@@ -181,7 +179,7 @@ function handleAddTask(workspaceItem) {
         if (data.success) {
             console.log('Task created successfully:', data);
             
-            // Create task HTML with database ID
+            // create task HTML with database ID
             const taskHTML = `
                 <div class="task-item" data-task-id="${data.taskID}" data-pinned="false">
                     <img src="../navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
@@ -207,16 +205,16 @@ function handleAddTask(workspaceItem) {
             const submenu = workspaceItem.querySelector('.workspace-submenu');
             submenu.insertAdjacentHTML('beforeend', taskHTML);
             
-            // Get the new task element and initialize dropdown
+            // get the new task element and initialize dropdown
             const newTask = document.querySelector(`[data-task-id="${data.taskID}"]`);
             const dropdown = newTask.querySelector('.dropdown');
             
-            // Check if initializeSingleDropdown is available, otherwise use fallback
+            // init dropdown functionality only for the new task
             if (typeof window.initializeSingleDropdown === 'function') {
                 window.initializeSingleDropdown(dropdown);
             } else {
                 console.warn('initializeSingleDropdown not available, using fallback');
-                // Fallback: manually initialize just this dropdown
+                // init dropdown functionality only for the new task
                 const toggle = dropdown.querySelector('.dropdown-toggle');
                 toggle.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -245,9 +243,8 @@ function handleAddTask(workspaceItem) {
 }
 
 /**
- * Toggle workspace submenu visibility (show/hide tasks and goals)
- * This is called when user clicks "Hide" or "Unhide" from workspace dropdown
- * It just toggles the CSS visibility - doesn't affect the database
+ * toggle workspace submenu visibility (show/hide tasks and goals)
+ * called when user clicks "Hide" or "Unhide" from workspace dropdown   
  */
 function handleHideUnhide(workspaceItem) {
     if (!workspaceItem) return;
@@ -267,9 +264,9 @@ function handleHideUnhide(workspaceItem) {
 
 
 /**
- * Delete an entire workspace (dangerous!)
- * This removes the workspace from the database along with all its tasks and goals
- * Shows a confirmation dialog first because this action can't be undone
+ * delete an entire workspace (dangerous!)
+ * called when user clicks "Delete" from workspace dropdown
+ * this action can't be undone
  */
 function handleDeleteWorkSpace(workspaceItem) {
     if (!workspaceItem) return;
@@ -278,7 +275,7 @@ function handleDeleteWorkSpace(workspaceItem) {
     const workspaceName = workspaceItem.querySelector('.workspace-name').textContent;
 
     if (confirm(`Are you sure you want to delete workspace "${workspaceName}"? This will also delete all tasks in this workspace.`)) {
-        // Delete via API
+        // delete via API
         fetch('/protask/Navbar/navbar_api.php', {
             method: 'POST',
             headers: {
@@ -292,7 +289,7 @@ function handleDeleteWorkSpace(workspaceItem) {
                 workspaceItem.remove();
                 console.log('Workspace deleted successfully');
                 
-                // Check if no workspaces left
+                // check if no workspaces left
                 const remainingWorkspaces = document.querySelectorAll('.workspace-item');
                 if (remainingWorkspaces.length === 0) {
                     const noWorkspaceHTML = `
@@ -316,8 +313,8 @@ function handleDeleteWorkSpace(workspaceItem) {
 }
 
 
-// Export these functions so other JavaScript files can use them
-// This makes them available globally via the window object
+// export these functions so other js files can use them
+// makes them available globally via the window object
 window.addNewWorkspace = addNewWorkspace;
 window.handleAddTask = handleAddTask;
 window.handleHideUnhide = handleHideUnhide;

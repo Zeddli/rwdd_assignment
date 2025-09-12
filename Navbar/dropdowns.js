@@ -1,196 +1,180 @@
-
 /**
- * Dropdown Menu System
- * Handles all the three-dot menus (⋮) throughout the sidebar
- * This manages opening/closing menus and handling the actions when you click menu items
- */
-/**
- * Initialize all dropdown menus on the page
- * This finds every dropdown menu and sets up the click handlers
- * Called once when the sidebar starts up
+ * Set up all the dropdown menus when the page first loads
  */
 function initializeDropdowns() {
-    // Find all dropdown containers (the three-dot menus)
+    // find every single dropdown menu on the page
     const dropdowns = document.querySelectorAll('.dropdown');
     
-    // Set up each dropdown menu
+    // go through each one and make it work
     dropdowns.forEach(dropdown => {
         initializeSingleDropdown(dropdown);
     });
 }
 
 /**
- * Initialize a single dropdown menu
- * This is used for both initial setup and when new dropdowns are added dynamically
+ * use this for the initial setup AND when we create new workspaces/tasks
  */
 function initializeSingleDropdown(dropdown) {
-    // Skip if this dropdown already has event listeners
+    // don't set up the same dropdown twice
     if (dropdown.dataset.initialized === 'true') {
         return;
     }
     
-    // Find the button that opens the menu (the three dots)
+    // find the three-dot button and the menu that pops up
     const toggle = dropdown.querySelector('.dropdown-toggle');
     const menu = dropdown.querySelector('.dropdown-menu');
     
-    // When user clicks the three dots, open/close the menu
+    // when someone clicks the three dots, show or hide the menu
     toggle.addEventListener('click', (e) => {
-        e.stopPropagation(); // Don't let this click bubble up to parent elements
+        e.stopPropagation(); // don't let this click mess with other stuff
         toggleDropdown(dropdown);
     });
     
-    // Handle clicks on menu items (like "Rename", "Delete", etc.)
+    // handle when someone clicks a menu option (like "Rename" or "Delete")
     const items = dropdown.querySelectorAll('.dropdown-item');
     items.forEach(item => {
         item.addEventListener('click', (e) => {
-            e.stopPropagation(); // Don't let this click bubble up
+            e.stopPropagation(); // keep this click to ourselves
             handleDropdownAction(item, dropdown);
         });
     });
     
-    // Mark this dropdown as initialized to prevent duplicate listeners
+    // remember that we already set this one up
     dropdown.dataset.initialized = 'true';
 }
 
 /**
- * Toggle a specific dropdown menu open or closed
- * This is called when user clicks the three-dot button
+ * Show or hide a dropdown menu when someone clicks the three dots
+ * only one menu can be open at a time
  */
 function toggleDropdown(dropdown) {
-    // First, close any other open dropdowns (only one menu open at a time)
+    // close any other menus that might be open
     closeAllDropdowns();
     
-    // Check if this dropdown is currently open
+    // Is this menu already showing?
     if (dropdown.classList.contains('active')) {
-        // It's open, so close it
+        // close it
         dropdown.classList.remove('active');
         SidebarState.activeDropdown = null;
     } else {
-        // It's closed, so open it
         dropdown.classList.add('active');
         SidebarState.activeDropdown = dropdown;
         
-        // Position the dropdown menu properly on screen
-        // We use fixed positioning so it doesn't get cut off by the sidebar
+        // make sure the menu shows up in the right spot on screen
         const menu = dropdown.querySelector('.dropdown-menu');
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const toggleRect = toggle.getBoundingClientRect();
         
-        // Position the menu below and to the left of the three-dot button
+        // position it nicely below and to the left of the three-dot button
         menu.style.left = (toggleRect.left - 160 + toggleRect.width) + 'px';
         menu.style.top = (toggleRect.bottom + 5) + 'px';
     }
 }
 
 /**
- * Close all open dropdown menus
- * This ensures only one dropdown is open at a time
- * Also called when user clicks outside or presses Escape
+ * Close all dropdown menus
  */
 function closeAllDropdowns() {
-    // Find all currently open dropdown menus
+    // find any menus that are currently showing
     const activeDropdowns = document.querySelectorAll('.dropdown.active');
     
-    // Close each one by removing the "active" class
+    // tell each one to close up
     activeDropdowns.forEach(dropdown => {
         dropdown.classList.remove('active');
     });
     
-    // Clear the global state
+    // Remember that no menus are open now
     SidebarState.activeDropdown = null;
 }
 
 /**
- * Handle dropdown menu action clicks
- * This is the "traffic controller" - it figures out what the user clicked and calls the right function
- * Each dropdown item has a data-action attribute that tells us what to do
+ * figure out what the user wants to do when they click a menu item
  */
 function handleDropdownAction(item, dropdown) {
-    // Get the action from the clicked item (like "rename", "delete", etc.)
+    // What did they click? (the tag tells us)
     const action = item.dataset.action;
     
-    // Figure out what kind of item this dropdown belongs to
-    const workspaceItem = dropdown.closest('.workspace-item');  // Is this a workspace dropdown?
-    const taskItem = dropdown.closest('.task-item');            // Is this a task dropdown?
-    const goalItem = dropdown.closest('.goal-item');            // Is this a goal dropdown?
+    // What kind of thing does this menu belong to?
+    const workspaceItem = dropdown.closest('.workspace-item');  // Is it a workspace menu?
+    const taskItem = dropdown.closest('.task-item');            // Is it a task menu?
+    const goalItem = dropdown.closest('.goal-item');            // Is it a goal menu?
     
-    console.log(`Dropdown action: ${action}`);
+    console.log(`User wants to: ${action}`);
     
-    // Route the action to the appropriate handler function
+    // send them to the right function based on what they clicked
     switch (action) {
         case 'invite':
-            // User wants to invite someone to a workspace
+            // invite someone to help with a workspace
             handleInviteMember(workspaceItem);
             break;
             
         case 'add-task':
-            // User wants to add a new task to a workspace
+            // add a new task to a workspace
             handleAddTask(workspaceItem);
             break;
             
         case 'rename':
-            // User wants to rename something - figure out what
-            console.log('Rename action triggered');
+            // rename something (task, goal, or workspace)
+            console.log('Time to rename something!');
             if (taskItem) {
-                // Renaming a task
-                console.log('Renaming task:', taskItem);
+                // rename a task
+                console.log('Renaming a task:', taskItem);
                 const taskNameElement = taskItem.querySelector('.task-name');
-                console.log('Task name element found:', taskNameElement);
+                console.log('Found the task name to rename:', taskNameElement);
                 handleRename(taskNameElement);
             } else if (goalItem) {
-                // Renaming a goal (though goals don't have dropdowns anymore)
-                console.log('Renaming goal:', goalItem);
+                // rename a goal
+                console.log('Renaming a goal:', goalItem);
                 const goalNameElement = goalItem.querySelector('.goal-name');
-                console.log('Goal name element found:', goalNameElement);
+                console.log('Found the goal name to rename:', goalNameElement);
                 handleRename(goalNameElement);
             } else if (workspaceItem) {
-                // Renaming a workspace
-                console.log('Renaming workspace:', workspaceItem);
+                // rename a workspace
+                console.log('Renaming a workspace:', workspaceItem);
                 const workspaceNameElement = workspaceItem.querySelector('.workspace-name');
-                console.log('Workspace name element found:', workspaceNameElement);
+                console.log('Found the workspace name to rename:', workspaceNameElement);
                 handleRename(workspaceNameElement);
             }
             break;
             
         case 'view-details':
-            // User wants to see goal details (placeholder for future feature)
+            // see more info about a goal (we'll add this feature later)
             if (goalItem) {
-                console.log('View goal details - placeholder functionality');
-                alert('Goal details functionality would be implemented here');
+                console.log('Showing goal details - coming soon!');
+                alert('Goal details feature is coming soon!');
             }
             break;
         case 'hide':
-            // User wants to hide/show workspace tasks
+            // hide/show the tasks under a workspace
             handleHideUnhide(workspaceItem);
             break;
             
         case 'grant-access':
-            // User wants to give someone access to a task
+            // let someone else work on a task
             handleGrantAccess(taskItem);
             break;
             
         case 'pin':
-            // User wants to pin/unpin a task to the top
+            // pin a task to the top (like a sticky note)
             handlePinTask(taskItem);
             break;
             
         case 'delete':
-            // User wants to delete something - figure out what
             if (taskItem) {
-                // Deleting a task
+                // delete a task
                 handleDeleteTask(taskItem);
             } else if (workspaceItem) {
-                // Deleting a workspace
+                // deleting an entire workspace 
                 handleDeleteWorkSpace(workspaceItem);
             }
             break;
     }
     
-    // Always close the dropdown after an action is performed
+    // Close the menu now that they've made their choice
     dropdown.classList.remove('active');
 }
 
-// Export these functions so other JavaScript files can use them
+// Share these functions with other js files
 window.initializeDropdowns = initializeDropdowns;
 window.initializeSingleDropdown = initializeSingleDropdown;
 window.toggleDropdown = toggleDropdown;

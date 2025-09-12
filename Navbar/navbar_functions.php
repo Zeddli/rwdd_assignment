@@ -1,26 +1,27 @@
 <?php
 /**
- * Navbar Database Functions
- * This file contains all the PHP functions that interact with the database
- * for workspace and task management. 
+ * navbar database functions
+ * contains all the php functions that interact with the database
+ * for workspace and task management
  */
 
-// Start session and connect to database - need these for everything
+// start session and connect to database
 session_start();
 require_once '../Database/Database.php';
 
 /**
- * Gets all workspaces the user can access, plus their tasks and goals
+ * get all workspaces the user can access, plus their tasks and goals
  */
 function getUserWorkspaces($userID) {
     global $conn;
     
     // out if no database connection
+    // if no connection, return empty array
     if (!$conn) {
         return [];
     }
     
-    // Find all workspaces where this user is a member
+    // find all workspaces where this user is a member
     $workspaceQuery = "
         SELECT w.WorkSpaceID, w.Name as WorkspaceName 
         FROM workspace w 
@@ -36,7 +37,7 @@ function getUserWorkspaces($userID) {
     
     $workspaces = [];
     while ($workspace = mysqli_fetch_assoc($workspaceResult)) {
-        // Get the goal for this workspace
+        // get the goal for this workspace
         $goalQuery = "
             SELECT g.GoalID, g.Description as GoalName, g.Progress 
             FROM goal g 
@@ -50,7 +51,7 @@ function getUserWorkspaces($userID) {
         $goalResult = mysqli_stmt_get_result($goalStmt);
         $goal = mysqli_fetch_assoc($goalResult);
         
-        // For each workspace, get all tasks this user can see
+        // for each workspace, get all tasks this user can see
         $taskQuery = "
             SELECT t.TaskID, t.Title as TaskName, t.Status 
             FROM task t 
@@ -64,13 +65,13 @@ function getUserWorkspaces($userID) {
         mysqli_stmt_execute($taskStmt);
         $taskResult = mysqli_stmt_get_result($taskStmt);
         
-        // Collect all tasks for this workspace
+        // collect all tasks for this workspace
         $tasks = [];
         while ($task = mysqli_fetch_assoc($taskResult)) {
             $tasks[] = $task;
         }
         
-        // Add goal and tasks to workspace and add to our list
+        // add goal and tasks to workspace and add to our list
         $workspace['goal'] = $goal;
         $workspace['tasks'] = $tasks;
         $workspaces[] = $workspace;
@@ -80,23 +81,23 @@ function getUserWorkspaces($userID) {
 }
 
 /**
- * Creates a brand new workspace and makes the user the manager
- * Also creates a default goal for the workspace
- * Returns success/failure info
+ * create a brand new workspace and make the user the manager
+ * also create a default goal for the workspace
+ * return success/failure info
  */
 function createWorkspace($userID, $workspaceName) {
     global $conn;
     
-    // Can't do anything without database
+    // can't do anything without database
     if (!$conn) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Start transaction to ensure all operations succeed or fail together
+            // start transaction to ensure all operations succeed or fail together
     mysqli_begin_transaction($conn);
     
     try {
-        // Create the workspace first
+        // create the workspace first
         $insertWorkspace = "INSERT INTO workspace (Name, UserID) VALUES (?, ?)";
         $stmt = mysqli_prepare($conn, $insertWorkspace);
         mysqli_stmt_bind_param($stmt, "si", $workspaceName, $userID);
@@ -107,7 +108,7 @@ function createWorkspace($userID, $workspaceName) {
         
         $workspaceID = mysqli_insert_id($conn);
         
-        // Now make this user the manager of their new workspace
+        // now make this user the manager of their new workspace
         $insertMember = "INSERT INTO workspacemember (WorkSpaceID, UserID, UserRole) VALUES (?, ?, 'Manager')";
         $memberStmt = mysqli_prepare($conn, $insertMember);
         mysqli_stmt_bind_param($memberStmt, "ii", $workspaceID, $userID);
@@ -116,7 +117,7 @@ function createWorkspace($userID, $workspaceName) {
             throw new Exception('Failed to add user as manager');
         }
         
-        // Create a default goal for this workspace
+        // create a default goal for this workspace
         $currentTime = date('Y-m-d H:i:s');
         $goalDescription = "Workspace Goal";
         $insertGoal = "
@@ -132,7 +133,7 @@ function createWorkspace($userID, $workspaceName) {
         
         $goalID = mysqli_insert_id($conn);
         
-        // Commit the transaction
+        // commit the query
         mysqli_commit($conn);
         
         return [
@@ -144,15 +145,15 @@ function createWorkspace($userID, $workspaceName) {
         ];
         
     } catch (Exception $e) {
-        // Rollback the transaction on error
+        // rollback the query on error
         mysqli_rollback($conn);
         return ['success' => false, 'message' => $e->getMessage()];
     }
 }
 
 /**
- * Creates a new task inside a workspace
- * User needs access to the workspace to do this
+ * create a new task inside a workspace
+ * user needs access to the workspace to do this
  */
 function createTask($userID, $workspaceID, $taskName) {
     global $conn;
@@ -161,7 +162,7 @@ function createTask($userID, $workspaceID, $taskName) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Make sure user actually has access to this workspace
+    // make sure user actually has access to this workspace
     $checkAccess = "SELECT 1 FROM workspacemember WHERE WorkSpaceID = ? AND UserID = ?";
     $stmt = mysqli_prepare($conn, $checkAccess);
     mysqli_stmt_bind_param($stmt, "ii", $workspaceID, $userID);
@@ -172,7 +173,7 @@ function createTask($userID, $workspaceID, $taskName) {
         return ['success' => false, 'message' => 'No access to workspace'];
     }
     
-    // Create the task with some default values
+    // create the task with some default values
     $currentTime = date('Y-m-d H:i:s');
     $insertTask = "
         INSERT INTO task (WorkSpaceID, Title, Description, StartTime, EndTime, Deadline, Priority, Status) 
@@ -184,7 +185,7 @@ function createTask($userID, $workspaceID, $taskName) {
     if (mysqli_stmt_execute($stmt)) {
         $taskID = mysqli_insert_id($conn);
         
-        // Give the user access to their new task
+        // give the user access to their new task
         $insertAccess = "INSERT INTO taskaccess (UserID, TaskID) VALUES (?, ?)";
         $accessStmt = mysqli_prepare($conn, $insertAccess);
         mysqli_stmt_bind_param($accessStmt, "ii", $userID, $taskID);
@@ -201,8 +202,8 @@ function createTask($userID, $workspaceID, $taskName) {
 }
 
 /**
- * Changes the name of a workspace
- * Only managers can do this - regular members can't
+ * change the name of a workspace
+ * only managers can do this - regular members can't
  */
 function renameWorkspace($userID, $workspaceID, $newName) {
     global $conn;
@@ -211,7 +212,7 @@ function renameWorkspace($userID, $workspaceID, $newName) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Check if this user is actually a manager of this workspace
+    // check if this user is actually a manager of this workspace
     $checkManager = "SELECT 1 FROM workspacemember WHERE WorkSpaceID = ? AND UserID = ? AND UserRole = 'Manager'";
     $stmt = mysqli_prepare($conn, $checkManager);
     mysqli_stmt_bind_param($stmt, "ii", $workspaceID, $userID);
@@ -222,7 +223,7 @@ function renameWorkspace($userID, $workspaceID, $newName) {
         return ['success' => false, 'message' => 'Only managers can rename workspace'];
     }
     
-    // Update the workspace name
+    // update the workspace name
     $updateWorkspace = "UPDATE workspace SET Name = ? WHERE WorkSpaceID = ?";
     $stmt = mysqli_prepare($conn, $updateWorkspace);
     mysqli_stmt_bind_param($stmt, "si", $newName, $workspaceID);
@@ -235,8 +236,8 @@ function renameWorkspace($userID, $workspaceID, $newName) {
 }
 
 /**
- * Changes the name/title of a task
- * User just needs access to the task to do this
+ * change the name/title of a task
+ * user just needs access to the task to do this
  */
 function renameTask($userID, $taskID, $newName) {
     global $conn;
@@ -245,7 +246,7 @@ function renameTask($userID, $taskID, $newName) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Make sure user has access to this task
+    // make sure user has access to this task
     $checkAccess = "SELECT 1 FROM taskaccess WHERE TaskID = ? AND UserID = ?";
     $stmt = mysqli_prepare($conn, $checkAccess);
     mysqli_stmt_bind_param($stmt, "ii", $taskID, $userID);
@@ -256,7 +257,7 @@ function renameTask($userID, $taskID, $newName) {
         return ['success' => false, 'message' => 'No access to task'];
     }
     
-    // Update the task title
+    // update the task title
     $updateTask = "UPDATE task SET Title = ? WHERE TaskID = ?";
     $stmt = mysqli_prepare($conn, $updateTask);
     mysqli_stmt_bind_param($stmt, "si", $newName, $taskID);
@@ -269,8 +270,8 @@ function renameTask($userID, $taskID, $newName) {
 }
 
 /**
- * Deletes an entire workspace and everything in it
- * Only managers can do this - be careful, this removes EVERYTHING!
+    * delete an entire workspace and everything in it
+ * only managers can do this - be careful, this removes EVERYTHING!
  */
 function deleteWorkspace($userID, $workspaceID) {
     global $conn;
@@ -279,7 +280,7 @@ function deleteWorkspace($userID, $workspaceID) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Double-check that user is a manager before letting them nuke everything
+    // double-check that user is a manager before letting them delete everything
     $checkManager = "SELECT 1 FROM workspacemember WHERE WorkSpaceID = ? AND UserID = ? AND UserRole = 'Manager'";
     $stmt = mysqli_prepare($conn, $checkManager);
     mysqli_stmt_bind_param($stmt, "ii", $workspaceID, $userID);
@@ -290,7 +291,7 @@ function deleteWorkspace($userID, $workspaceID) {
         return ['success' => false, 'message' => 'Only managers can delete workspace'];
     }
     
-    // Delete the workspace - database will cascade delete everything else
+    // delete the workspace - database will cascade delete everything else
     $deleteWorkspace = "DELETE FROM workspace WHERE WorkSpaceID = ?";
     $stmt = mysqli_prepare($conn, $deleteWorkspace);
     mysqli_stmt_bind_param($stmt, "i", $workspaceID);
@@ -303,8 +304,8 @@ function deleteWorkspace($userID, $workspaceID) {
 }
 
 /**
- * Deletes a single task
- * Only workspace managers can delete tasks (not just task members)
+ * delete a single task
+ * only workspace managers can delete tasks (not just task members)
  */
 function deleteTask($userID, $taskID) {
     global $conn;
@@ -313,7 +314,7 @@ function deleteTask($userID, $taskID) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Complex check: user needs task access AND manager role in the workspace
+    // complex check: user needs task access AND manager role in the workspace
     $checkAccess = "
         SELECT t.WorkSpaceID 
         FROM task t 
@@ -330,7 +331,7 @@ function deleteTask($userID, $taskID) {
         return ['success' => false, 'message' => 'Only managers can delete tasks'];
     }
     
-    // Delete the task - database will clean up related records
+    // delete the task - database will clean up related records
     $deleteTask = "DELETE FROM task WHERE TaskID = ?";
     $stmt = mysqli_prepare($conn, $deleteTask);
     mysqli_stmt_bind_param($stmt, "i", $taskID);
@@ -343,8 +344,8 @@ function deleteTask($userID, $taskID) {
 }
 
 /**
- * Rename goal
- * Only workspace managers can rename goals
+ * rename goal
+ * only workspace managers can rename goals
  */
 function renameGoal($userID, $goalID, $newName) {
     global $conn;
@@ -353,7 +354,7 @@ function renameGoal($userID, $goalID, $newName) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // Check if user is manager of the workspace that owns this goal
+    // check if user is manager of the workspace that owns this goal
     $checkManager = "
         SELECT 1 FROM goal g 
         INNER JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID 
@@ -368,7 +369,7 @@ function renameGoal($userID, $goalID, $newName) {
         return ['success' => false, 'message' => 'Only managers can rename goals'];
     }
     
-    // Update goal description
+    // update goal description
     $updateGoal = "UPDATE goal SET Description = ? WHERE GoalID = ?";
     $stmt = mysqli_prepare($conn, $updateGoal);
     mysqli_stmt_bind_param($stmt, "si", $newName, $goalID);

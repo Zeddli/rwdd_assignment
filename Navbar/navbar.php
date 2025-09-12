@@ -199,7 +199,7 @@ $workspaces = getUserWorkspaces($userID); // This gets workspaces + tasks user h
 
    
 
-    <!-- Load JavaScript modules in dependency order -->
+    <!-- Load js modules in dependency order -->
     <!-- Important: These need to load in this specific order because they depend on each other -->
     <script src="core.js"></script>          <!-- Global state and DOM cache -->
     <script src="dropdowns.js"></script>     <!-- Dropdown menu functionality -->

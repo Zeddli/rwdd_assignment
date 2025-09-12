@@ -1,13 +1,10 @@
 /**
- * Task Management
- * Handles task actions like pinning, deleting and access control
+ * task management
+ * handles task actions like pinning, deleting and access control
  */
 
 /**
- * handle pinning tasks
- */
-/**
- * Handle pinning/unpinning tasks
+ * handle pinning/unpinning tasks
  */
 function handlePinTask(taskItem) {
     if (!taskItem) return;
@@ -15,11 +12,11 @@ function handlePinTask(taskItem) {
     const isPinned = taskItem.dataset.pinned === 'true';
     
     if (isPinned) {
-        // Unpin the task
+        // unpin the task
         taskItem.dataset.pinned = 'false';
         
         
-        // move it to the end of the submenu
+            // move it to the end of the submenu
         const workspaceItem = taskItem.closest('.workspace-item');
         const submenu = workspaceItem.querySelector('.workspace-submenu');
         submenu.appendChild(taskItem);

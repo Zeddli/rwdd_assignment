@@ -1,24 +1,24 @@
 <?php
 /**
- * Navbar API Endpoint
- * receives AJAX requests from the js
- * and calls the appropriate database functions to do the actual work.
+ * navbar api endpoint
+ * receives ajax requests from the js
+ * and calls the appropriate database functions to do the actual work
  * 
- * 1. js sends POST request with 'action' parameter
- * 2. This file looks at the action and calls the right function
- * 3. Results are sent back as JSON for js to handle
+ * 1. js sends post request with 'action' parameter
+ * 2. this file looks at the action and calls the right function
+ * 3. results are sent back as json for js to handle
  */
 
-// Get our helper functions
+// get our helper functions
 require_once 'navbar_functions.php';
 
-// Tell browser we're sending JSON back
+// tell browser we're sending json back
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Make sure user is logged in first
+// make sure user is logged in first
 if (!isset($_SESSION['UserID'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
@@ -27,15 +27,15 @@ if (!isset($_SESSION['UserID'])) {
 $userID = $_SESSION['UserID'];
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-// Figure out what the user wants to do
+// figure out what the user wants to do
 switch ($action) {
-    // Get all workspaces for this user
+    // get all workspaces for this user
     case 'get_workspaces':
         $workspaces = getUserWorkspaces($userID);
         echo json_encode(['success' => true, 'workspaces' => $workspaces]);
         break;
         
-    // Create a new workspace
+    // create a new workspace
     case 'create_workspace':
         $workspaceName = trim($_POST['workspace_name'] ?? 'New Workspace');
         
@@ -48,7 +48,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Create a new task in a workspace
+    // create a new task in a workspace
     case 'create_task':
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
         $taskName = trim($_POST['task_name'] ?? 'New Task');
@@ -67,7 +67,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Change workspace name (only managers can do this)
+    // change workspace name (only managers can do this)
     case 'rename_workspace':
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
         $newName = trim($_POST['new_name'] ?? '');
@@ -81,7 +81,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Change task name
+    // change task name
     case 'rename_task':
         $taskID = intval($_POST['task_id'] ?? 0);
         $newName = trim($_POST['new_name'] ?? '');
@@ -95,7 +95,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Change goal name/description
+    // change goal name/description
     case 'rename_goal':
         $goalID = intval($_POST['goal_id'] ?? 0);
         $newName = trim($_POST['new_name'] ?? '');
@@ -109,7 +109,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Delete entire workspace (only managers can do this - careful!)
+    // delete entire workspace (only managers can do this - careful!)
     case 'delete_workspace':
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
         
@@ -122,7 +122,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Delete a single task (only managers can do this)
+    // delete a single task (only managers can do this)
     case 'delete_task':
         $taskID = intval($_POST['task_id'] ?? 0);
         
@@ -135,7 +135,7 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // Oops, unknown action
+    // unknown action
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
         break;
