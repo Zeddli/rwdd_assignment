@@ -4,140 +4,178 @@
  */
 
 /**
- * add new workspace
+ * Add new workspace via database
  */
 function addNewWorkspace() {
-    SidebarState.workspaceCounter++;
-    const workspaceId = `workspace-${SidebarState.workspaceCounter}`;
-
-    /**
-     * workspaceId用途
-     * 给每个workspace一个id
-     * 
-     */
+    console.log('Creating new workspace...');
     
-    
-    const workspaceHTML = `
-        <div class="workspace-item" data-workspace-id="${workspaceId}">
-            <div class="workspace-header-item">
-                <img src="../navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
-                <span class="workspace-name" data-editable="true">New Workspace</span>
-                <div class="workspace-actions">
-                    <button class="add-task-btn" aria-label="Add new task">
-                        <svg width="16" height="16" viewBox="0 0 16 16">
-                        <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2"/>
-                        <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    </button>
-                    <div class="dropdown">
-                        <button class="dropdown-toggle" aria-label="Workspace options">
-                            <svg width="16" height="16" viewBox="0 0 16 16">
+    // Create workspace via API
+    fetch('navbar_api.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=create_workspace&workspace_name=New Workspace'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Workspace created successfully:', data);
+            
+            // Remove "no workspace" message if it exists
+            const noWorkspaceMsg = document.querySelector('.no-workspace-message');
+            if (noWorkspaceMsg) {
+                noWorkspaceMsg.remove();
+            }
+            
+            // Create workspace HTML with database ID
+            const workspaceHTML = `
+                <div class="workspace-item" data-workspace-id="${data.workspaceID}">
+                    <div class="workspace-header-item">
+                        <img src="../navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
+                        <span class="workspace-name">${data.workspaceName}</span>
+                        <div class="workspace-actions">
+                            <button class="add-task-btn" aria-label="Add new task">
+                                <svg width="16" height="16" viewBox="0 0 16 16">
+                                    <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown">
+                                <button class="dropdown-toggle" aria-label="Workspace options">
+                                    <svg width="16" height="16" viewBox="0 0 16 16">
                                         <circle cx="8" cy="4" r="1" fill="currentColor"/>
                                         <circle cx="8" cy="8" r="1" fill="currentColor"/>
                                         <circle cx="8" cy="12" r="1" fill="currentColor"/>
                                     </svg>
-                        </button>
-                        <div class="dropdown-menu">
-                            <button class="dropdown-item" data-action="invite">Invite member</button>
-                            <button class="dropdown-item" data-action="add-task">Add task</button>
-                            <button class="dropdown-item" data-action="rename">Rename</button>
-                            <button class="dropdown-item" data-action="hide">Hide</button>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button class="dropdown-item" data-action="invite">Invite member</button>
+                                    <button class="dropdown-item" data-action="add-task">Add task</button>
+                                    <button class="dropdown-item" data-action="rename">Rename</button>
+                                    <button class="dropdown-item" data-action="delete">Delete</button>
+                                    <button class="dropdown-item" data-action="hide">Hide</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="workspace-submenu" data-visible="true">
+                        <div class="goal-item" data-goal-id="${data.goalID}">
+                            <img src="../navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
+                            <span class="goal-name">${data.goalName}</span>
+                            <div class="dropdown">
+                                <button class="dropdown-toggle" aria-label="Goal options">
+                                    <svg width="16" height="16" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="4" r="1" fill="currentColor"/>
+                                        <circle cx="8" cy="8" r="1" fill="currentColor"/>
+                                        <circle cx="8" cy="12" r="1" fill="currentColor"/>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button class="dropdown-item" data-action="rename">Rename</button>
+                                    <button class="dropdown-item" data-action="view-details">View Details</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="workspace-submenu" data-visible="true">
-                <div class="submenu-item">
-                    <img src="../navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
-                    <span class="submenu-label">Goal</span>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    DOM.workspacesContainer.insertAdjacentHTML('beforeend', workspaceHTML);
-    
-    // re-init dropdown and editable elements for new workspace
-    initializeDropdowns();
-    initializeEditableElements();
-    
-    // start editing the new workspace name
-    const newWorkspace = document.querySelector(`[data-workspace-id="${workspaceId}"]`);
-    const nameElement = newWorkspace.querySelector('.workspace-name');
-    setTimeout(() => startEditing(nameElement), 100);
-    
-    console.log(`New workspace added: ${workspaceId}`);
+            `;
+            
+            DOM.workspacesContainer.insertAdjacentHTML('beforeend', workspaceHTML);
+            
+            // Re-initialize dropdown functionality
+            initializeDropdowns();
+            
+            console.log(`New workspace added with ID: ${data.workspaceID}`);
+        } else {
+            console.error('Failed to create workspace:', data.message);
+            alert('Failed to create workspace: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error creating workspace:', error);
+        alert('Error creating workspace. Please try again.');
+    });
 }
 
 /**
- * adding new task to a workspace
+ * Add new task to a workspace via database
  */
 function handleAddTask(workspaceItem) {
     if (!workspaceItem) return;
     
-    SidebarState.taskCounter++;
-    const taskId = `task-${SidebarState.taskCounter}`;
+    const workspaceID = workspaceItem.dataset.workspaceId;
+    console.log('Creating new task for workspace:', workspaceID);
     
-    const taskHTML = `
-        <div class="task-item" data-task-id="${taskId}" data-pinned="false">
-            <img src="../navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
-            <span class="task-name" data-editable="true">New Task</span>
-            <div class="dropdown">
-                <button class="dropdown-toggle" aria-label="Task options">
-                    <svg width="16" height="16" viewBox="0 0 16 16">
-                        <circle cx="8" cy="4" r="1" fill="currentColor"/>
-                        <circle cx="8" cy="8" r="1" fill="currentColor"/>
-                        <circle cx="8" cy="12" r="1" fill="currentColor"/>
-                    </svg>
-                </button>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item" data-action="grant-access">Grant access</button>
-                    <button class="dropdown-item" data-action="rename">Rename</button>
-                    <button class="dropdown-item" data-action="pin" data-pin-text="Pin">Pin</button>
-                    <button class="dropdown-item" data-action="delete">Delete</button>
+    // Create task via API
+    fetch('navbar_api.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=create_task&workspace_id=${workspaceID}&task_name=New Task`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Task created successfully:', data);
+            
+            // Create task HTML with database ID
+            const taskHTML = `
+                <div class="task-item" data-task-id="${data.taskID}" data-pinned="false">
+                    <img src="../navbar-icon/task.svg" alt="Task" class="submenu-icon" width="16" height="16">
+                    <span class="task-name">${data.taskName}</span>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" aria-label="Task options">
+                            <svg width="16" height="16" viewBox="0 0 16 16">
+                                <circle cx="8" cy="4" r="1" fill="currentColor"/>
+                                <circle cx="8" cy="8" r="1" fill="currentColor"/>
+                                <circle cx="8" cy="12" r="1" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item" data-action="grant-access">Grant access</button>
+                            <button class="dropdown-item" data-action="rename">Rename</button>
+                            <button class="dropdown-item" data-action="pin" data-pin-text="Pin">Pin</button>
+                            <button class="dropdown-item" data-action="delete">Delete</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    `;
-    
-    const submenu = workspaceItem.querySelector('.workspace-submenu');
-    submenu.insertAdjacentHTML('beforeend', taskHTML);
-    
-    // get the new task element
-    const newTask = document.querySelector(`[data-task-id="${taskId}"]`);
-    
-    // manually init the dropdown for this new task
-    const dropdown = newTask.querySelector('.dropdown');
-    const toggle = dropdown.querySelector('.dropdown-toggle');
-    const menu = dropdown.querySelector('.dropdown-menu');
-    
-    // add click event to toggle
-    toggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleDropdown(dropdown);
-    });
-    
-    // add click events to dropdown items
-    const items = dropdown.querySelectorAll('.dropdown-item');
-    items.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            handleDropdownAction(item, dropdown);
-        });
-    });
-    
-    // init editable function for the task name
-    const nameElement = newTask.querySelector('.task-name');
-    nameElement.addEventListener('click', () => {
-        if (!SidebarState.editingElement) {
-            startEditing(nameElement);
+            `;
+            
+            const submenu = workspaceItem.querySelector('.workspace-submenu');
+            submenu.insertAdjacentHTML('beforeend', taskHTML);
+            
+            // Get the new task element and initialize dropdown
+            const newTask = document.querySelector(`[data-task-id="${data.taskID}"]`);
+            const dropdown = newTask.querySelector('.dropdown');
+            const toggle = dropdown.querySelector('.dropdown-toggle');
+            
+            // Add click event to toggle
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDropdown(dropdown);
+            });
+            
+            // Add click events to dropdown items
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleDropdownAction(item, dropdown);
+                });
+            });
+            
+            console.log(`New task added with ID: ${data.taskID}`);
+        } else {
+            console.error('Failed to create task:', data.message);
+            alert('Failed to create task: ' + data.message);
         }
+    })
+    .catch(error => {
+        console.error('Error creating task:', error);
+        alert('Error creating task. Please try again.');
     });
-    
-    // edit the new task name
-    setTimeout(() => startEditing(nameElement), 100);
-    
-    console.log(`New task added: ${taskId}`);
 }
 
 /**
@@ -161,14 +199,49 @@ function handleHideUnhide(workspaceItem) {
 
 
 /**
-    * handle deleting tasks
+ * Handle deleting workspace
  */
 function handleDeleteWorkSpace(workspaceItem) {
     if (!workspaceItem) return;
 
-    if (confirm('Are you sure you want to delete this workspace?')) {
-        workspaceItem.remove();
-        console.log('Workspace deleted');
+    const workspaceID = workspaceItem.dataset.workspaceId;
+    const workspaceName = workspaceItem.querySelector('.workspace-name').textContent;
+
+    if (confirm(`Are you sure you want to delete workspace "${workspaceName}"? This will also delete all tasks in this workspace.`)) {
+        // Delete via API
+        fetch('navbar_api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=delete_workspace&workspace_id=${workspaceID}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                workspaceItem.remove();
+                console.log('Workspace deleted successfully');
+                
+                // Check if no workspaces left
+                const remainingWorkspaces = document.querySelectorAll('.workspace-item');
+                if (remainingWorkspaces.length === 0) {
+                    const noWorkspaceHTML = `
+                        <div class="no-workspace-message">
+                            <p>You don't have any workspace yet.</p>
+                            <button class="create-first-workspace-btn" onclick="addNewWorkspace()">Create Workspace</button>
+                        </div>
+                    `;
+                    DOM.workspacesContainer.innerHTML = noWorkspaceHTML;
+                }
+            } else {
+                console.error('Failed to delete workspace:', data.message);
+                alert('Failed to delete workspace: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting workspace:', error);
+            alert('Error deleting workspace. Please try again.');
+        });
     }
 }
 

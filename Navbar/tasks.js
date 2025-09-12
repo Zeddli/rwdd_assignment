@@ -51,14 +51,37 @@ function handlePinTask(taskItem) {
 }
 
 /**
-    * handle deleting tasks
+ * Handle deleting task
  */
 function handleDeleteTask(taskItem) {
     if (!taskItem) return;
     
-    if (confirm('Are you sure you want to delete this task?')) {
-        taskItem.remove();
-        console.log('Task deleted');
+    const taskID = taskItem.dataset.taskId;
+    const taskName = taskItem.querySelector('.task-name').textContent;
+    
+    if (confirm(`Are you sure you want to delete task "${taskName}"?`)) {
+        // Delete via API
+        fetch('navbar_api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=delete_task&task_id=${taskID}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                taskItem.remove();
+                console.log('Task deleted successfully');
+            } else {
+                console.error('Failed to delete task:', data.message);
+                alert('Failed to delete task: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting task:', error);
+            alert('Error deleting task. Please try again.');
+        });
     }
 }
 
