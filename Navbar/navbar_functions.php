@@ -2,7 +2,7 @@
 /**
  * Navbar Database Functions
  * This file contains all the PHP functions that interact with the database
- * for workspace and task management. Think of it as the "backend" for the navbar.
+ * for workspace and task management. 
  */
 
 // Start session and connect to database - need these for everything
@@ -11,12 +11,11 @@ require_once '../Database/Database.php';
 
 /**
  * Gets all workspaces the user can access, plus their tasks and goals
- * This is what populates the navbar workspace dropdown
  */
 function getUserWorkspaces($userID) {
     global $conn;
     
-    // Bail out if no database connection
+    // out if no database connection
     if (!$conn) {
         return [];
     }
@@ -95,10 +94,6 @@ function createWorkspace($userID, $workspaceName) {
     
     // Start transaction to ensure all operations succeed or fail together
     mysqli_begin_transaction($conn);
-
-    /**
-     * transaction = mysql query
-     */
     
     try {
         // Create the workspace first
