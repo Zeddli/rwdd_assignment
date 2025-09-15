@@ -162,10 +162,10 @@ function handleDropdownAction(item, dropdown) {
         case 'delete':
             if (taskItem) {
                 // Delete a task
-                handleDeleteTask(taskItem);
+                window.handleDeleteTask(taskItem);
             } else if (workspaceItem) {
                 // Delete a workspace
-                handleDeleteWorkspace(workspaceItem);
+                window.handleDeleteWorkspace(workspaceItem);
             }
             break;
     }

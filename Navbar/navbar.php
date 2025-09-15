@@ -29,9 +29,9 @@ $workspaces = getUserWorkspaces($userID); // This gets workspaces + tasks user h
     <link rel="icon" type="image/png" href="./logo/logo.png">
     <title>Navigation Sidebar</title>
     <!-- Load base styles first, then our custom navbar styles -->
-    <link rel="stylesheet" href="navbarBase.css">
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="deletePopup.css">
+    <link rel="stylesheet" href="/protask/Navbar/navbarBase.css">
+    <link rel="stylesheet" href="/protask/Navbar/navbar.css">
+    <link rel="stylesheet" href="/protask/Navbar/deletePopup.css">
 </head>
 <body>
     <!-- Main Navigation Sidebar Container -->
@@ -202,14 +202,14 @@ $workspaces = getUserWorkspaces($userID); // This gets workspaces + tasks user h
 
     <!-- Load js modules in dependency order -->
     <!-- Important: These need to load in this specific order because they depend on each other -->
-    <script src="core.js"></script>                      <!-- Global state and DOM cache -->
-    <script src="delete.js"></script>                    <!-- Delete functionality -->
-    <script src="dropdowns.js"></script>                 <!-- Dropdown menu functionality -->
-    <script src="editing.js"></script>                   <!-- Inline rename functionality -->
-    <script src="workspaces.js"></script>                <!-- Workspace creation/management -->
-    <script src="tasks.js"></script>                     <!-- Task operations -->
-    <script src="sidebar.js"></script>                   <!-- Main sidebar functionality -->
-    <script src="main.js"></script>                      <!-- Entry point that starts everything -->
+    <script src="/protask/Navbar/core.js"></script>                      <!-- Global state and DOM cache -->
+    <script src="/protask/Navbar/delete.js"></script>                    <!-- Delete functionality -->
+    <script src="/protask/Navbar/dropdowns.js"></script>                 <!-- Dropdown menu functionality -->
+    <script src="/protask/Navbar/editing.js"></script>                   <!-- Inline rename functionality -->
+    <script src="/protask/Navbar/workspaces.js"></script>                <!-- Workspace creation/management -->
+    <script src="/protask/Navbar/tasks.js"></script>                     <!-- Task operations -->
+    <script src="/protask/Navbar/sidebar.js"></script>                   <!-- Main sidebar functionality -->
+    <script src="/protask/Navbar/main.js"></script>                      <!-- Entry point that starts everything -->
 
 </body>
 </html>
