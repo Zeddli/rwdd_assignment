@@ -12,6 +12,7 @@
     <!-- Sidebar -->
     <!-- Main Navigation Sidebar Container -->
     <?php include "../Navbar/navbar.php"; ?>
+    <?php require_once "../Navbar/navbar_functions.php"; ?>
     
     <!-- Main Content Area -->
     <div class="main-content">

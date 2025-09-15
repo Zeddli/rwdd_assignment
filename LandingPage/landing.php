@@ -250,7 +250,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript for interactive elements -->
+    <!-- js for interactive elements -->
     <script>
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

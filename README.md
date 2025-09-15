@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<!-- JavaScript Files -->
+<!-- js Files -->
 <script src="../Navbar/core.js"></script>
 <script src="../Navbar/dropdowns.js"></script>
 <script src="../Navbar/editing.js"></script>

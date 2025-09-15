@@ -319,7 +319,7 @@
     updateCountdown(); // run once immediately
     </script>
 
-    <!-- JavaScript Files -->
+    <!-- js Files -->
     <script src="../Navbar/core.js"></script>
     <script src="../Navbar/dropdowns.js"></script>
     <script src="../Navbar/editing.js"></script>
