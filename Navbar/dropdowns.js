@@ -161,11 +161,11 @@ function handleDropdownAction(item, dropdown) {
             
         case 'delete':
             if (taskItem) {
-                // delete a task
+                // Delete a task
                 handleDeleteTask(taskItem);
             } else if (workspaceItem) {
-                // deleting an entire workspace 
-                handleDeleteWorkSpace(workspaceItem);
+                // Delete a workspace
+                handleDeleteWorkspace(workspaceItem);
             }
             break;
     }

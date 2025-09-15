@@ -24,6 +24,6 @@ window.SidebarManager = {
     addNewWorkspace,                 // Function to create new workspace
     addNewTask: handleAddTask,       // Function to create new task
     renameElement: handleRename,     // Function to rename workspace/task
-    pinTask: handlePinTask,          // Function to pin/unpin tasks
-    deleteTask: handleDeleteTask     // Function to delete tasks
+    pinTask: handlePinTask           // Function to pin/unpin tasks
+    // deleteTask function removed - to be reimplemented
 };

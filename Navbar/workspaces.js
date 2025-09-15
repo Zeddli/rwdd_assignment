@@ -268,49 +268,7 @@ function handleHideUnhide(workspaceItem) {
  * called when user clicks "Delete" from workspace dropdown
  * this action can't be undone
  */
-function handleDeleteWorkSpace(workspaceItem) {
-    if (!workspaceItem) return;
-
-    const workspaceID = workspaceItem.dataset.workspaceId;
-    const workspaceName = workspaceItem.querySelector('.workspace-name').textContent;
-
-    if (confirm(`Are you sure you want to delete workspace "${workspaceName}"? This will also delete all tasks in this workspace.`)) {
-        // delete via API
-        fetch('/protask/Navbar/navbar_api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=delete_workspace&workspace_id=${workspaceID}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                workspaceItem.remove();
-                console.log('Workspace deleted successfully');
-                
-                // check if no workspaces left
-                const remainingWorkspaces = document.querySelectorAll('.workspace-item');
-                if (remainingWorkspaces.length === 0) {
-                    const noWorkspaceHTML = `
-                        <div class="no-workspace-message">
-                            <p>You don't have any workspace yet.</p>
-                            <button class="create-first-workspace-btn" onclick="addNewWorkspace()">Create Workspace</button>
-                        </div>
-                    `;
-                    DOM.workspacesContainer.innerHTML = noWorkspaceHTML;
-                }
-            } else {
-                console.error('Failed to delete workspace:', data.message);
-                alert('Failed to delete workspace: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error deleting workspace:', error);
-            alert('Error deleting workspace. Please try again.');
-        });
-    }
-}
+// handleDeleteWorkSpace function removed - to be reimplemented
 
 
 // export these functions so other js files can use them
@@ -318,4 +276,4 @@ function handleDeleteWorkSpace(workspaceItem) {
 window.addNewWorkspace = addNewWorkspace;
 window.handleAddTask = handleAddTask;
 window.handleHideUnhide = handleHideUnhide;
-window.handleDeleteWorkSpace = handleDeleteWorkSpace;
+// handleDeleteWorkSpace export removed

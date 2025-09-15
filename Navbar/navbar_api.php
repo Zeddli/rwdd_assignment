@@ -109,6 +109,34 @@ switch ($action) {
         echo json_encode($result);
         break;
         
+    // delete a single task
+    case 'delete_task':
+        $taskID = intval($_POST['task_id'] ?? 0);
+        
+        if ($taskID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid task ID']);
+            break;
+        }
+        
+        // Start transaction for data integrity
+        mysqli_begin_transaction($conn);
+        
+        try {
+            $result = deleteTaskFromDB($conn, $userID, $taskID);
+            
+            if ($result['success']) {
+                mysqli_commit($conn);
+            } else {
+                mysqli_rollback($conn);
+            }
+            
+            echo json_encode($result);
+        } catch (Exception $e) {
+            mysqli_rollback($conn);
+            echo json_encode(['success' => false, 'message' => 'Database error occurred']);
+        }
+        break;
+        
     // delete entire workspace (only managers can do this - careful!)
     case 'delete_workspace':
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
@@ -118,22 +146,26 @@ switch ($action) {
             break;
         }
         
-        $result = deleteWorkspace($userID, $workspaceID);
-        echo json_encode($result);
-        break;
+        // Start transaction for data integrity
+        mysqli_begin_transaction($conn);
         
-    // delete a single task (only managers can do this)
-    case 'delete_task':
-        $taskID = intval($_POST['task_id'] ?? 0);
-        
-        if ($taskID <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Invalid task ID']);
-            break;
+        try {
+            $result = deleteWorkspaceFromDB($conn, $userID, $workspaceID);
+            
+            if ($result['success']) {
+                mysqli_commit($conn);
+            } else {
+                mysqli_rollback($conn);
+            }
+            
+            echo json_encode($result);
+        } catch (Exception $e) {
+            mysqli_rollback($conn);
+            echo json_encode(['success' => false, 'message' => 'Database error occurred']);
         }
-        
-        $result = deleteTask($userID, $taskID);
-        echo json_encode($result);
         break;
+        
+
         
     // unknown action
     default:

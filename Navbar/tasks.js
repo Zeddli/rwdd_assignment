@@ -48,39 +48,10 @@ function handlePinTask(taskItem) {
 }
 
 /**
- * Handle deleting task
+ * Handle deleting task - REMOVED
+ * Delete functionality has been removed and will be reimplemented
  */
-function handleDeleteTask(taskItem) {
-    if (!taskItem) return;
-    
-    const taskID = taskItem.dataset.taskId;
-    const taskName = taskItem.querySelector('.task-name').textContent;
-    
-    if (confirm(`Are you sure you want to delete task "${taskName}"?`)) {
-        // Delete via API
-        fetch('/protask/Navbar/navbar_api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=delete_task&task_id=${taskID}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                taskItem.remove();
-                console.log('Task deleted successfully');
-            } else {
-                console.error('Failed to delete task:', data.message);
-                alert('Failed to delete task: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error deleting task:', error);
-            alert('Error deleting task. Please try again.');
-        });
-    }
-}
+// handleDeleteTask function removed - to be reimplemented
 
 /**
  * handle inviting members 
@@ -100,6 +71,6 @@ function handleGrantAccess(taskItem) {
 
 // export to other file
 window.handlePinTask = handlePinTask;
-window.handleDeleteTask = handleDeleteTask;
+// window.handleDeleteTask = handleDeleteTask;
 window.handleInviteMember = handleInviteMember;
 window.handleGrantAccess = handleGrantAccess;

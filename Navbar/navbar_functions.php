@@ -304,43 +304,139 @@ function deleteWorkspace($userID, $workspaceID) {
 }
 
 /**
- * delete a single task
- * only workspace managers can delete tasks (not just task members)
+ * delete a single task - REMOVED
+ * Delete functionality has been removed and will be reimplemented
  */
 function deleteTask($userID, $taskID) {
-    global $conn;
-    
-    if (!$conn) {
-        return ['success' => false, 'message' => 'Database connection failed'];
+    // Function disabled - delete functionality removed
+    return ['success' => false, 'message' => 'Delete functionality not implemented'];
+}
+
+/**
+ * Delete task from database with proper cleanup
+ * Removes task and all related data (comments, files, access permissions)
+ */
+function deleteTaskFromDB($conn, $userID, $taskID) {
+    if ($taskID <= 0) {
+        return ['success' => false, 'message' => 'Invalid task ID'];
     }
     
-    // complex check: user needs task access AND manager role in the workspace
-    $checkAccess = "
-        SELECT t.WorkSpaceID 
-        FROM task t 
-        INNER JOIN taskaccess ta ON t.TaskID = ta.TaskID 
-        INNER JOIN workspacemember wm ON t.WorkSpaceID = wm.WorkSpaceID 
-        WHERE t.TaskID = ? AND ta.UserID = ? AND wm.UserID = ? AND wm.UserRole = 'Manager'
+    // Check if user has permission to delete task
+    $checkSQL = "
+        SELECT t.TaskID, t.Title 
+        FROM task t
+        JOIN workspace w ON t.WorkSpaceID = w.WorkSpaceID
+        LEFT JOIN workspacemember wm ON w.WorkSpaceID = wm.WorkSpaceID AND wm.UserID = ?
+        LEFT JOIN taskaccess ta ON t.TaskID = ta.TaskID AND ta.UserID = ?
+        WHERE t.TaskID = ? 
+        AND (w.UserID = ? OR wm.UserRole = 'Manager' OR ta.UserID IS NOT NULL)
     ";
-    $stmt = mysqli_prepare($conn, $checkAccess);
-    mysqli_stmt_bind_param($stmt, "iii", $taskID, $userID, $userID);
+    
+    $stmt = mysqli_prepare($conn, $checkSQL);
+    mysqli_stmt_bind_param($stmt, "iiii", $userID, $userID, $taskID, $userID);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     
-    if (mysqli_num_rows($result) == 0) {
-        return ['success' => false, 'message' => 'Only managers can delete tasks'];
+    if (mysqli_num_rows($result) === 0) {
+        mysqli_stmt_close($stmt);
+        return ['success' => false, 'message' => 'Task not found or no permission'];
     }
     
-    // delete the task - database will clean up related records
-    $deleteTask = "DELETE FROM task WHERE TaskID = ?";
-    $stmt = mysqli_prepare($conn, $deleteTask);
-    mysqli_stmt_bind_param($stmt, "i", $taskID);
+    mysqli_stmt_close($stmt);
     
-    if (mysqli_stmt_execute($stmt)) {
-        return ['success' => true];
+    // Delete related records in correct order
+    $deleteQueries = [
+        "DELETE FROM comment WHERE TaskID = ?",
+        "DELETE FROM fileshared WHERE TaskID = ?", 
+        "DELETE FROM taskaccess WHERE TaskID = ?",
+        "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID = ?",
+        "DELETE FROM task WHERE TaskID = ?"
+    ];
+    
+    foreach ($deleteQueries as $query) {
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $taskID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
     
-    return ['success' => false, 'message' => 'Failed to delete task'];
+    return ['success' => true, 'message' => 'Task deleted successfully'];
+}
+
+/**
+ * Delete workspace from database with proper cleanup
+ * Removes workspace and all related data (tasks, goals, members, notifications)
+ */
+function deleteWorkspaceFromDB($conn, $userID, $workspaceID) {
+    if ($workspaceID <= 0) {
+        return ['success' => false, 'message' => 'Invalid workspace ID'];
+    }
+    
+    // Check if user has permission to delete workspace
+    $checkSQL = "
+        SELECT w.WorkSpaceID, w.Name 
+        FROM workspace w
+        LEFT JOIN workspacemember wm ON w.WorkSpaceID = wm.WorkSpaceID AND wm.UserID = ?
+        WHERE w.WorkSpaceID = ? 
+        AND (w.UserID = ? OR wm.UserRole = 'Manager')
+    ";
+    
+    $stmt = mysqli_prepare($conn, $checkSQL);
+    mysqli_stmt_bind_param($stmt, "iii", $userID, $workspaceID, $userID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if (mysqli_num_rows($result) === 0) {
+        mysqli_stmt_close($stmt);
+        return ['success' => false, 'message' => 'Workspace not found or no permission'];
+    }
+    
+    mysqli_stmt_close($stmt);
+    
+    // Get all task IDs in this workspace for cleanup
+    $stmt = mysqli_prepare($conn, "SELECT TaskID FROM task WHERE WorkSpaceID = ?");
+    mysqli_stmt_bind_param($stmt, "i", $workspaceID);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $taskIDs = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $taskIDs[] = $row['TaskID'];
+    }
+    mysqli_stmt_close($stmt);
+    
+    // Delete task-related records first
+    if (!empty($taskIDs)) {
+        $taskIDList = implode(',', $taskIDs);
+        $taskDeleteQueries = [
+            "DELETE FROM comment WHERE TaskID IN ($taskIDList)",
+            "DELETE FROM fileshared WHERE TaskID IN ($taskIDList)",
+            "DELETE FROM taskaccess WHERE TaskID IN ($taskIDList)",
+            "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID IN ($taskIDList)"
+        ];
+        
+        foreach ($taskDeleteQueries as $query) {
+            mysqli_query($conn, $query);
+        }
+    }
+    
+    // Delete workspace-related records
+    $workspaceDeleteQueries = [
+        "DELETE FROM task WHERE WorkSpaceID = ?",
+        "DELETE FROM goal WHERE WorkSpaceID = ?",
+        "DELETE FROM workspacemember WHERE WorkSpaceID = ?",
+        "DELETE FROM notification WHERE RelatedTable = 'workspace' AND RelatedID = ?",
+        "DELETE FROM workspace WHERE WorkSpaceID = ?"
+    ];
+    
+    foreach ($workspaceDeleteQueries as $query) {
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $workspaceID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+    
+    return ['success' => true, 'message' => 'Workspace deleted successfully'];
 }
 
 /**
