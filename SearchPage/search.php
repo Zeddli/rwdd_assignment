@@ -1,3 +1,7 @@
+<?php
+include "../Head/Head.php";
+include "../Database/Database.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
