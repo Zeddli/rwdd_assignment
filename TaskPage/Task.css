@@ -20,6 +20,7 @@ body::-webkit-scrollbar{
 .content-section,
 .file-sharing-container,
 .comment-container {
+    background-color: ;
     width: 100%;
     margin: 0 auto; /* centers the element */
 }
@@ -133,6 +134,7 @@ body:has(.sidebar.closed) .main-content {
 }
 
 .file-sharing-container, .comment-container{
+    background-color: #f9f9f9;
     position: relative;
     flex: 1 1 0;
     min-width: 0;
@@ -205,10 +207,11 @@ body:has(.sidebar.closed) .main-content {
     transition: all 0.2s ease;
 }
 .comment-section img:active{
-    transform: scale(1.1);
+    transform: scale(0.9);
 }
 
-.no-comment{
+.no-comment,
+.no-file{
     color: grey;
     position: absolute;
     font-size: large;
@@ -224,14 +227,11 @@ body:has(.sidebar.closed) .main-content {
     height: 90%;
     overflow-y: auto;    /* vertical scroll if too many */
     padding: 10px;
-    border: 1px solid #ccc;
     background: #f9f9f9;
+    border-top-right-radius: 8px;
 } 
 .comment-container .comment::-webkit-scrollbar{
     display: none;
-}
-.comment{
-    border-top-right-radius: 8px;
 }
 .comment-item{
     display: flex;
@@ -257,6 +257,54 @@ body:has(.sidebar.closed) .main-content {
     color: grey;
     font-size: 12px;
     margin-left: auto;
+}
+
+.file-sharing-container .file {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 90%;
+    overflow-y: auto;    /* vertical scroll if too many */
+    padding: 10px;
+    gap: 8px;
+} 
+
+.file-sharing-container .file::-webkit-scrollbar{
+    display: none;
+}
+
+.file-item-container{
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    box-shadow:  5px 5px 5px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+}
+.download-icon{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 5px;
+    transition: all 0.3s ease;
+}
+.download-icon:hover{
+    background-color: rgba(162, 162, 162, 0.33);
+    cursor: pointer;
+}
+.file-head,
+.file-bottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.file-bottom p{
+    color: grey;
+    font-size: 12px;
 }
 
 
@@ -288,6 +336,11 @@ body:has(.sidebar.closed) .main-content {
     }
     .description-section .time{
         font-size: 14px;
+    }
+    .comment-section textarea,
+    .comment-section img{
+        height: 18px;
+        font-size: 12px;
     }
     
 }

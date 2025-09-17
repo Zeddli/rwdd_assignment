@@ -71,8 +71,7 @@
                     "userID" => $row["UserID"],
                     "email" => $row["Email"],
                     "username" => $row["Username"],
-                    "pictureName" => $row["PictureName"],
-                    "picturePath" => $row["PicturePath"]
+                    "pictureName" => $row["PictureName"]
                 ];
                 setcookie("loginInfo", json_encode($cookieValue), time() + (86400 * 30), "/");
                 mysqli_close($conn);
@@ -81,8 +80,7 @@
                     "userID" => $row["UserID"],
                     "email" => $row["Email"],
                     "username" => $row["Username"],
-                    "pictureName" => $row["PictureName"],
-                    "picturePath" => $row["PicturePath"]
+                    "pictureName" => $row["PictureName"]
                 ];
                 header("Location: ../../../HomePage/Home.php");
             } else{

@@ -9,6 +9,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+    <link rel="stylesheet" href="landing.css">
 <head>
 </head>
 <body>
@@ -249,12 +250,12 @@
         </div>
     </footer>
 
-    <!-- JavaScript for interactive elements -->
+    <!-- js for interactive elements -->
     <script>
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+                // e.preventDefault();
                 document.querySelector(this.getAttribute('href')).scrollIntoView({
                     behavior: 'smooth'
                 });

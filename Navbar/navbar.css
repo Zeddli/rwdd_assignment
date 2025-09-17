@@ -445,6 +445,35 @@
     opacity: 0;
 }
 
+/* goal items */
+.goal-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px; 
+    margin: 1px 0; 
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.goal-item:hover {
+    background-color: #f8f9fa;
+}
+
+.goal-name {
+    flex: 1;
+    font-size: 11px; 
+    color: #666;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    font-weight: 500;
+}
+
+.sidebar.closed .goal-name {
+    opacity: 0;
+}
+
 /* task items */
 .task-item {
     display: flex;
@@ -482,15 +511,15 @@
     background: white; /* Ensure it's visible */
 }
 
-/* Editable Text Styles */
-[data-editable="true"] {
+/* Editable Text Styles
+[data-editable="false"] {
     cursor: pointer;
     padding: 2px 4px;
     border-radius: 3px;
     transition: background-color 0.2s ease;
 }
 
-[data-editable="true"]:hover {
+[data-editable="false"]:hover {
     background-color: #f0f0f0;
 }
 
@@ -498,6 +527,33 @@
     background-color: #e3f2fd;
     outline: 2px solid #2196f3;
     padding: 2px 4px;
+} */
+
+/* No workspace message */
+.no-workspace-message {
+    text-align: center;
+    padding: 20px 12px;
+    color: #666;
+}
+
+.no-workspace-message p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+}
+
+.create-first-workspace-btn {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.create-first-workspace-btn:hover {
+    background-color: #1976d2;
 }
 
 /* scrollbar styling */ 

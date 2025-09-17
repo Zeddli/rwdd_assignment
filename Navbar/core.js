@@ -1,38 +1,46 @@
 /**
- * Core State and DOM Management
- * Handles global state and DOM element caching for the sidebar
+ * keeps track of all the important HTML pieces so we don't lose them
  */
 
-// Global state management
+// remembers what state everything is in
 const SidebarState = {
-    isOpen: true,
-    activeDropdown: null,
-    editingElement: null,
-    workspaceCounter: 1,
-    taskCounter: 1
+    isOpen: true,                    // Is the sidebar wide open or squished closed?
+    activeDropdown: null,            // Which three-dot menu is currently showing? 
+    editingElement: null,            // What are we currently renaming? 
+    workspaceCounter: 1,             // Old counter for new workspaces 
+    taskCounter: 1,                  // Old counter for new tasks 
+    allowProgrammaticEdit: false     // Security thing - only let renaming happen fro
 };
 
-// DOM elements cache
+// Our "phonebook" of important HTML elements 
 const DOM = {
-    sidebar: null,
-    sidebarToggle: null,
-    workspacesContainer: null,
-    addWorkspaceBtn: null
+    sidebar: null,                   // whole sidebar container
+    sidebarToggle: null,             //  little arrow button that opens/closes the sidebar
+    workspacesContainer: null,       // scrollable area where all workspaces live
+    addWorkspaceBtn: null            // "+" button to make new workspaces
 };
 
 /**
- * init DOM element references
+ * Find and remember all important HTML elements
+ * This runs once when the page loads
  */
 function initializeDOM() {
+    // Go find the main sidebar and remember where it is
     DOM.sidebar = document.getElementById('sidebar');
+    
+    // Find that collapse/expand button and remember it
     DOM.sidebarToggle = document.getElementById('sidebarToggle');
+    
+    // Find where all the workspaces live and remember that spot
     DOM.workspacesContainer = document.getElementById('workspacesContainer');
+    
+    // Find the "+" button for making new workspaces
     DOM.addWorkspaceBtn = document.getElementById('addWorkspaceBtn');
     
-    console.log('DOM elements initialized');
+    console.log('Found and remembered all our important HTML elements!');
 }
 
-// Export for use in other modules
+// Make these available to other js files - like sharing your toys with friends
 window.SidebarState = SidebarState;
 window.DOM = DOM;
 window.initializeDOM = initializeDOM;

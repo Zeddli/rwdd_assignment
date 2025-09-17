@@ -1,13 +1,10 @@
 /**
- * Task Management
- * Handles task actions like pinning, deleting and access control
+ * task management
+ * handles task actions like pinning, deleting and access control
  */
 
 /**
- * handle pinning tasks
- */
-/**
- * Handle pinning/unpinning tasks
+ * handle pinning/unpinning tasks
  */
 function handlePinTask(taskItem) {
     if (!taskItem) return;
@@ -15,11 +12,11 @@ function handlePinTask(taskItem) {
     const isPinned = taskItem.dataset.pinned === 'true';
     
     if (isPinned) {
-        // Unpin the task
+        // unpin the task
         taskItem.dataset.pinned = 'false';
         
         
-        // move it to the end of the submenu
+            // move it to the end of the submenu
         const workspaceItem = taskItem.closest('.workspace-item');
         const submenu = workspaceItem.querySelector('.workspace-submenu');
         submenu.appendChild(taskItem);
@@ -51,16 +48,10 @@ function handlePinTask(taskItem) {
 }
 
 /**
-    * handle deleting tasks
+ * Handle deleting task - REMOVED
+ * Delete functionality has been removed and will be reimplemented
  */
-function handleDeleteTask(taskItem) {
-    if (!taskItem) return;
-    
-    if (confirm('Are you sure you want to delete this task?')) {
-        taskItem.remove();
-        console.log('Task deleted');
-    }
-}
+// handleDeleteTask function removed - to be reimplemented
 
 /**
  * handle inviting members 
@@ -80,6 +71,6 @@ function handleGrantAccess(taskItem) {
 
 // export to other file
 window.handlePinTask = handlePinTask;
-window.handleDeleteTask = handleDeleteTask;
+// window.handleDeleteTask = handleDeleteTask;
 window.handleInviteMember = handleInviteMember;
 window.handleGrantAccess = handleGrantAccess;
