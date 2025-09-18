@@ -35,11 +35,10 @@ $tasksByStatus = [
 
 if ($selectedWorkspaceID) {
     $taskQuery = "
-        SELECT task.TaskID, task.Title, task.Description, task.Deadline, task.Priority
-        FROM task
-        LEFT JOIN goal ON goal.GoalID = task.WorkSpaceID
-        WHERE task.WorkSpaceID = $selectedWorkspaceID
-        ORDER BY task.Deadline ASC
+    SELECT task.TaskID, task.Title, task.Description, task.Deadline, task.Priority, task.Status
+    FROM task
+    WHERE task.WorkSpaceID = $selectedWorkspaceID
+    ORDER BY task.Deadline ASC
     ";
     $taskResult = mysqli_query($conn, $taskQuery);
     while ($row = mysqli_fetch_assoc($taskResult)) {
@@ -47,8 +46,6 @@ if ($selectedWorkspaceID) {
         $tasksByStatus[$status][] = $row;
     }
 }
-
-// mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +72,7 @@ if ($selectedWorkspaceID) {
                 <select name="workspace" id="workspace" onchange="this.form.submit()">
                     <?php foreach ($workspaces as $ws): ?>
                         <option value="<?= $ws['WorkSpaceID'] ?>" <?= ($ws['WorkSpaceID'] == $selectedWorkspaceID) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($ws['Name']) ?>
+                            <?= htmlspecialchars(isset($ws['Name']) ? $ws['Name'] : 'Workspace') ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
