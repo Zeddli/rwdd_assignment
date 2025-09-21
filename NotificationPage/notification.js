@@ -1,17 +1,6 @@
-// Dummy notification data - in practice, you'd fetch this from backend
-    const notifications = [
-        // Example notification structure
-        // { id: 1, text: 'Task "Design UI" is due tomorrow', date: '2025-09-01 11:22' },
-        // ... add up to N notifications for demo
-    ];
-    // Demo: create dummy notifications, newest first
-    for(let i=300; i>=1; i--) {
-        notifications.push({
-            id: i,
-            text: `Notification #${i}: Task or Goal update/reminder`,
-            date: `2025-08-${Math.floor(i/2)+1} 08:${(i*3)%60}` // random date for demo
-        });
-    }
+// Get the user's timezone
+// Get the timezone string, e.g., "Asia/Kuala_Lumpur"
+var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 // Paging logic
 const perPage = 20;
@@ -23,25 +12,36 @@ function renderNotifications() {
     list.innerHTML = '';
     pagelist.innerHTML = '';
 
-    if (notifications.length === 0) {
+    if (!notifications || notifications.length === 0) {
         list.innerHTML = '<div class="no-notification">No Notifications</div>';
         return;
     }
 
-    // Order by date descending (latest first)
-    const ordered = [...notifications].sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Order by CreatedAt descending (latest first)
+    const ordered = [...notifications].sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
     const totalPage = Math.ceil(ordered.length / perPage);
     const start = (currentPage-1)*perPage;
-    const pageItems = ordered.slice(start, start+perPage);
+    const pageItems = ordered.slice(start, start+perPage);;
 
     // Render notification cards
     pageItems.forEach(n => {
         const card = document.createElement('div');
         card.className = 'notification-card';
+
+        // Determine redirect URL based on RelatedTable
+        let redirectUrl = "#";
+        if (n.RelatedTable === 'goal') {
+            redirectUrl = `../GoalPage/Goal.php?goalid=${encodeURIComponent(n.RelatedID)}`;
+        } else if (n.RelatedTable === 'task') {
+            redirectUrl = `../TaskPage/Task.php?taskid=${encodeURIComponent(n.RelatedID)}`;
+        }
+
         card.innerHTML = `
-            <div class="notification-text">${n.text}</div>
-            <div class="notification-date">${n.date}</div>
+            <div class="notification-title"><strong>${n.Title}</strong></div>
+            <div class="notification-desc">${n.Description}</div>
+            <div class="notification-date">${n.CreatedAt}</div>
         `;
+        card.onclick = () => { window.location.href = redirectUrl; };
         list.appendChild(card);
     });
 
