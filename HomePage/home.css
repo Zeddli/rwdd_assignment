@@ -112,12 +112,13 @@ body:has(.sidebar.closed) .main-content {
     border: 2px solid #222;
     margin: 10px 0;
     min-height: 80px;
-    background: #f8f8f8;
+    background: #fff;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.18s;
 }
 .task-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     background: #e3f2fd;
 }
 .task-card-content {
