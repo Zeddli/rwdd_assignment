@@ -138,6 +138,9 @@ function addNewWorkspace() {
     });
 }
 
+// debugging
+let isCreatingTask = true;
+
 /**
  * Add a new task to an existing workspace
  * gets called when user clicks the "+" button next to a workspace name
@@ -145,6 +148,19 @@ function addNewWorkspace() {
  */
 function handleAddTask(workspaceItem) {
     if (!workspaceItem) return;
+
+    // Prevent duplicate calls using global flag
+    if (workspaceItem.dataset.addingTask === 'true') {
+        console.log('🔥 handleAddTask already in progress, skipping duplicate call');
+        return;
+    }
+    
+    // Mark as processing to prevent duplicates
+    workspaceItem.dataset.addingTask = 'true';
+
+    //debugging
+    const callId = Math.random().toString(36).substr(2, 9);
+    console.log(`🔥 handleAddTask called [${callId}] for workspace:`, workspaceItem.dataset.workspaceId);
     
     const workspaceID = workspaceItem.dataset.workspaceId;
     console.log('Creating new task for workspace:', workspaceID);
@@ -239,6 +255,10 @@ function handleAddTask(workspaceItem) {
     .catch(error => {
         console.error('Error creating task:', error);
         alert('Error creating task. Please try again.');
+    })
+    .finally(() => {
+        // Reset the flag when done (success or error)
+        workspaceItem.dataset.addingTask = 'false';
     });
 }
 

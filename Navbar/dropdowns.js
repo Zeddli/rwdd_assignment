@@ -99,7 +99,7 @@ function handleDropdownAction(item, dropdown) {
     const taskItem = dropdown.closest('.task-item');            // Is it a task menu?
     const goalItem = dropdown.closest('.goal-item');            // Is it a goal menu?
     
-    console.log(`User wants to: ${action}`);
+    console.log(`🔥 handleDropdownAction called for action: ${action}`);
     
     // send them to the right function based on what they clicked
     switch (action) {
@@ -110,6 +110,7 @@ function handleDropdownAction(item, dropdown) {
             
         case 'add-task':
             // add a new task to a workspace
+            console.log('🔥 DROPDOWN: Calling handleAddTask from dropdown action');
             handleAddTask(workspaceItem);
             break;
             

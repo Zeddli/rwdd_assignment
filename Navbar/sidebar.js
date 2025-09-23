@@ -4,6 +4,12 @@
  * it's called from main.js when the page loads
  */
 function initializeSidebar() {
+    // prevent multiple initializations
+    if (window.sidebarInitialized) {
+        console.log('Sidebar already initialized, skipping...');
+        return;
+    }
+    
     // find and cache all the important HTML elements
     initializeDOM();
     
@@ -14,13 +20,27 @@ function initializeSidebar() {
     initializeDropdowns();           // set up dropdown menus
     initializeEditableElements();    // set up inline renaming (currently disabled)
     
+    // mark as initialized
+    window.sidebarInitialized = true;
     console.log('Sidebar initialized successfully');
 }
 
 /**
  * bind all event listeners for the sidebar
+ * only set up listeners once to prevent duplicates
  */
 function bindEventListeners() {
+    // check if we've already set up the listeners to prevent duplicates
+    if (!DOM.workspacesContainer) {
+        console.error('workspacesContainer not found!');
+        return;
+    }
+    
+    if (DOM.workspacesContainer.dataset.listenersBound === 'true') {
+        console.log('Event listeners already bound, skipping...');
+        return;
+    }
+    
     // wire up the sidebar collapse/expand button
     DOM.sidebarToggle.addEventListener('click', toggleSidebar);
     
@@ -30,6 +50,8 @@ function bindEventListeners() {
     // handle "+" buttons for adding tasks to workspaces
     DOM.workspacesContainer.addEventListener('click', (e) => {
         if (e.target.closest('.add-task-btn')) {
+            e.stopPropagation(); //stop the + button and add task  trigger same time
+            console.log('🔥 + button clicked - calling handleAddTask');
             // user clicked a "+" button next to a workspace
             const workspaceItem = e.target.closest('.workspace-item');
             handleAddTask(workspaceItem);
@@ -41,6 +63,10 @@ function bindEventListeners() {
     
     // handle keyboard shortcuts (like Escape key to cancel editing)
     document.addEventListener('keydown', handleKeyDown);
+    
+    // mark that we've set up the listeners
+    DOM.workspacesContainer.dataset.listenersBound = 'true';
+    console.log('Event listeners bound successfully');
 }
 
 /**
