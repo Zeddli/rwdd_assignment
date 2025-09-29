@@ -28,7 +28,7 @@ body::-webkit-scrollbar{
 .main-content {
     /* margin: 0px 180px;  */
     /* margin: 0px 0px; */
-    margin-left: 160px;
+    margin-left: 140px;
     padding: 40px;
     width: calc(100% - 150px);
     flex: 1;
@@ -41,6 +41,9 @@ body:has(.sidebar.closed) .main-content {
 }
 
 /* main */
+p{
+    overflow-wrap: break-word;
+}
 .task-header{
     display: grid;
     grid-template-rows: auto auto;
@@ -128,7 +131,7 @@ body:has(.sidebar.closed) .main-content {
 .content-section{
     display: flex;
     gap: 0px;
-    height: 70%;
+    height: 71%;
     margin-top: 20px;
     margin-bottom: 0px;
 }
@@ -310,6 +313,12 @@ body:has(.sidebar.closed) .main-content {
 
 
 @media (max-width: 750px) {
+    .task-header{
+        font-size: 14px;
+    }
+    .main-content{
+        padding: 25px;
+    }
     .content-section {
         flex-direction: column;
     }
@@ -329,7 +338,7 @@ body:has(.sidebar.closed) .main-content {
         font-size: 12px;
     }
     .sub-header .task{
-        font-size: 22px;
+        font-size: 20px;
     }
     .description-section{
         height: 90px;
@@ -337,10 +346,24 @@ body:has(.sidebar.closed) .main-content {
     .description-section .time{
         font-size: 14px;
     }
+    .content-section{
+        margin-top: 10px;
+    }
+    .file-name{
+        font-size: 15px;
+    }
     .comment-section textarea,
     .comment-section img{
         height: 18px;
         font-size: 12px;
     }
+    .file-head{
+        font-size: 15px;
+    }
+    .download-icon{
+        width: 30px;
+        height: 30px;
+    }
+
     
 }

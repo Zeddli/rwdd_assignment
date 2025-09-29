@@ -1,10 +1,10 @@
 <?php
-    session_start();
-    if(isset($_COOKIE["loginInfo"])){
-        $info = json_decode($_COOKIE["loginInfo"],true);
-        $_SESSION["userInfo"] = $info;
-        header("Location: ../HomePage/home.php");
-    }
+    // session_start();
+    // if(isset($_COOKIE["loginInfo"])){
+    //     $info = json_decode($_COOKIE["loginInfo"],true);
+    //     $_SESSION["userInfo"] = $info;
+    //     header("Location: ../HomePage/home.php");
+    // }
 ?>
 
 <!DOCTYPE html>

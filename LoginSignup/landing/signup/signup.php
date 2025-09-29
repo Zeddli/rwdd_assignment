@@ -1,18 +1,15 @@
-<?php
-    session_start();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-        include("../../../Head/Head.php");
-    ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/RWDD_ASSIGNMENT/Assets/logo.png">
+    <title>ProTask</title>
     <link rel="stylesheet" href="signup.css">
 </head>
 <body>
     <div class="logo">
-        <img src="../../Assets/logo.png" alt="">
+        <img src="/RWDD_ASSIGNMENT/Assets/logo.png" alt="">
         <h1>ProTask</h1>
     </div>
 

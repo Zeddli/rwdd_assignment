@@ -39,7 +39,7 @@
             <input type="email" id="email" name="email" value="<?php if(isset($_SESSION["email"])){echo $_SESSION["email"];}?>" required><br>
             <label for="password">Password <span id="passwordAlert" style="color:red; font-size:20px;"><?php if(isset($_SESSION["passwordError"])){echo $_SESSION["passwordError"];}?></span></label><br>
             <input type="password" id="password" name="password" value="<?php if(isset($_SESSION["password"])){echo $_SESSION["password"];}?>" required><br>
-            <p>Do not have an account? Proceed to <a href="../Signup/signup.php">Sign up</a></p><br>
+            <p>Do not have an account? Proceed to <a href="../signup/signup.php">Sign up</a></p><br>
             <input type="submit" value="LOGIN">
         </form>
     </div>

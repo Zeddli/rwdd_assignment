@@ -17,7 +17,7 @@
             $_SESSION["userInfo"] = $info;
         } else {
             // no cookie, go to landing page
-            header("Location: ../LandingPage/landing.php");
+            header("Location: /RWDD_ASSIGNMENT/LandingPage/landing.php");
             exit();
         }
     }
