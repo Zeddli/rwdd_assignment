@@ -8,7 +8,8 @@
     if($_SERVER["REQUEST_METHOD"] === "POST"){
         //  UserID TaskID Comment CreatedAt
         $comment = filter_input(INPUT_POST, "comment", FILTER_SANITIZE_SPECIAL_CHARS);
-        $taskID = $_POST["taskID"];
+        // $taskID = $_POST["taskID"];
+        $taskID = $_SESSION["taskID"];
         $userID = $_SESSION["userInfo"]["userID"];
 
         if(empty($comment)){

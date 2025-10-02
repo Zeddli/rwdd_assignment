@@ -15,24 +15,28 @@
     <div class="main-content">
         
         <div class="task-header">
-            <h1 class="workspace">"WorkSpaces Name"</h1>
+            <div class="header">
+                <h1 class="workspace" id="workspace"><!--"WorkSpaces Name" -->/</h1>
+                <div class="task-menu" id="task-menu"></div>
+            </div>
+            
             <div class="sub-header">
-                <span class="task">"Task Name"</span>  <!-- maybe require js to create this one for different colour based on the status -->
-                <span class="status">"Status"</span>
-                <span class="priority">"Priority"</span>
+                <span class="task" id="task"><!--"Task Name"--></span>  <!-- maybe require js to create this one for different colour based on the status -->
+                <span class="status" id="status"><!--"Status"--></span>
+                <span class="priority" id="priority"><!--"Priority"--></span>
             </div>
 
         </div>
         <div class="description-section">
-            <textarea readonly class="description-text">REMEMBER TO CHANGE DESCRIPTION, TIME, TASKID FOR READ/SENDCOMMENT AND FILESHARED, SEARCH "CHANGE" will see!!!!!!!!!!!!!!!!!!</textarea>
+            <textarea readonly class="description-text" id="description-text"><!--REMEMBER TO CHANGE DESCRIPTION, TIME, TASKID FOR READ/SENDCOMMENT AND FILESHARED, SEARCH "CHANGE" will see!!!!!!!!!!!!!!!!!!--></textarea>
             <div class="time">
                 <span id="start-time" class="start-time">
                     Start Time:
-                    <span id="start">2024-01-01 10:00 AM</span>
+                    <span id="start"><!--2024-01-01 10:00 AM--></span>
                 </span>
                 <span id="deadline" class="deadline">
                     Deadline:
-                    <span id="end">2024-01-01 10:00 AM</span>
+                    <span id="end"><!--2024-01-01 10:00 AM--></span>
                 </span>
                 
                 <span class="countdown-time" id="countdown-time">
@@ -66,6 +70,115 @@
 
     
     <script>
+        //fetch task info
+        <?php
+        $_SESSION["taskID"] = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ?>
+
+        //countdown
+            //countdown: if completed, time left change to completed
+            // if in progress, normal countdown
+            // if overdue, show overdue how many time
+            // if pending, show pending
+            // endtime may be 0000-00-00 00:00:00
+
+        // const targetDate = new Date("2025-10-10T00:00:00").getTime(); 
+
+        function updateCountdown(targetDate, stat) {
+            const countdownValue = document.getElementById("countdown");
+            const timer = setInterval(() => updateCountdown(deadline, stat), 1000);   
+
+            if(stat === "pending"){
+                countdownValue.innerHTML = "The task is pending";
+                return;
+            } else if (stat === "completed"){
+                countdownValue.innerHTML = "The task is completed";
+                clearInterval(timer);
+                return;
+            } else {
+                //inprogress
+                const now = new Date().getTime();
+                const dis = targetDate - now;
+                const distance = Math.abs(dis);
+
+                let status = "";
+                // overude
+                if (dis < 0) {
+                    status = "Overdue by";
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(
+                (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                );
+                const minutes = Math.floor(
+                (distance % (1000 * 60 * 60)) / (1000 * 60)
+                );
+
+                countdownValue.innerHTML =
+                `${status} ${days} days, ${hours} hours, ${minutes} minutes`;
+            }
+        }
+
+        // fetch task info
+        let deadline;
+        let stat;
+        fetch("FetchTask.php", {
+            method: "POST",
+        }).then(data => data.json())
+          .then(data => {
+            if(data.success){
+                //data.task[] task.Title Description StartTime EndTime Deadline Priority Status workspace.Name
+
+                document.getElementById("workspace").textContent = data.task["Name"];
+                document.getElementById("task").textContent = data.task["Title"];
+                document.getElementById("description-text").textContent = data.task["Description"];
+                document.getElementById("start").textContent = data.task["StartTime"];
+                document.getElementById("end").textContent = data.task["Deadline"];
+                document.getElementById("status").textContent = data.task["Status"];
+                document.getElementById("priority").textContent = data.task["Priority"];
+
+                //diff colour for status and priority
+                const statusValue = data.task["Status"].toLowerCase();
+                const priorityValue = data.task["Priority"].toLowerCase();
+
+                if(statusValue === "completed"){
+                    document.getElementById("status").style.backgroundColor = "green"; 
+                } else if (statusValue === "inprogress"){
+                    document.getElementById("status").style.backgroundColor = "red";
+                } else if (statusValue === "pending"){
+                    document.getElementById("status").style.backgroundColor = "yellow"; 
+                } 
+
+                if(priorityValue === "low"){
+                    document.getElementById("priority").style.backgroundColor = "green"; 
+                } else if (priorityValue === "high"){
+                    document.getElementById("priority").style.backgroundColor = "red";
+                } else if (priorityValue === "medium"){
+                    document.getElementById("priority").style.backgroundColor = "yellow";
+                } 
+
+                deadline = new Date(data.task["Deadline"].replace(" ", "T"));
+                deadline = deadline.getTime();
+                stat = data.task["Status"].toLowerCase();
+                // Update every 1 second
+                updateCountdown(deadline, stat); // run once immediately 
+                // const timer = setInterval(() => updateCountdown(deadline, stat), 1000);               
+                
+            
+            } else {
+                alert("Task not found");
+                window.location.href = "../HomePage/Home.php"; //go back to home if task not found
+            }
+        })
+        .catch((err) => {
+            alert("FetchTask failed: " + err);
+        });
+
+        // task menu
+
+       
+
         //download file
         // listen to file
         const fileSource = new EventSource("FetchFile.php");
@@ -163,7 +276,7 @@
 
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("taskID", 1); //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // formData.append("taskID", 1); //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             console.log(Object.fromEntries(formData.entries()));
             
 
@@ -173,7 +286,6 @@
             }).then(response => response.json())
               .then(data => {
                 if(data.success){
-                    // Optionally, you can refresh the file list here
                     alert("File uploaded successfully");
                 } else {
                     alert("File upload failed");
@@ -201,7 +313,7 @@
                 },
                 body: new URLSearchParams({
                     comment: text,
-                    taskID: 1 //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // taskID: 1 //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 })
             }).then(response => response.json())
               .then(data => {
@@ -280,46 +392,34 @@
             });
         }
 
-
-
-
-
-
-
-
-    // Set the target date and time
-    const targetDate = new Date("2025-09-10T00:00:00").getTime(); // example: Sept 10, 2025
-
-    const countdownEl = document.getElementById("countdown");
-
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = targetDate - now;
-
-        if (distance < 0) {
-        countdownEl.innerHTML = "Time's up!";
-        clearInterval(timer);
-        return;
-        }
-
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor(
-        (distance % (1000 * 60 * 60)) / (1000 * 60)
-        );
-
-        countdownEl.innerHTML =
-        `${days} days, ${hours} hours, ${minutes} minutes`;
-    }
-
-    // Update every 1 second
-    const timer = setInterval(updateCountdown, 1000);
-    updateCountdown(); // run once immediately
     </script>
 
     <!-- js Files -->
+    <script type = "module">
+        //menu
+        import {createThreeDotMenu} from '../ManagerFunction/menu.js';
+
+        // need to check if the user is manager for the workspace in workspacemember, check cookie
+        
+        //return data.sucess, if not success, alert you have no access to this function
+
+        const menu = createThreeDotMenu([
+            // edit task name, status, priority, start time, deadline, description
+            // when changing status to completed, insert end time
+            // when chaging status to pending or in progress, set end time to null
+            {label: "Edit", onClick: () => alert("Edit Clicked")},
+
+            //invite member or kick member to the task, not for workspace
+            {label: "Member", onClick: () => alert("Member Clicked")},
+
+            //delete all in comment, fileshared, file in FileSharing folder, task, taskaccess
+            {label: "Delete Task", onClick: () => alert("Delete Clicked")},
+
+        ]);
+        document.getElementById("task-menu").appendChild(menu);
+    </script>
+
+
     <script src="../Navbar/core.js"></script>
     <script src="../Navbar/dropdowns.js"></script>
     <script src="../Navbar/editing.js"></script>

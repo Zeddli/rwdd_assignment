@@ -48,6 +48,11 @@ p{
     display: grid;
     grid-template-rows: auto auto;
 }
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /*vertical*/
+}
 .workspace {
     color: black;
     margin-bottom: 10px;
@@ -72,9 +77,9 @@ p{
 .sub-header .status{
     font-size: 15px;
     align-self: center;
-    background-color: rgb(94, 184, 94);
+    /* background-color: rgb(94, 184, 94); */
     border: none;
-    padding: 2px;
+    padding: 4px;
     border-radius: 8px;
 }
 
@@ -82,9 +87,9 @@ p{
 .sub-header .priority{
     font-size: 15px;
     align-self: center;
-    background-color: rgb(94, 184, 94);
+    /* background-color: rgb(94, 184, 94); */
     border: none;
-    padding: 2px;
+    padding: 4px;
     border-radius: 8px;
 }
 
@@ -324,6 +329,9 @@ p{
     }
     .file-sharing-container{
         border-radius: 8px 8px 0px 0px;
+    }
+    .file-sharing-container .file{
+        height: 85%;
     }
     .comment-container{
         border-radius: 0px 0px 8px 8px;

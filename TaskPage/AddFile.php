@@ -11,7 +11,8 @@
 
         //UserID TaskID FileName CreatedAt 
         $userID = $_SESSION["userInfo"]["userID"];
-        $taskID = intval($_POST["taskID"]);
+        // $taskID = intval($_POST["taskID"]);
+        $taskID = intval($_SESSION["taskID"]);
         $originalName = basename($_FILES["file"]["name"]); //with extension
         $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
         $extension = pathinfo($originalName, PATHINFO_EXTENSION);
