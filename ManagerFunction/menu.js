@@ -7,12 +7,12 @@ export function createThreeDotMenu(actions = []) {
     const button = document.createElement("button");
     button.className = "three-dot-btn";
     button.innerHTML = "&#8942;"; // vertical ellipsis
-    button.style.fontSize = "30px";
+    button.style.fontSize = "25px";
     button.style.background = "none";
     button.style.border = "none";
     button.style.borderRadius = "50%";
-    button.style.width = "35px";
-    button.style.height = "35px";
+    button.style.width = "30px";
+    button.style.height = "30px";
     button.style.cursor = "pointer";
     button.style.padding = "0";
     button.style.margin = "-20px 0px 10px 0px";
@@ -42,6 +42,13 @@ export function createThreeDotMenu(actions = []) {
         item.textContent = action.label;
         item.style.padding = "8px 16px";
         item.style.cursor = "pointer";
+        // hover effect
+        item.onmouseover = () => {
+            item.style.backgroundColor = "lightgray";
+        };
+        item.onmouseout = () => {
+            item.style.backgroundColor = "transparent";
+        };
         item.addEventListener("click", (e) => {
             e.stopPropagation();
             menu.style.display = "none";

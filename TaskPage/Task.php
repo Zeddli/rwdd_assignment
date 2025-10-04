@@ -104,7 +104,7 @@
                 let status = "";
                 // overude
                 if (dis < 0) {
-                    status = "Overdue by";
+                    status = "Overdue";
                 }
 
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -116,7 +116,7 @@
                 );
 
                 countdownValue.innerHTML =
-                `${status} ${days} days, ${hours} hours, ${minutes} minutes`;
+                `${status} ${days} days ${hours}h ${minutes}min`;
             }
         }
 
@@ -125,6 +125,12 @@
         let stat;
         fetch("FetchTask.php", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                taskID: <?php echo $_SESSION["taskID"]; ?>
+            })
         }).then(data => data.json())
           .then(data => {
             if(data.success){
@@ -144,7 +150,7 @@
 
                 if(statusValue === "completed"){
                     document.getElementById("status").style.backgroundColor = "green"; 
-                } else if (statusValue === "inprogress"){
+                } else if (statusValue === "in progress"){
                     document.getElementById("status").style.backgroundColor = "red";
                 } else if (statusValue === "pending"){
                     document.getElementById("status").style.backgroundColor = "yellow"; 
@@ -398,28 +404,28 @@
     <script type = "module">
         //menu
         import {createThreeDotMenu} from '../ManagerFunction/menu.js';
+        import {edit, member, deleteTask, deleteWorkspace} from '../ManagerFunction/Main.js';
 
         // need to check if the user is manager for the workspace in workspacemember, check cookie
         
         //return data.sucess, if not success, alert you have no access to this function
-
         const menu = createThreeDotMenu([
             // edit task name, status, priority, start time, deadline, description
             // when changing status to completed, insert end time
             // when chaging status to pending or in progress, set end time to null
-            {label: "Edit", onClick: () => alert("Edit Clicked")},
+            {label: "Edit", onClick: () => edit(<?php echo $_SESSION["taskID"]; ?>)},
 
             //invite member or kick member to the task, not for workspace
-            {label: "Member", onClick: () => alert("Member Clicked")},
+            {label: "Member", onClick: () => member()},
 
             //delete all in comment, fileshared, file in FileSharing folder, task, taskaccess
-            {label: "Delete Task", onClick: () => alert("Delete Clicked")},
+            {label: "Delete Task", onClick: () => deleteTask()},
 
         ]);
         document.getElementById("task-menu").appendChild(menu);
     </script>
 
-
+    <!-- navbar -->
     <script src="../Navbar/core.js"></script>
     <script src="../Navbar/dropdowns.js"></script>
     <script src="../Navbar/editing.js"></script>
