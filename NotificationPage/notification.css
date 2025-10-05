@@ -176,7 +176,7 @@ body:has(.sidebar.closed) .main-content {
 
 .page-btn.active,
 .page-btn:hover {
-    background: grey;
+    background: #2196f3;
     color: white;
 }
 

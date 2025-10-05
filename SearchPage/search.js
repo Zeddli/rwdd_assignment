@@ -42,5 +42,5 @@ searchBar.addEventListener('input', function() {
             resultsDiv.innerHTML = '<div class="no-result-card">Search error</div>';
         });
 });
-promptDiv.textContent = 'Type to search for tasks, goals, or workspace...';
+promptDiv.textContent = 'Type to search for tasks, goals, or workspaces...';
 promptDiv.style.display = 'block';
