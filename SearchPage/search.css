@@ -82,6 +82,17 @@ body:has(.sidebar.closed) .main-content {
 .result-name {
     color: #222;
 }
+.result-workspace {
+    display: block;
+    margin-top: 2px;
+    font-weight: 500;
+    color: #1565c0;
+    font-size: 0.98em;
+}
+.result-card .result-workspace {
+    font-weight: 600;
+    color: #2196f3;
+}
 .no-result-card {
     text-align: center;
     color: #555;

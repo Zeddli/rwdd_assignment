@@ -11,6 +11,11 @@ body {
     min-height: 100vh;
 }
 
+body:has(.sidebar.closed) .main-content {
+    margin-left: 50px;
+    width: calc(100% - 50px);
+}
+
 /* Main Content Area */
 .main-content {
     margin-left: 200px; 
@@ -18,11 +23,6 @@ body {
     width: calc(100% - 200px);
     flex: 1;
     transition: all 0.3s ease;
-}
-
-body:has(.sidebar.closed) .main-content {
-    margin-left: 50px;
-    width: calc(100% - 50px);
 }
 
 /* Notification Page Styles */
