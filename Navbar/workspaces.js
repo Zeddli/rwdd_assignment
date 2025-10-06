@@ -284,6 +284,25 @@ function handleHideUnhide(workspaceItem) {
 
 
 /**
+ * Handle workspace click to open workspace page
+ * Redirects to /protask/WorkspacePage/workspace.php/{workspaceID}
+ */
+function handleWorkspaceClick(event, workspaceItem) {
+    if (!workspaceItem) return;
+    
+    // Ignore clicks coming from dropdowns or buttons within the header
+    if (event.target.closest('.dropdown') || event.target.closest('button')) return;
+    
+    const workspaceID = workspaceItem.dataset.workspaceId;
+    if (!workspaceID) {
+        console.error('Workspace ID not found');
+        return;
+    }
+    
+    window.location.href = `/protask/WorkspacePage/workspace.php/${workspaceID}`;
+}
+
+/**
  * delete an entire workspace (dangerous!)
  * called when user clicks "Delete" from workspace dropdown
  * this action can't be undone
@@ -296,4 +315,5 @@ function handleHideUnhide(workspaceItem) {
 window.addNewWorkspace = addNewWorkspace;
 window.handleAddTask = handleAddTask;
 window.handleHideUnhide = handleHideUnhide;
+window.handleWorkspaceClick = handleWorkspaceClick;
 // handleDeleteWorkSpace export removed

@@ -14,6 +14,8 @@ function renderNotifications() {
 
     if (!notifications || notifications.length === 0) {
         list.innerHTML = '<div class="no-notification">No Notifications</div>';
+        // Even if no notification, still show pagination control for 1 page
+        renderPaginationControls(1, 1, pagelist);
         return;
     }
 
@@ -45,122 +47,126 @@ function renderNotifications() {
         list.appendChild(card);
     });
 
-    // Pagination arrows/buttons logic
-    if (totalPage > 1) {
-        // Leftmost arrow
-        const leftmost = document.createElement('button');
-        leftmost.className = 'page-btn arrow-btn';
-        leftmost.innerHTML = '&laquo;';
-        leftmost.disabled = currentPage === 1;
-        leftmost.onclick = () => {
-            if (currentPage !== 1) {
-                currentPage = 1;
-                renderNotifications();
-                window.scrollTo(0,0);
-            }
-        };
-        pagelist.appendChild(leftmost);
-
-        // Left arrow
-        const left = document.createElement('button');
-        left.className = 'page-btn arrow-btn';
-        left.innerHTML = '&lt;';
-        left.disabled = currentPage === 1;
-        left.onclick = () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderNotifications();
-                window.scrollTo(0,0);
-            }
-        };
-        pagelist.appendChild(left);
-
-        let firstPageBtn = 1;
-        let lastPageBtn = totalPage;
-
-        // Logic for showing max 10 page buttons
-        if (totalPage > 10) {
-            if (currentPage <= 6) {
-                firstPageBtn = 1;
-                lastPageBtn = 10;
-            } else if (currentPage > totalPage - 5) {
-                firstPageBtn = totalPage - 9;
-                lastPageBtn = totalPage;
-            } else {
-                firstPageBtn = currentPage - 5;
-                lastPageBtn = currentPage + 4;
-            }
-        }
-
-        for(let i=firstPageBtn; i<=lastPageBtn; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'page-btn' + (i===currentPage ? ' active' : '');
-            btn.innerText = i;
-            btn.onclick = () => {
-                currentPage = i;
-                renderNotifications();
-                window.scrollTo(0,0);
-            };
-            pagelist.appendChild(btn);
-        }
-
-        // Only show ... and last page button if there's a gap
-        if (totalPage > 10 && lastPageBtn < totalPage - 1) {
-            const dots = document.createElement('span');
-            dots.className = 'page-ellipsis';
-            dots.innerText = '...';
-            pagelist.appendChild(dots);
-
-            // Last page button
-            const lastBtn = document.createElement('button');
-            lastBtn.className = 'page-btn' + (totalPage === currentPage ? ' active' : '');
-            lastBtn.innerText = totalPage;
-            lastBtn.onclick = () => {
-                currentPage = totalPage;
-                renderNotifications();
-                window.scrollTo(0,0);
-            };
-            pagelist.appendChild(lastBtn);
-        } else if (totalPage > 10 && lastPageBtn === totalPage - 1) {
-            // Show last page button directly if only one is skipped
-            const lastBtn = document.createElement('button');
-            lastBtn.className = 'page-btn' + (totalPage === currentPage ? ' active' : '');
-            lastBtn.innerText = totalPage;
-            lastBtn.onclick = () => {
-                currentPage = totalPage;
-                renderNotifications();
-                window.scrollTo(0,0);
-            };
-            pagelist.appendChild(lastBtn);
-        }
-
-        // Right arrow
-        const right = document.createElement('button');
-        right.className = 'page-btn arrow-btn';
-        right.innerHTML = '&gt;';
-        right.disabled = currentPage === totalPage;
-        right.onclick = () => {
-            if (currentPage < totalPage) {
-                currentPage++;
-                renderNotifications();
-                window.scrollTo(0,0);
-            }
-        };
-        pagelist.appendChild(right);
-
-        // Rightmost arrow
-        const rightmost = document.createElement('button');
-        rightmost.className = 'page-btn arrow-btn';
-        rightmost.innerHTML = '&raquo;';
-        rightmost.disabled = currentPage === totalPage;
-        rightmost.onclick = () => {
-            if (currentPage !== totalPage) {
-                currentPage = totalPage;
-                renderNotifications();
-                window.scrollTo(0,0);
-            }
-        };
-        pagelist.appendChild(rightmost);
-    }
+    // Always show pagination controls, even if only one page
+    renderPaginationControls(totalPage, currentPage, pagelist);
 }
+
+function renderPaginationControls(totalPage, currentPage, pagelist) {
+    // Leftmost arrow
+    const leftmost = document.createElement('button');
+    leftmost.className = 'page-btn arrow-btn';
+    leftmost.innerHTML = '&laquo;';
+    leftmost.disabled = currentPage === 1;
+    leftmost.onclick = () => {
+        if (currentPage !== 1) {
+            window.currentPage = 1;
+            renderNotifications();
+            window.scrollTo(0,0);
+        }
+    };
+    pagelist.appendChild(leftmost);
+
+    // Left arrow
+    const left = document.createElement('button');
+    left.className = 'page-btn arrow-btn';
+    left.innerHTML = '&lt;';
+    left.disabled = currentPage === 1;
+    left.onclick = () => {
+        if (currentPage > 1) {
+            window.currentPage--;
+            renderNotifications();
+            window.scrollTo(0,0);
+        }
+    };
+    pagelist.appendChild(left);
+
+    let firstPageBtn = 1;
+    let lastPageBtn = totalPage;
+
+    // Logic for showing max 10 page buttons
+    if (totalPage > 10) {
+        if (currentPage <= 6) {
+            firstPageBtn = 1;
+            lastPageBtn = 10;
+        } else if (currentPage > totalPage - 5) {
+            firstPageBtn = totalPage - 9;
+            lastPageBtn = totalPage;
+        } else {
+            firstPageBtn = currentPage - 5;
+            lastPageBtn = currentPage + 4;
+        }
+    }
+
+    for(let i=firstPageBtn; i<=lastPageBtn; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (i===currentPage ? ' active' : '');
+        btn.innerText = i;
+        btn.onclick = () => {
+            window.currentPage = i;
+            renderNotifications();
+            window.scrollTo(0,0);
+        };
+        pagelist.appendChild(btn);
+    }
+
+    // Only show ... and last page button if there's a gap
+    if (totalPage > 10 && lastPageBtn < totalPage - 1) {
+        const dots = document.createElement('span');
+        dots.className = 'page-ellipsis';
+        dots.innerText = '...';
+        pagelist.appendChild(dots);
+
+        // Last page button
+        const lastBtn = document.createElement('button');
+        lastBtn.className = 'page-btn' + (totalPage === currentPage ? ' active' : '');
+        lastBtn.innerText = totalPage;
+        lastBtn.onclick = () => {
+            window.currentPage = totalPage;
+            renderNotifications();
+            window.scrollTo(0,0);
+        };
+        pagelist.appendChild(lastBtn);
+    } else if (totalPage > 10 && lastPageBtn === totalPage - 1) {
+        // Show last page button directly if only one is skipped
+        const lastBtn = document.createElement('button');
+        lastBtn.className = 'page-btn' + (totalPage === currentPage ? ' active' : '');
+        lastBtn.innerText = totalPage;
+        lastBtn.onclick = () => {
+            window.currentPage = totalPage;
+            renderNotifications();
+            window.scrollTo(0,0);
+        };
+        pagelist.appendChild(lastBtn);
+    }
+
+    // Right arrow
+    const right = document.createElement('button');
+    right.className = 'page-btn arrow-btn';
+    right.innerHTML = '&gt;';
+    right.disabled = currentPage === totalPage;
+    right.onclick = () => {
+        if (currentPage < totalPage) {
+            window.currentPage++;
+            renderNotifications();
+            window.scrollTo(0,0);
+        }
+    };
+    pagelist.appendChild(right);
+
+    // Rightmost arrow
+    const rightmost = document.createElement('button');
+    rightmost.className = 'page-btn arrow-btn';
+    rightmost.innerHTML = '&raquo;';
+    rightmost.disabled = currentPage === totalPage;
+    rightmost.onclick = () => {
+        if (currentPage !== totalPage) {
+            window.currentPage = totalPage;
+            renderNotifications();
+            window.scrollTo(0,0);
+        }
+    };
+    pagelist.appendChild(rightmost);
+}
+
+
 renderNotifications();

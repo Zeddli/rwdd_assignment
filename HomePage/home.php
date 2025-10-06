@@ -4,13 +4,17 @@ include "../Database/Database.php";
 
 // Get userID from session
 $userID = $_SESSION["userInfo"]["userID"] ?? null;
+if (!$userID) {
+    echo "<div style='color:red;'>Session not set!</div>";
+    exit;
+}
 
 // Get selected workspace from GET (for switching)
 $selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : null;
 
 // Fetch all workspaces for this user
 $workspaceQuery = "
-    SELECT workspace.WorkSpaceID, workspace.Name
+    SELECT workspace.WorkSpaceID, workspace.Name as WorkspaceName
     FROM workspace
     JOIN workspacemember ON workspace.WorkSpaceID = workspacemember.WorkSpaceID
     WHERE workspacemember.UserID = $userID
@@ -60,7 +64,6 @@ if ($selectedWorkspaceID) {
 </head>
 <body>
     <!-- Sidebar -->
-    <!-- Main Navigation Sidebar Container -->
     <?php include "../Navbar/navbar.php"; ?>
     
     <!-- Main Content -->
@@ -71,8 +74,8 @@ if ($selectedWorkspaceID) {
                 <label for="workspace" class="workspace">Select workspace:</label>
                 <select name="workspace" id="workspace" onchange="this.form.submit()">
                     <?php foreach ($workspaces as $ws): ?>
-                        <option value="<?= $ws['WorkSpaceID'] ?>" <?= ($ws['WorkSpaceID'] == $selectedWorkspaceID) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars(isset($ws['Name']) ? $ws['Name'] : 'Workspace') ?>
+                        <option value="<?= htmlspecialchars($ws['WorkSpaceID']) ?>" <?= ($ws['WorkSpaceID'] == $selectedWorkspaceID) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($ws['WorkspaceName']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -113,7 +116,7 @@ if ($selectedWorkspaceID) {
     </div>
     
     <!-- JS modules -->
-   <script src="../Navbar/core.js"></script>
+    <script src="../Navbar/core.js"></script>
     <script src="../Navbar/dropdowns.js"></script>
     <script src="../Navbar/editing.js"></script>
     <script src="../Navbar/workspaces.js"></script>

@@ -1,40 +1,46 @@
-// Example dummy data for demo
-const dummyResults = [
-    { id: 1, type: 'task', name: 'UI Design', link: 'task.html?id=1' },
-    { id: 2, type: 'goal', name: 'Complete Website', link: 'goal.html?id=2' },
-    { id: 3, type: 'workspace', name: 'Frontend Team', link: 'workspace.html?id=3' },
-    { id: 4, type: 'task', name: 'Write Documentation', link: 'task.html?id=4' },
-    { id: 5, type: 'goal', name: 'Release MVP', link: 'goal.html?id=5' }
-];
-
 const searchBar = document.getElementById('search-bar');
 const resultsDiv = document.getElementById('search-results');
 const promptDiv = document.getElementById('search-prompt');
 
 searchBar.addEventListener('input', function() {
-    const q = searchBar.value.trim().toLowerCase();
-    // In real implementation, make AJAX call to backend here
+    const q = searchBar.value.trim();
     if (!q) {
         resultsDiv.innerHTML = '';
         promptDiv.style.display = 'block';
+        promptDiv.textContent = 'Type to search for tasks, goals, or workspace...';
         return;
     }
     promptDiv.style.display = 'none';
-    // Filter results by name
-    const results = dummyResults.filter(r => r.name.toLowerCase().includes(q));
-    if (results.length === 0) {
-        resultsDiv.innerHTML = '<div class="no-result-card">No results found</div>';
-    } else {
-        resultsDiv.innerHTML = '';
-        results.forEach(r => {
-            const card = document.createElement('div');
-            card.className = 'result-card';
-            card.innerHTML = `<span class="result-type">${r.type}</span>: <span class="result-name">${r.name}</span>`;
-            card.onclick = () => {
-                // Redirect to the relative page
-                window.location.href = r.link;
-            };
-            resultsDiv.appendChild(card);
+
+    fetch(`search_api.php?q=${encodeURIComponent(q)}`)
+        .then(res => res.json())
+        .then(results => {
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-result-card">No results found</div>';
+            } else {
+                resultsDiv.innerHTML = '';
+                results.forEach(r => {
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+
+                    if (r.type === 'workspace') {
+                        // Only show workspace name, styled
+                        card.innerHTML = `<span class="result-type" style="color:#1565c0; font-weight:600;">Workspace</span>: <span class="result-name">${r.name}</span>`;
+                    } else {
+                        // For task/goal, show workspace name in bottom line
+                        card.innerHTML = `<span class="result-type">${r.type}</span>: <span class="result-name">${r.name}</span>
+                        <div class="result-workspace" style="margin-top:2px; font-weight:500; color:#1565c0; font-size:0.98em;">Workspace: ${r.workspace}</div>`;
+                    }
+                    card.onclick = () => {
+                        window.location.href = r.link;
+                    };
+                    resultsDiv.appendChild(card);
+                });
+            }
+        })
+        .catch(() => {
+            resultsDiv.innerHTML = '<div class="no-result-card">Search error</div>';
         });
-    }
 });
+promptDiv.textContent = 'Type to search for tasks, goals, or workspaces...';
+promptDiv.style.display = 'block';

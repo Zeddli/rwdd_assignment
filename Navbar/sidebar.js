@@ -18,7 +18,6 @@ function initializeSidebar() {
     
     // init other modules that depend on the basic setup
     initializeDropdowns();           // set up dropdown menus
-    initializeEditableElements();    // set up inline renaming (currently disabled)
     
     // mark as initialized
     window.sidebarInitialized = true;
@@ -55,6 +54,23 @@ function bindEventListeners() {
             // user clicked a "+" button next to a workspace
             const workspaceItem = e.target.closest('.workspace-item');
             handleAddTask(workspaceItem);
+        }
+    });
+    
+    // handle task item clicks to open task page
+    DOM.workspacesContainer.addEventListener('click', (e) => {
+        const taskItem = e.target.closest('.task-item');
+        if (taskItem) {
+            handleTaskClick(e, taskItem);
+        }
+    });
+    
+    // handle workspace header clicks to open workspace page
+    DOM.workspacesContainer.addEventListener('click', (e) => {
+        const header = e.target.closest('.workspace-header-item');
+        if (header) {
+            const workspaceItem = header.closest('.workspace-item');
+            handleWorkspaceClick(e, workspaceItem);
         }
     });
     
