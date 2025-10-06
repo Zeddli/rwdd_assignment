@@ -42,6 +42,9 @@ export function createThreeDotMenu(actions = []) {
         item.textContent = action.label;
         item.style.padding = "8px 16px";
         item.style.cursor = "pointer";
+        if(action.label.toLowerCase().includes("delete") || action.label.toLowerCase().includes("kick")){
+            item.style.color = "red";
+        }
         // hover effect
         item.onmouseover = () => {
             item.style.backgroundColor = "lightgray";

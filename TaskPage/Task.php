@@ -416,7 +416,7 @@
             {label: "Edit", onClick: () => edit(<?php echo $_SESSION["taskID"]; ?>)},
 
             //invite member or kick member to the task, not for workspace
-            {label: "Member", onClick: () => member()},
+            {label: "Member", onClick: () => member(<?php echo $_SESSION["taskID"]; ?>, "task")},
 
             //delete all in comment, fileshared, file in FileSharing folder, task, taskaccess
             {label: "Delete Task", onClick: () => deleteTask()},

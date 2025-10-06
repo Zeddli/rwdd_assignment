@@ -20,7 +20,7 @@
     //     font-size: 14px;
     //     animation: fadeIn 0.5s;
     // }
-    
+import { createThreeDotMenu } from "/rwdd_assignment/ManagerFunction/menu.js";
 export function edit(taskID){
     // alert("Edit function called for taskID (Main.js): " + taskID);
 
@@ -253,7 +253,7 @@ export function edit(taskID){
                     });
 
                     // Submit button styling
-                    submit.style.backgroundColor = "#4A90E2";
+                    submit.style.backgroundColor = "#007bff";
                     submit.style.color = "white";
                     submit.style.border = "none";
                     submit.style.padding = "10px";
@@ -262,10 +262,10 @@ export function edit(taskID){
                     submit.style.fontWeight = "600";
                     submit.style.transition = "0.3s";
                     submit.addEventListener("mouseover", () => {
-                        submit.style.backgroundColor = "#357ABD";
+                        submit.style.backgroundColor = "#26598cff";
                     });
                     submit.addEventListener("mouseout", () => {
-                        submit.style.backgroundColor = "#4A90E2";
+                        submit.style.backgroundColor = "#007bff";
                     });
 
                     // Cancel button styling
@@ -329,7 +329,7 @@ export function member(id, type){
     // flow ->
     // click memebr button -> popup window show all mmeber with three dot button 
     // -> kick (check permission)
-    // -> change role (check permission)
+    // -> Grant Manager Access (check permission)
     // Invite member (workspace) (check permission) -> type email(will show list when typing) -> select role -> invite
     // Invite member (task) (check permission) -> type email(will show list when typing) -> invite
     
@@ -337,7 +337,278 @@ export function member(id, type){
 
     //invite member or kick member, need to check is task or workspace
     // when invite member, need to check if the user is already in the workspace
-    alert("Member function called");
+
+    // FetchMember.php(two type) KickMember.php(two type) GrantAccess.php(workspace only) InviteMember.php(two type, role set default to NULL)
+
+    fetch("/rwdd_assignment/ManagerFunction/FetchMember.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+            id: id,
+            type: type //workspace or task
+        })
+    }).then(data => data.json())
+    .then(data => {
+        if(data.success){
+            //data.members[] task: UserID TaskID
+            //user: UserID Username Email PictureName
+            //top: textarea role(for workspace) select invite button
+            //list: picture name email role(for workspace) three dot button (kick, grant access)
+
+            const popup = document.createElement("div");
+            popup.className = "popup";
+            popup.style.position = "absolute";
+            popup.style.zIndex = "1000";
+            popup.style.width = "100%";
+            popup.style.height = "100%";
+            popup.style.backgroundColor = "#00000090";
+            popup.style.display = "grid";
+            popup.style.animation = "fadeIn 0.5s";
+            popup.style.backdropFilter = "blur(2px)";
+
+            // Container
+            const popupContainer = document.createElement("div");
+            popupContainer.className = "popup-container";
+            popupContainer.style.placeSelf = "center";
+            popupContainer.style.width = "max(50%, 400px)";
+            popupContainer.style.backgroundColor = "white";
+            popupContainer.style.display = "flex";
+            popupContainer.style.flexDirection = "column";
+            popupContainer.style.gap = "15px";
+            popupContainer.style.padding = "20px 30px";
+            popupContainer.style.borderRadius = "8px";
+            popupContainer.style.fontSize = "15px";
+            popupContainer.style.animation = "fadeIn 0.5s";
+            popupContainer.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
+            popupContainer.style.fontFamily = "Arial, sans-serif";
+
+            // Title
+            const title = document.createElement("h2");
+            title.textContent = type === "workspace" ? "Workspace Members" : "Task Members";
+            title.style.margin = "0 0 10px 0";
+            popupContainer.appendChild(title);
+
+            // Invite section
+            const inviteBox = document.createElement("div");
+            inviteBox.style.display = "flex";
+            inviteBox.style.width = "100%";
+            inviteBox.style.justifyContent = "center";
+            inviteBox.style.alignItems = "center";
+
+            const inviteForm = document.createElement("form");
+            inviteForm.method = "POST";
+            inviteForm.action = "/rwdd_assignment/ManagerFunction/InviteMember.php";
+            inviteForm.style.display = "flex";
+            inviteForm.style.width = "100%";
+            inviteForm.style.gap = "10px";
+            inviteForm.style.alignItems = "center";
+
+            const inviteInput = document.createElement("input");
+            inviteInput.type = "email";
+            inviteInput.name = "invite-email";
+            inviteInput.id = "invite-email";
+            inviteInput.required = true;
+            inviteInput.placeholder = "Enter email to invite";
+            inviteInput.style.flex = "2";
+            inviteInput.style.padding = "5px";
+            inviteInput.style.border = "1px solid #ccc";
+            inviteInput.style.borderRadius = "4px";
+            inviteInput.rows = 1;
+
+            const roleSelect = document.createElement("select");
+            roleSelect.style.border = "1px solid #ccc";
+            roleSelect.style.borderRadius = "4px";
+            roleSelect.style.padding = "5px";
+            roleSelect.style.cursor = "pointer";
+            roleSelect.style.background = "#fff";
+            roleSelect.style.color = "#333";
+            roleSelect.style.fontSize = "14px";
+            ["Employee", "Manager"].forEach(r => {
+                const option = document.createElement("option");
+                option.value = r;
+                option.textContent = r;
+                roleSelect.appendChild(option);
+            });
+
+            const inviteBtn = document.createElement("button");
+            inviteBtn.type = "submit";
+            inviteBtn.textContent = "Invite";
+            inviteBtn.style.cursor = "pointer";
+            inviteBtn.style.padding = "5px 12px";
+            inviteBtn.style.border = "1px solid #ccc";
+            inviteBtn.style.borderRadius = "4px";
+            inviteBtn.style.background = "#007bff";
+            inviteBtn.style.color = "#fff";
+            inviteBtn.style.transition = "0.3s";
+            inviteBtn.addEventListener("mouseover", () => {
+                inviteBtn.style.backgroundColor = "#26598cff";
+            });
+            inviteBtn.addEventListener("mouseout", () => {
+                inviteBtn.style.backgroundColor = "#007bff";
+            });
+
+            inviteForm.appendChild(inviteInput);
+            inviteForm.appendChild(roleSelect);
+            inviteForm.appendChild(inviteBtn);
+
+            inviteBox.appendChild(inviteForm);
+
+            popupContainer.appendChild(inviteBox);
+
+            inviteBtn.addEventListener("click", (e) => {
+                // need to check permission
+                e.preventDefault();
+                checkPermission(data.members[0]["TaskID"]).then(hasPermission => {
+                    // alert(hasPermission);
+                    if(hasPermission){
+                        // have permission, proceed to invite
+                        inviteInput.value = inviteInput.value.trim(); //这里trim 了 下面的invite form 里面的email 也没有trim到，在report validity 不能detect到
+                        if(inviteForm.reportValidity()){
+                            // alert(`Inviting ${inviteInput.value} as ${roleSelect.value}`);
+                            fetch(inviteForm.action, {
+                                method: inviteForm.method,
+                                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                                body: new URLSearchParams({
+                                    id: id, // to know which workspace or task
+                                    type: type, //to know workspace or task
+                                    email: inviteInput.value, 
+                                    role: roleSelect.value
+                                })
+                            }).then(data => data.json())
+                            .then(data => {
+                                if(data.success){
+                                    alert(`Success: ${inviteInput.value} invited as ${roleSelect.value}`);
+                                    inviteInput.value = "";
+                                } else {
+                                    alert(`${inviteInput.value} invitation failed: ${data.error}`);
+                                    return;
+                                }
+                            }).catch((err) => {
+                                alert(`Fetch InviteMember Failed: ${err}`);
+                                return;
+                            });
+                        }
+
+                    } else {
+                        // do not have permission
+                        alert("You do not have permission to invite member!");
+                        return;
+                    }
+                });
+            });
+
+            // Member list
+            const memberList = document.createElement("div");
+            memberList.style.display = "flex";
+            memberList.style.flexDirection = "column";
+            memberList.style.gap = "10px";
+            memberList.style.height = "50vh";
+            memberList.style.overflowY = "auto";
+
+            data.members.forEach(member => {
+                const row = document.createElement("div");
+                row.style.display = "flex";
+                row.style.alignItems = "center";
+                row.style.justifyContent = "space-between";
+                row.style.borderBottom = "1px solid #eee";
+                row.style.padding = "8px 0";
+
+                // Left side (avatar + info)
+                const info = document.createElement("div");
+                info.style.display = "flex";
+                info.style.alignItems = "center";
+                info.style.gap = "10px";
+
+                const img = document.createElement("img");
+                img.src = member.PictureName == null? "/rwdd_assignment/Assets/ProfilePic/anonymous.jpg" : `/rwdd_assignment/Assets/ProfilePic/${member.PictureName}`;
+                img.style.width = "35px";
+                img.style.height = "35px";
+                img.style.borderRadius = "50%";
+                img.style.objectFit = "cover";
+
+                const details = document.createElement("div");
+                const name = document.createElement("div");
+                name.textContent = member.Username;
+                name.style.fontWeight = "bold";
+                const email = document.createElement("div");
+                email.textContent = member.Email;
+                email.style.fontSize = "12px";
+                email.style.color = "gray";
+
+                details.appendChild(name);
+                details.appendChild(email);
+
+                info.appendChild(img);
+                info.appendChild(details);
+
+                // Right side (role + menu)
+                const actions = document.createElement("div");
+                actions.style.display = "flex";
+                actions.style.alignItems = "center";
+                actions.style.gap = "5px";
+
+                if (type === "workspace") {
+                    const role = document.createElement("span");
+                    role.textContent = member.UserRole;
+                    role.style.fontSize = "13px";
+                    role.style.color = "gray";
+                    actions.appendChild(role);
+                }
+
+                const menu = createThreeDotMenu([
+                    { label: "Grant Access", onClick: () => {
+                        fetch("/rwdd_assignment/ManagerFunction/GrantAccess.php", {
+                            method: "POST",
+                            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                            body: new URLSearchParams({
+                                userID: member.UserID
+                            })
+                        }).then(data => data.json())
+                        .then(data => {
+                            
+                        })
+                    }},
+                    { label: "Kick", onClick: () => alert(`Kicked ${member.Username}`)}
+                ]);
+                actions.appendChild(menu);
+
+                row.appendChild(info);
+                row.appendChild(actions);
+                memberList.appendChild(row);
+            });
+
+            popupContainer.appendChild(memberList);
+
+            // Cancel button
+            const cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "Close";
+            cancelBtn.style.marginTop = "15px";
+            cancelBtn.style.padding = "8px 12px";
+            cancelBtn.style.border = "1px solid #ccc";
+            cancelBtn.style.borderRadius = "4px";
+            cancelBtn.style.cursor = "pointer";
+            cancelBtn.style.transition = "0.3s";
+            cancelBtn.addEventListener("mouseover", () => {
+                cancelBtn.style.backgroundColor = "#999";
+            });
+            cancelBtn.addEventListener("mouseout", () => {
+                cancelBtn.style.backgroundColor = "#ccc";
+            });
+            cancelBtn.addEventListener("click", () => popup.remove());
+
+            popupContainer.appendChild(cancelBtn);
+
+            //  appendChild
+            popup.appendChild(popupContainer);
+            document.body.appendChild(popup);
+        } else {
+            alert("FetchMember failed: " + data.error);
+        }
+    }).catch((err) => {
+        alert("FetchMember fetch failed: " + err);
+    });
 }
 
 export function deleteTask(){
