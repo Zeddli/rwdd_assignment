@@ -45,8 +45,8 @@
     </div>
     <script>
         document.getElementById("loginForm").addEventListener("submit", (e) =>{
-            let email = document.getElementById("email").value;
-            let password = document.getElementById("password").value;
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value.trim();
 
             let emailAlert = document.getElementById("emailAlert");
             let passwordAlert = document.getElementById("passwordAlert");            

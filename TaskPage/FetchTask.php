@@ -5,9 +5,8 @@
     include "../Database/Database.php";
     header('Content-Type: application/json');
 
-
     if($_SERVER["REQUEST_METHOD"] === "POST"){
-        $taskID = $_SESSION["taskID"];
+        $taskID = $_POST["taskID"];
         //check taskID
         if(!isset($taskID)){
             echo json_encode(["success" => false]);

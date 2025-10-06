@@ -1,3 +1,6 @@
+<?php
+    session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,9 +31,9 @@
     </div>
     <script>
         document.getElementById("signupForm").addEventListener("submit", (e) =>{
-            let email = document.getElementById("email").value;
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
+            let email = document.getElementById("email").value.trim();
+            let username = document.getElementById("username").value.trim();
+            let password = document.getElementById("password").value.trim();
 
             let emailAlert = document.getElementById("emailAlert");
             let usernameAlert = document.getElementById("usernameAlert");
@@ -48,7 +51,9 @@
                 e.preventDefault();
                 passwordAlert.textContent = "*Enter Your Password";
             }        
-        })
+        }).catch((error) => {
+            alert('Error:', error);
+        });
     </script>
 </body>
 </html>
