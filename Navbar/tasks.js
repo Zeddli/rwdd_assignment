@@ -69,8 +69,50 @@ function handleGrantAccess(taskItem) {
     alert('Grant access functionality would be implemented here');
 }
 
+/**
+ * Handle task click to open task details page
+ * Sets the task ID in session and redirects to Task.php
+ */
+function handleTaskClick(event, taskItem) {
+    // Don't trigger if clicking on dropdown or buttons
+    if (event.target.closest('.dropdown') || event.target.closest('button')) {
+        return;
+    }
+    
+    const taskID = taskItem.dataset.taskId;
+    
+    if (!taskID) {
+        console.error('Task ID not found');
+        return;
+    }
+    
+    // Set task ID in session via API and redirect
+    fetch('/protask/Navbar/navbar_api.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=set_task_session&task_id=${taskID}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect to task page with task ID in URL
+            window.location.href = `/protask/TaskPage/Task.php`;
+        } else {
+            console.error('Failed to set task session:', data.message);
+            alert('Failed to open task. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error setting task session:', error);
+        alert('Error opening task. Please try again.');
+    });
+}
+
 // export to other file
 window.handlePinTask = handlePinTask;
 // window.handleDeleteTask = handleDeleteTask;
 window.handleInviteMember = handleInviteMember;
 window.handleGrantAccess = handleGrantAccess;
+window.handleTaskClick = handleTaskClick;

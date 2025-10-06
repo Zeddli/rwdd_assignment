@@ -1,49 +1,27 @@
 /**
- * Initialize editable elements (workspace names, task names)
- * This used to set up click-to-rename, but now renaming only works via dropdown menus
+ * Simple rename functionality - only works through dropdown menus
+ * No click-to-rename, no complex state management
  */
-// function initializeEditableElements() {
-//     // Click-to-rename disabled; renaming only via dropdown action.
-//     // All renaming now happens through dropdown menu > "Rename" option
-// }
 
 /**
- * Start editing an element (turn text into input field)
+ * Start renaming an element (workspace, task, or goal)
+ * Called only from dropdown menu "Rename" action
  */
-function startEditing(element) {
-    console.log('startEditing called for element:', element);
-    console.log('Element text content:', element ? element.textContent : 'null');
-    console.log('allowProgrammaticEdit:', SidebarState.allowProgrammaticEdit);
-    console.log('editingElement:', SidebarState.editingElement);
-        
-    // security check - only allow editing when triggered from dropdown menu
-    if (!SidebarState.allowProgrammaticEdit) {
-        console.log('startEditing blocked - allowProgrammaticEdit is false');
-        return;
-    }
+function startRename(element) {
+    if (!element) return;
     
-    // don't allow editing multiple things at once
-    if (SidebarState.editingElement) {
-        console.log('startEditing blocked - another element is already being edited');
-        return;
-    }
+    const currentText = element.textContent.trim();
     
-    console.log('Proceeding with editing...');
-    // mark this element as being edited and remember the original text
-    SidebarState.editingElement = element;
-    const currentText = element.textContent;
-    element.dataset.originalValue = currentText;
-    
-    // create a text input field to replace the text
+    // Create input field
     const input = document.createElement('input');
     input.type = 'text';
     input.value = currentText;
-    input.className = 'edit-input';
+    input.className = 'rename-input';
     
-    // style the input to look like the original text but with a blue border
+    // Style the input
     input.style.cssText = `
-        border: none;
-        background: transparent;
+        border: 2px solid #2196f3;
+        background: #e3f2fd;
         font-size: inherit;
         font-family: inherit;
         color: inherit;
@@ -51,60 +29,52 @@ function startEditing(element) {
         outline: none;
         padding: 2px 4px;
         border-radius: 3px;
-        background-color: #e3f2fd;
-        border: 2px solid #2196f3;
     `;
     
-    // replace the text with the input field
+    // Replace text with input
     element.textContent = '';
     element.appendChild(input);
-    element.classList.add('editing'); // add CSS class for styling
-    
-    // put cursor in the input and select all text so user can type immediately
     input.focus();
     input.select();
     
-    // set up event listeners for the input field
-    // when user clicks away, save the changes
-    input.addEventListener('blur', () => finishEditing(element, input.value));
-    
-    // handle keyboard shortcuts
+    // Handle input events
+    input.addEventListener('blur', () => finishRename(element, input.value, currentText));
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            // enter key = save changes
-            finishEditing(element, input.value);
+            finishRename(element, input.value, currentText);
         } else if (e.key === 'Escape') {
-            cancelEditing(element, currentText);
+            cancelRename(element, currentText);
         }
     });
 }
 
 /**
- * finish editing an element 
- * saves the new name to the database and get back from input to text
+ * Finish renaming - save to database or cancel
  */
-function finishEditing(element, newValue) {
-    if (!SidebarState.editingElement) return;
-    
+function finishRename(element, newValue, originalValue) {
     const trimmedValue = newValue.trim();
-    const originalValue = element.dataset.originalValue;
     
     if (trimmedValue && trimmedValue !== originalValue) {
-        // save to database
+        // Save to database
         saveRename(element, trimmedValue, originalValue);
     } else {
-        // no change, just cleanup
+        // No change or empty - restore original
         element.textContent = originalValue;
-        cleanupEditing(element);
     }
 }
 
 /**
- * save rename to database
- * what type of thing is being renamed (workspace/task/goal)
- * send the new name to the server via ajax
+ * Cancel renaming - restore original text
+ */
+function cancelRename(element, originalValue) {
+    element.textContent = originalValue;
+}
+
+/**
+ * Save rename to database via API
  */
 function saveRename(element, newValue, originalValue) {
+    // Determine what type of element this is
     const isWorkspace = element.classList.contains('workspace-name');
     const isTask = element.classList.contains('task-name');
     const isGoal = element.classList.contains('goal-name');
@@ -129,14 +99,13 @@ function saveRename(element, newValue, originalValue) {
     } else {
         console.error('Unknown element type for renaming');
         element.textContent = originalValue;
-        cleanupEditing(element);
         return;
     }
 
-    // show loading state
+    // Show saving state
     element.textContent = 'Saving...';
     
-    // save via api
+    // Send to API
     fetch('/protask/Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
@@ -148,73 +117,27 @@ function saveRename(element, newValue, originalValue) {
     .then(data => {
         if (data.success) {
             element.textContent = newValue;
-            console.log(`Successfully renamed to: ${newValue}`);
         } else {
             console.error('Failed to rename:', data.message);
             alert('Failed to rename: ' + data.message);
             element.textContent = originalValue;
         }
-        cleanupEditing(element);
     })
     .catch(error => {
         console.error('Error renaming:', error);
         alert('Error renaming. Please try again.');
         element.textContent = originalValue;
-        cleanupEditing(element);
     });
 }
 
 /**
- * cleanup editing state
- */
-function cleanupEditing(element) {
-    delete element.dataset.originalValue;
-    element.classList.remove('editing');
-    SidebarState.editingElement = null;
-}
-
-/**
- * cancel editing an element
- */
-function cancelEditing(element, originalValue) {
-    if (!SidebarState.editingElement) return;
-    
-    element.textContent = originalValue;
-    cleanupEditing(element);
-}
-
-/**
- * handle renaming elements
- * main entry point for renaming
- * called when user clicks "Rename" in dropdown
- * temporarily allows editing and starts the inline editing process
+ * Handle rename action from dropdown menu
+ * Main entry point for renaming - called from dropdowns.js
  */
 function handleRename(element) {
-    console.log('handleRename called with element:', element);
-    if (!element) {
-        console.log('handleRename: element is null, returning');
-        return;
-    }
-    console.log('Element text content:', element.textContent);
-    console.log('Element class list:', element.classList);
-    console.log('Element tag name:', element.tagName);
-    
-    // temporarily allow editing and remember original text
-    element.dataset.originalValue = element.textContent;
-    SidebarState.allowProgrammaticEdit = true;
-    console.log('allowProgrammaticEdit set to:', SidebarState.allowProgrammaticEdit);
-    
-    // start the inline editing process
-    startEditing(element);
-    
-    // reset the security flag after editing
-    SidebarState.allowProgrammaticEdit = false;
-    console.log('allowProgrammaticEdit reset to:', SidebarState.allowProgrammaticEdit);
+    if (!element) return;
+    startRename(element);
 }
 
-// export for use in other modules
-window.initializeEditableElements = initializeEditableElements;
-window.startEditing = startEditing;
-window.finishEditing = finishEditing;
-window.cancelEditing = cancelEditing;
+// Export functions for use in dropdowns.js
 window.handleRename = handleRename;

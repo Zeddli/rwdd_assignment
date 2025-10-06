@@ -165,7 +165,19 @@ switch ($action) {
         }
         break;
         
-
+    // set task ID in session for task page
+    case 'set_task_session':
+        $taskID = intval($_POST['task_id'] ?? 0);
+        
+        if ($taskID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid task ID']);
+            break;
+        }
+        
+        // Store task ID in session for FetchTask.php to use
+        $_SESSION['taskID'] = $taskID;
+        echo json_encode(['success' => true, 'taskID' => $taskID]);
+        break;
         
     // unknown action
     default:
