@@ -139,7 +139,10 @@ function addNewWorkspace() {
 }
 
 // debugging
-let isCreatingTask = true;
+if(window.isCreatingTask === undefined){
+    window.isCreatingTask = true;
+}
+    
 
 /**
  * Add a new task to an existing workspace

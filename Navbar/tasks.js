@@ -54,22 +54,6 @@ function handlePinTask(taskItem) {
 // handleDeleteTask function removed - to be reimplemented
 
 /**
- * handle inviting members 
- */
-function handleInviteMember(workspaceItem) {
-    console.log('Invite member functionality - placeholder');
-    alert('Invite member functionality would be implemented here');
-}
-
-/**
- * handle granting access 
- */
-function handleGrantAccess(taskItem) {
-    console.log('Grant access functionality - placeholder');
-    alert('Grant access functionality would be implemented here');
-}
-
-/**
  * Handle task click to open task details page
  * Sets the task ID in session and redirects to Task.php
  */
@@ -113,6 +97,4 @@ function handleTaskClick(event, taskItem) {
 // export to other file
 window.handlePinTask = handlePinTask;
 // window.handleDeleteTask = handleDeleteTask;
-window.handleInviteMember = handleInviteMember;
-window.handleGrantAccess = handleGrantAccess;
 window.handleTaskClick = handleTaskClick;

@@ -72,7 +72,7 @@
     <script>
         //fetch task info
         <?php
-        $_SESSION["taskID"] = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // $_SESSION["taskID"] = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ?>
 
         //countdown

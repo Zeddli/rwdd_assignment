@@ -179,6 +179,61 @@ switch ($action) {
         echo json_encode(['success' => true, 'taskID' => $taskID]);
         break;
         
+    // search for users by email
+    case 'search_user':
+        $email = trim($_POST['email'] ?? $_GET['email'] ?? '');
+        
+        if (empty($email)) {
+            echo json_encode(['success' => false, 'message' => 'Email cannot be empty']);
+            break;
+        }
+        
+        $result = searchUserByEmail($email);
+        echo json_encode($result);
+        break;
+        
+    // invite user to workspace
+    case 'invite_to_workspace':
+        $workspaceID = intval($_POST['workspace_id'] ?? 0);
+        $invitedUserID = intval($_POST['invited_user_id'] ?? 0);
+        
+        if ($workspaceID <= 0 || $invitedUserID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
+            break;
+        }
+        
+        $result = inviteToWorkspace($userID, $workspaceID, $invitedUserID);
+        echo json_encode($result);
+        break;
+        
+    // grant task access to user
+    case 'invite_to_task':
+        $taskID = intval($_POST['task_id'] ?? 0);
+        $invitedUserID = intval($_POST['invited_user_id'] ?? 0);
+        $workspaceID = intval($_POST['workspace_id'] ?? 0);
+        
+        if ($taskID <= 0 || $invitedUserID <= 0 || $workspaceID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
+            break;
+        }
+        
+        $result = inviteToTask($userID, $taskID, $invitedUserID, $workspaceID);
+        echo json_encode($result);
+        break;
+        
+    // get workspace members
+    case 'get_workspace_members':
+        $workspaceID = intval($_POST['workspace_id'] ?? $_GET['workspace_id'] ?? 0);
+        
+        if ($workspaceID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid workspace ID']);
+            break;
+        }
+        
+        $result = getWorkspaceMembers($userID, $workspaceID);
+        echo json_encode($result);
+        break;
+        
     // unknown action
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
