@@ -71,7 +71,7 @@ function handleTaskClick(event, taskItem) {
     }
     
     // Set task ID in session via API and redirect
-    fetch('/protask/Navbar/navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -82,7 +82,7 @@ function handleTaskClick(event, taskItem) {
     .then(data => {
         if (data.success) {
             // Redirect to task page with task ID in URL
-            window.location.href = `/protask/TaskPage/Task.php`;
+            window.location.href = `../TaskPage/Task.php`;
         } else {
             console.error('Failed to set task session:', data.message);
             alert('Failed to open task. Please try again.');

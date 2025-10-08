@@ -282,3 +282,4 @@ window.handleGrantAccess = handleGrantAccess;
 window.inviteUser = inviteUser;
 window.removeInviteModal = removeInviteModal;
 
+

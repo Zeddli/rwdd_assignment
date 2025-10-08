@@ -11,7 +11,7 @@ function addNewWorkspace() {
     console.log('Creating new workspace...');
     
     // create workspace via API
-    fetch('/protask/Navbar/navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -169,7 +169,7 @@ function handleAddTask(workspaceItem) {
     console.log('Creating new task for workspace:', workspaceID);
     
     // create task via API
-    fetch('/protask/Navbar/navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -288,7 +288,7 @@ function handleHideUnhide(workspaceItem) {
 
 /**
  * Handle workspace click to open workspace page
- * Redirects to /protask/WorkspacePage/workspace.php/{workspaceID}
+ * Redirects to ../WorkspacePage/workspace.php/{workspaceID}
  */
 function handleWorkspaceClick(event, workspaceItem) {
     if (!workspaceItem) return;
@@ -302,7 +302,7 @@ function handleWorkspaceClick(event, workspaceItem) {
         return;
     }
     
-    window.location.href = `/protask/WorkspacePage/workspace.php/${workspaceID}`;
+    window.location.href = `../WorkspacePage/workspace.php/${workspaceID}`;
 }
 
 /**

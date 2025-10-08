@@ -86,20 +86,25 @@ function bindEventListeners() {
 }
 
 /**
- * toggle sidebar between open and closed states
+ * toggle sidebar between open and closed states (left navbar only)
  */
-function toggleSidebar() {
+function toggleSidebar(event) {
+    // Make sure this is only for the left navbar toggle
+    if (event && event.target && event.target.id === 'todoSidebarToggle') {
+        return; // Don't handle to-do sidebar toggle
+    }
+    
     // flip the state - if open, make it closed; if closed, make it open
     SidebarState.isOpen = !SidebarState.isOpen;
     
     if (SidebarState.isOpen) {
         // remove the "closed" CSS class to show full sidebar
         DOM.sidebar.classList.remove('closed');
-        console.log('Sidebar opened');
+        console.log('Left sidebar opened');
     } else {
         // add the "closed" CSS class to show icon-only sidebar
         DOM.sidebar.classList.add('closed');
-        console.log('Sidebar closed');
+        console.log('Left sidebar closed');
     }
     
     // close any open dropdown menus when toggling 

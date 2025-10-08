@@ -106,7 +106,7 @@ function saveRename(element, newValue, originalValue) {
     element.textContent = 'Saving...';
     
     // Send to API
-    fetch('/protask/Navbar/navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

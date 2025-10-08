@@ -104,7 +104,7 @@ function handleDeleteWorkspace(workspaceItem) {
  * Makes AJAX call to delete task and updates UI
  */
 function deleteTaskFromDatabase(taskID, taskItem) {
-    fetch('/protask/Navbar/navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -132,7 +132,7 @@ function deleteTaskFromDatabase(taskID, taskItem) {
  * Makes AJAX call to delete workspace and updates UI
  */
 function deleteWorkspaceFromDatabase(workspaceID, workspaceItem) {
-    fetch('/protask/Navbar/navbar_api.php', {
+    fetch('../Navbar/navbar_api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
