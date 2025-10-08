@@ -73,7 +73,87 @@
             //table: file in FileSharing folder, comment, fileshared, taskaccess, task, goal, workspacemember, workspace
             //flow: 
             // SELECT TaskID FROM task WHERE WorkSpaceID = id -> store in taskID[] -> FOR LOOP: SELECT FileID, Extension FROM fileshared WHERE TaskID = id -> combine FileID.Extension into an array -> for loop delete file in FileSharing folder  -> taskIncluded = [comment, fileshared, taskaccess, task] -> FOR LOOP(taskIncluded): FOR LOOP(taskID[]): DELETE FROM taskIncluded WHERE TaskID = taskID[] -> workspaceIncluded = [goal, workspacemember, workspace] -> FOR LOOP(workspaceIncluded): DELETE FROM workspaceIncluded WHERE WorkSpaceID = id
+            $workspaceID = $id;
+            
+            //get taskID
+            $taskID = [];
+            $taskIDStmt = $conn->prepare("SELECT TaskID FROM task WHERE WorkSpaceID = ?");
+            $taskIDStmt->bind_param("i", $workspaceID);
+            if($taskIDStmt->execute()){
+                $taskIDResult = $taskIDStmt->get_result();
+                while($row = $taskIDResult->fetch_assoc()){
+                    $taskID[] = $row["TaskID"];
+                }
+                $taskIDStmt->close();
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Error when get taskID in Delete.php"]);
+                exit();
+            }
 
+            $filepath = [];
+            // get filename
+            foreach($taskID as $id){
+                $getFileStmt = $conn->prepare("SELECT FileID, Extension FROM fileshared WHERE TaskID = ?");
+                $getFileStmt->bind_param("i", $id);
+                if($getFileStmt->execute()){
+                    $fileResult = $getFileStmt->get_result();
+                    while($row = $fileResult->fetch_assoc()){
+                        $filepath[] =  "../TaskPage/FileSharing/" . $row["FileID"] . "." . $row["Extension"];
+                    }
+                    $getFileStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when get file id"]);
+                    exit();
+                }
+            }
+
+            //delete file
+            $deleted = 0;
+            $failed = [];
+            foreach($filepath as $file){
+                if (file_exists($file)) {
+                    if(unlink($file)){
+                        $deleted++;
+                    }  else {
+                        $failed[] = $file;
+                    }
+                } else {
+                    $failed[] = $file . " not found";
+                }
+            }
+
+            //dlt related table
+            $taskIncluded = ["comment", "fileshared", "taskaccess", "task"];
+            if(!empty($taskID)){
+                $taskIDPlaceholder = implode(',', array_fill(0, count($taskID), '?'));
+                $types = str_repeat('i', count($taskID));
+
+                foreach($taskIncluded as $table){
+                    $dltStmt = $conn->prepare("DELETE FROM $table WHERE TaskID IN ($taskIDPlaceholder)");
+                    $dltStmt->bind_param($types, ...$taskID);
+                    if($dltStmt->execute()){
+                        //success
+                    } else {
+                        echo json_encode(["success"=>false, "error"=>"Error when deleting task in ".$table]);
+                        exit();
+                    }
+                    $dltStmt->close();
+                }
+            }
+
+            $workspaceIncluded = ["goal", "workspacemember", "workspace"];
+            foreach($workspaceIncluded as $table){
+                $dltStmt = $conn->prepare("DELETE FROM $table WHERE WorkSpaceID = ?");
+                $dltStmt->bind_param("i", $workspaceID);
+                if($dltStmt->execute()){
+                    $dltStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when deleting workspace related table: ".$table]);
+                    exit();
+                }
+            }
+            echo json_encode(["success"=>true, "deleted"=>$deleted, "failed"=>$failed]);
+            exit();
 
         }
     }
