@@ -30,37 +30,35 @@ session_start();
             JOIN user ON comment.UserID = user.UserID
             WHERE TaskID=$TaskID 
             ORDER BY CreatedAt DESC";
-    while (true) {
 
-        $result = mysqli_query($conn, $query);
+    $result = mysqli_query($conn, $query);
 
-        if ($result === false) {
-            // Send error as SSE event
-            echo "event: error\n";
-            echo "data: " . json_encode(["error" => mysqli_error($conn)]) . "\n\n";
-            flush();
-            sleep(2);
-            continue;
-        }
-
-        $comments = [];
-        while($row = mysqli_fetch_assoc($result)) {
-            $comments[] = $row;
-        }
-        if(!empty($comments)){
-            $newID = $comments[0]['CommentID'];
-            if($newID != $currentID){
-                $currentID = $newID;
-                echo "data: " . json_encode($comments) . "\n\n";
-                flush(); //send data to client
-            }
-        }
-        else {
-            // Always send at least an empty array so client can clear UI if needed
-            echo "data: []\n\n";
-            flush();
-        }
+    if ($result === false) {
+        // Send error as SSE event
+        echo "event: error\n";
+        echo "data: " . json_encode(["error" => mysqli_error($conn)]) . "\n\n";
+        flush();
         sleep(2);
     }
+
+    $comments = [];
+    while($row = mysqli_fetch_assoc($result)) {
+        $comments[] = $row;
+    }
+    if(!empty($comments)){
+        $newID = $comments[0]['CommentID'];
+        if($newID != $currentID){
+            $currentID = $newID;
+            echo "data: " . json_encode($comments) . "\n\n";
+            flush(); //send data to client
+        }
+    }
+    else {
+        // Always send at least an empty array so client can clear UI if needed
+        echo "data: []\n\n";
+        flush();
+    }
+    sleep(2);
+
     mysqli_close($conn);    
 ?>

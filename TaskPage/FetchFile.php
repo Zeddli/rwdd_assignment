@@ -1,5 +1,6 @@
 <!-- show file with filename, fetch using filePath -->
 <?php
+    session_start();
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 
@@ -20,29 +21,29 @@
                             ORDER BY fileshared.CreatedAt DESC");
     $stmt->bind_param("i", $TaskID);
 
-    while (true) {
-        $stmt->execute();
-        $result = $stmt->get_result();
 
-        $files = [];
-        while ($row = $result->fetch_assoc()) {
-            $files[] = $row;
-        }
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if (!empty($files)) {
-            $newID = $files[0]['FileID'];
-            if ($currentID != $newID) {
-                $currentID = $newID;
-                echo "data: " . json_encode($files) . "\n\n";
-                flush();
-            }
-        } else {
-            // Always send at least an empty array so client can clear UI if needed
-            echo "data: []\n\n";
+    $files = [];
+    while ($row = $result->fetch_assoc()) {
+        $files[] = $row;
+    }
+
+    if (!empty($files)) {
+        $newID = $files[0]['FileID'];
+        if ($currentID != $newID) {
+            $currentID = $newID;
+            echo "data: " . json_encode($files) . "\n\n";
             flush();
         }
-        sleep(2);
+    } else {
+        // Always send at least an empty array so client can clear UI if needed
+        echo "data: []\n\n";
+        flush();
     }
+    sleep(2);
+
     $stmt->close();
     $conn->close();
 ?>
