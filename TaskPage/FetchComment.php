@@ -11,7 +11,7 @@ session_start();
 ?>
 
 <?php
-    header('Content-Type: text/event-stream'); //this is server sent event
+    header('Content-Type: text/event-stream'); //server sent event
     header('Cache-Control: no-cache');
     header('Connection: keep-alive');
     ob_end_flush(); 
@@ -22,7 +22,7 @@ session_start();
 
     include "../Database/Database.php";
 
-    $TaskID = $_SESSION['taskID']; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    $TaskID = $_SESSION['taskID'];
     $currentID = 0;
     $newID = 0;
     $query = "SELECT comment.CommentID, comment.UserID, comment.Comment, comment.CreatedAt, user.Username, user.PictureName 
@@ -33,13 +33,13 @@ session_start();
 
     $result = mysqli_query($conn, $query);
 
-    if ($result === false) {
-        // Send error as SSE event
-        echo "event: error\n";
-        echo "data: " . json_encode(["error" => mysqli_error($conn)]) . "\n\n";
-        flush();
-        sleep(2);
-    }
+    // if ($result === false) {
+    //     // Send error as SSE event
+    //     echo "event: error\n";
+    //     echo "data: " . json_encode(["error" => mysqli_error($conn)]) . "\n\n";
+    //     flush();
+    //     sleep(2);
+    // }
 
     $comments = [];
     while($row = mysqli_fetch_assoc($result)) {

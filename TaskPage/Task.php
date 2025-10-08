@@ -3,7 +3,12 @@
 <head>
     <!-- Need to get task ID -->
     <!-- Need the task status to be in progress?? -->
-    <?php include "../Head/Head.php"?>
+    <?php 
+        include "../Head/Head.php";
+        if(!isset($_SESSION["taskID"])){
+            header("Location: ../HomePage/Home.php");
+        }
+    ?>
     
     <link rel="stylesheet" href="../Navbar/base.css">
     <link rel="stylesheet" href="../Navbar/navbar.css"> 
