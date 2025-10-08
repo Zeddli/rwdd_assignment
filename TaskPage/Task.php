@@ -404,7 +404,7 @@
     <script type = "module">
         //menu
         import {createThreeDotMenu} from '../ManagerFunction/menu.js';
-        import {edit, member, deleteTask, deleteWorkspace} from '../ManagerFunction/Main.js';
+        import {edit, member, dlt} from '../ManagerFunction/Main.js';
 
         // need to check if the user is manager for the workspace in workspacemember, check cookie
         
@@ -419,7 +419,7 @@
             {label: "Member", onClick: () => member(<?php echo $_SESSION["taskID"]; ?>, "task")},
 
             //delete all in comment, fileshared, file in FileSharing folder, task, taskaccess
-            {label: "Delete Task", onClick: () => deleteTask()},
+            {label: "Delete Task", onClick: () => dlt(<?php echo $_SESSION["taskID"]; ?>, "task")},
 
         ]);
         document.getElementById("task-menu").appendChild(menu);

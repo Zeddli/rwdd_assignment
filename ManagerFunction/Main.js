@@ -207,7 +207,9 @@ export function edit(taskID){
                     popup.style.height = "100%";
                     popup.style.backgroundColor = "#00000090";
                     popup.style.display = "grid";
-                    popup.style.animation = "fadeIn 0.5s";
+                    popup.style.transition = "0.3s";
+                    popup.style.opacity = "1";
+
                     popup.style.backdropFilter = "blur(2px)"; 
 
                     // Popup container styling
@@ -480,7 +482,11 @@ export function member(id, type){
                             .then(data => {
                                 if(data.success){
                                     alert(`Success: ${inviteInput.value} invited as ${roleSelect.value}`);
-                                    inviteInput.value = "";
+                                    // inviteInput.value = "";
+                                    popup.remove();
+                                    member(id,type);
+                                
+                                    return;
                                 } else {
                                     alert(`${inviteInput.value} invitation failed: ${data.error}`);
                                     return;
@@ -559,18 +565,65 @@ export function member(id, type){
 
                 const menu = createThreeDotMenu([
                     { label: "Grant Access", onClick: () => {
-                        fetch("/rwdd_assignment/ManagerFunction/GrantAccess.php", {
-                            method: "POST",
-                            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                            body: new URLSearchParams({
-                                userID: member.UserID
-                            })
-                        }).then(data => data.json())
-                        .then(data => {
-                            
+                        checkPermission(member.TaskID).then(hasPermission => {
+                            if(hasPermission){
+                                fetch("/rwdd_assignment/ManagerFunction/GrantAccess.php", {
+                                    method: "POST",
+                                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                                    body: new URLSearchParams({
+                                        taskID: member.TaskID,
+                                        userID: member.UserID
+                                    })
+                                }).then(data => data.json())
+                                .then(data => {
+                                    if(data.success){
+                                        alert(`${member.Username} has become a manager.`);
+                                        return;
+                                    } else {
+                                        alert(`Grant access failed: ${data.error}`);
+                                        return;
+                                    }
+                                }).catch((err) => {
+                                    alert(`Error occur when fetch GrantAccess: ${err}`);
+                                });
+                            } else {
+                                alert("You do not have permission to grant manager access.");
+                                return
+                            }
                         })
                     }},
-                    { label: "Kick", onClick: () => alert(`Kicked ${member.Username}`)}
+                    { label: "Kick", onClick: () => {
+                        checkPermission(member.TaskID).then(hasPermission => {
+                            if(hasPermission){
+                                if(confirm(`Are you sure you want to kick member: ${member.Username}`)){
+                                    fetch("/rwdd_assignment/ManagerFunction/KickMember.php", {
+                                        method: "POST",
+                                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                                        body: new URLSearchParams({
+                                            tableID: id,
+                                            type: type,
+                                            userID: member.UserID
+                                        })
+                                    }).then(data => data.json())
+                                    .then(data => {
+                                        if(data.success){
+                                            alert(`${member.Username} was kicked from this task.`);
+                                            row.remove();
+                                            return;
+                                        } else {
+                                            alert(`Kicked failed: ${data.error}`);
+                                            return;
+                                        }
+                                    }).catch((err) => {
+                                        alert(`Error occur when fetch GrantAccess: ${err}`);
+                                    });
+                                }
+                            } else {
+                                alert("You do not have permission to kick member");
+                                return;
+                            }
+                        })
+                    }}
                 ]);
                 actions.appendChild(menu);
 
@@ -611,12 +664,41 @@ export function member(id, type){
     });
 }
 
-export function deleteTask(){
-    alert("Delete Task function called");
-}
-
-export function deleteWorkspace(){
-    alert("Delete Workspace function called");
+export function dlt(id, type){
+    checkPermission(id).then(hasPermission => {
+        if(hasPermission){
+            if(confirm("Are you sure you want to delete this task?")){
+                fetch("/rwdd_assignment/ManagerFunction/Delete.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        id: id,
+                        type: type
+                    })
+                }).then(data=>data.json())
+                .then(data => {
+                    if(data.success){
+                        alert("Delete task successfully");
+                        console.log(`file deleted: ${data.deleted}`);
+                        data.failed.forEach(element => {
+                            console.log(`File failed: ${element}`);
+                        });
+                        window.location.href = "/rwdd_assignment/HomePage/home.php"
+                        return;
+                    } else {
+                        alert(`Error occur when deleting task: ${data.error}`);
+                        return;
+                    }
+                }).catch((err)=>{
+                    alert(`Error when fetch delete.php: ${err}`);
+                    return;
+                });
+            }
+        }
+    })
+    
 }
 
 function checkPermission(task){

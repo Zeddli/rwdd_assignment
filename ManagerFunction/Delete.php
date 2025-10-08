@@ -1,0 +1,80 @@
+<?php
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    include "../Database/Database.php";
+    header('Content-Type: application/json');
+    //id: id,
+    //type: type
+    if($_SERVER["REQUEST_METHOD"] == "POST"){
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $type = htmlspecialchars(strip_tags($_POST['type']), ENT_QUOTES, 'UTF-8');
+
+        //when delte FileSharing folder:
+        // if (file_exists($filepath)) {
+        //     unlink($filepath)
+        // }
+
+
+        //if type == task
+        if($type == "task"){
+            //table: comment, fileshared, task, taskaccess, file in FileSharing folder
+            //flow:
+            // SELECT FileID, Extension FROM fileshared WHERE TaskID = id -> combine FileID.Extension into an array -> for loop delete file in FileSharing folder -> tableInclude = [fileshared, comment, taskaccess, task] -> for loop DELETE FROM tableToDlt WHERE TaskID = id
+            $taskID = $id;
+            $tableInclude = ["fileshared", "comment", "taskaccess", "task"];
+
+            //get file name
+            $getFileStmt = $conn->prepare("SELECT FileID, Extension FROM fileshared WHERE TaskID = ?");
+            $getFileStmt->bind_param("i", $taskID);
+            if($getFileStmt->execute()){
+                $fileResult = $getFileStmt->get_result();
+                $filepath = [];
+                while($row = $fileResult->fetch_assoc()){
+                    $filepath[] =  "../TaskPage/FileSharing/" . $row["FileID"] . "." . $row["Extension"];
+                }
+                $getFileStmt->close();
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Error when get file id"]);
+                exit();
+            }
+
+            //delete file
+
+            $deleted = 0;
+            $failed = [];
+            foreach($filepath as $file){
+                if (file_exists($file)) {
+                    if(unlink($file)){
+                        $deleted++;
+                    }  else {
+                        $failed[] = $file;
+                    }
+                } else {
+                    $failed[] = $file . " not found";
+                }
+            }
+
+            foreach($tableInclude as $table){
+                $dltStmt = $conn->prepare("DELETE FROM $table WHERE TaskID = ?");
+                $dltStmt->bind_param("i", $taskID);
+                if($dltStmt->execute()){
+                    $dltStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when deleting task in ".$table]);
+                    exit();
+                }
+            }
+            echo json_encode(["success"=>true, "deleted"=>$deleted, "failed"=>$failed]);
+            exit();
+
+        } 
+        //if type == workspace
+        else if ($type == "workspace"){
+            //table: file in FileSharing folder, comment, fileshared, taskaccess, task, goal, workspacemember, workspace
+            //flow: 
+            // SELECT TaskID FROM task WHERE WorkSpaceID = id -> store in taskID[] -> FOR LOOP: SELECT FileID, Extension FROM fileshared WHERE TaskID = id -> combine FileID.Extension into an array -> for loop delete file in FileSharing folder  -> taskIncluded = [comment, fileshared, taskaccess, task] -> FOR LOOP(taskIncluded): FOR LOOP(taskID[]): DELETE FROM taskIncluded WHERE TaskID = taskID[] -> workspaceIncluded = [goal, workspacemember, workspace] -> FOR LOOP(workspaceIncluded): DELETE FROM workspaceIncluded WHERE WorkSpaceID = id
+
+
+        }
+    }
+?> 
