@@ -3,22 +3,29 @@
  */
 
 // remembers what state everything is in
-const SidebarState = {
-    isOpen: true,                    // Is the sidebar wide open or squished closed?
-    activeDropdown: null,            // Which three-dot menu is currently showing? 
-    editingElement: null,            // What are we currently renaming? 
-    workspaceCounter: 1,             // Old counter for new workspaces 
-    taskCounter: 1,                  // Old counter for new tasks 
-    allowProgrammaticEdit: false     // Security thing - only let renaming happen fro
-};
+if (!window.SidebarState){
+    const SidebarState = {
+        isOpen: true,                    // Is the sidebar wide open or squished closed?
+        activeDropdown: null,            // Which three-dot menu is currently showing? 
+        editingElement: null,            // What are we currently renaming? 
+        workspaceCounter: 1,             // Old counter for new workspaces 
+        taskCounter: 1,                  // Old counter for new tasks 
+        allowProgrammaticEdit: false     // Security thing - only let renaming happen fro
+    };
+    window.SidebarState = SidebarState;
+}
 
 // Our "phonebook" of important HTML elements 
-const DOM = {
-    sidebar: null,                   // whole sidebar container
-    sidebarToggle: null,             //  little arrow button that opens/closes the sidebar
-    workspacesContainer: null,       // scrollable area where all workspaces live
-    addWorkspaceBtn: null            // "+" button to make new workspaces
-};
+if (!window.DOM){
+    const DOM = {
+        sidebar: null,                   // whole sidebar container
+        sidebarToggle: null,             //  little arrow button that opens/closes the sidebar
+        workspacesContainer: null,       // scrollable area where all workspaces live
+        addWorkspaceBtn: null            // "+" button to make new workspaces
+    };
+    window.DOM = DOM;
+}
+
 
 /**
  * Find and remember all important HTML elements

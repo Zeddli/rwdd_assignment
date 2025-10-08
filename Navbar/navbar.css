@@ -574,3 +574,178 @@
 .workspaces-container::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+
+/* ========================================
+   Invite Member Modal Styles
+   ======================================== */
+
+/* overlay that covers the whole screen */
+.invite-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+/* main modal box */
+.invite-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* search input container */
+.invite-search-container {
+    margin-bottom: 20px;
+}
+
+/* search input styling */
+.invite-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.invite-search-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.invite-search-input::placeholder {
+    color: #999;
+}
+
+/* results container */
+.invite-results {
+    min-height: 60px;
+}
+
+/* single result item */
+.invite-result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+.invite-result-item:hover {
+    background: #e9ecef;
+}
+
+/* user info section */
+.invite-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+/* user avatar */
+.invite-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invite-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* avatar placeholder with initial */
+.invite-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* user details */
+.invite-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* user name */
+.invite-user-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
+}
+
+/* user email */
+.invite-user-email {
+    font-size: 12px;
+    color: #666;
+}
+
+/* invite button */
+.invite-btn {
+    padding: 8px 16px;
+    background: #4a90e2;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.invite-btn:hover {
+    background: #357abd;
+}
+
+.invite-btn:active {
+    background: #2868a8;
+}
+
+/* loading, error, and no results states */
+.invite-loading,
+.invite-error,
+.invite-no-results {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+.invite-error {
+    color: #d32f2f;
+}
+
+.invite-loading {
+    color: #4a90e2;
+}

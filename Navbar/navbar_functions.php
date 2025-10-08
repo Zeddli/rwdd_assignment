@@ -10,6 +10,7 @@ require_once 'Navbar_Function_PHP/getWorkspace.php';
 require_once 'Navbar_Function_PHP/createWorkspaceAndTask.php';
 require_once 'Navbar_Function_PHP/renameWorkspaceTaskAndGoal.php';
 require_once 'Navbar_Function_PHP/deleteWorkspaceAndTask.php';
+require_once 'Navbar_Function_PHP/inviteMember.php';
 
 
 ?>

@@ -3,7 +3,12 @@
 
 <!-- expecting the all comment with taskID 1 -->
 <!-- CommentID UserID TaskID Comment CreatedAt Username PictureName PicturePath -->
+<!-- Calendar main view with To-Do Sidebar -->
+<?php
+session_start();
+// Check if user is logged in
 
+?>
 
 <?php
     header('Content-Type: text/event-stream'); //this is server sent event
@@ -17,7 +22,7 @@
 
     include "../Database/Database.php";
 
-    $TaskID = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    $TaskID = $_SESSION['taskID']; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     $currentID = 0;
     $newID = 0;
     $query = "SELECT comment.CommentID, comment.UserID, comment.Comment, comment.CreatedAt, user.Username, user.PictureName 
