@@ -9,25 +9,32 @@
         $userInfo = json_decode($_COOKIE["loginInfo"],true);
         $userID = $userInfo["userID"];
         //get workspaceId from taskID
-        $getWorkspaceStmt = $conn->prepare("SELECT WorkSpaceID FROM task WHERE TaskID = ?");
-        $getWorkspaceStmt->bind_param("i", $_POST["taskID"]);
-        if($getWorkspaceStmt->execute()){
-            $result = $getWorkspaceStmt->get_result();
-            if($result->num_rows === 1){
-                $workspaceId = $result->fetch_assoc()["WorkSpaceID"];
-            }
-            else{
-                // got no result or more than 1 result
-                echo json_encode(["success" => false, "error" => "No such task"]);
-                $stmt->close();
+        if (isset($_POST["workspaceID"])) {
+            // Direct workspace permission check
+            $workspaceId = intval($_POST["workspaceID"]);
+        } elseif (isset($_POST["taskID"])) {
+            // Get workspaceID from taskID
+            $getWorkspaceStmt = $conn->prepare("SELECT WorkSpaceID FROM task WHERE TaskID = ?");
+            $getWorkspaceStmt->bind_param("i", $_POST["taskID"]);
+            if ($getWorkspaceStmt->execute()) {
+                $result = $getWorkspaceStmt->get_result();
+                if ($result->num_rows === 1) {
+                    $workspaceId = $result->fetch_assoc()["WorkSpaceID"];
+                } else {
+                    echo json_encode(["success" => false, "error" => "No such task"]);
+                    $getWorkspaceStmt->close();
+                    $conn->close();
+                    exit();
+                }
+            } else {
+                echo json_encode(["success" => false, "error" => "Failed to execute"]);
+                $getWorkspaceStmt->close();
                 $conn->close();
                 exit();
             }
-        }
-        else{
-            // failed
-            echo json_encode(["success" => false, "error" => "Failed to execute"]);
-            $stmt->close();
+            $getWorkspaceStmt->close();
+        } else {
+            echo json_encode(["success" => false, "error" => "No workspaceID or taskID provided"]);
             $conn->close();
             exit();
         }

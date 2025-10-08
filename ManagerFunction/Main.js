@@ -665,7 +665,7 @@ export function member(id, type){
 }
 
 export function dlt(id, type){
-    checkPermission(id).then(hasPermission => {
+    checkPermission(id, "workspace").then(hasPermission => {
         if(hasPermission){
             if(confirm("Are you sure you want to delete this task?")){
                 fetch("/rwdd_assignment/ManagerFunction/Delete.php", {
@@ -696,22 +696,26 @@ export function dlt(id, type){
                     return;
                 });
             }
+        } else {
+            alert("You do not have permission to delete this task.");
+            return;
         }
     })
     
 }
 
-function checkPermission(task){
+function checkPermission(id, type = "task"){
     // alert("Checking permission for taskID: " + task);
+    const paramName = type === "workspace" ? "workspaceID" : "taskID";
+    const params = new URLSearchParams();
+    params.append(paramName, id);
 
     return fetch("/rwdd_assignment/ManagerFunction/CheckPermission.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({
-            taskID: task
-        })
+        body: params
     }).then(data => data.json())
       .then(data => {
         if(data.success){
