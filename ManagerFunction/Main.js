@@ -20,7 +20,7 @@
     //     font-size: 14px;
     //     animation: fadeIn 0.5s;
     // }
-import { createThreeDotMenu } from "/rwdd_assignment/ManagerFunction/Menu.js";
+import { createThreeDotMenu } from "/rwdd_assignment/ManagerFunction/menu.js";
 export function edit(taskID){
     // alert("Edit function called for taskID (Main.js): " + taskID);
 
