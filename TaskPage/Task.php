@@ -398,6 +398,11 @@
             });
         }
 
+        window.addEventListener("beforeunload", () => {
+            commentSource.close();
+            fileSource.close();
+        });
+
     </script>
 
     <!-- js Files -->
