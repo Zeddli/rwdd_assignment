@@ -10,7 +10,7 @@
     flush();
 
     include "../Database/Database.php";
-    $TaskID = 1; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    $TaskID = $_SESSION['taskID']; //CHANGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     $currentID = 0;
 
     $stmt = $conn->prepare("SELECT fileshared.FileID, fileshared.UserID, fileshared.TaskID, fileshared.FileName, fileshared.Extension, fileshared.CreatedAt, user.Username
