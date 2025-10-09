@@ -46,7 +46,7 @@ if (stripos('task', $queryLower) !== false) {
 
 if (stripos('goal', $queryLower) !== false) {
     $stmt = $conn->prepare(
-        "SELECT g.GoalID, g.Description, w.Name
+        "SELECT g.GoalID, g.Description, w.Name, g.WorkSpaceID
          FROM goal g
          JOIN workspace w ON g.WorkSpaceID = w.WorkSpaceID
          JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID
@@ -61,6 +61,7 @@ if (stripos('goal', $queryLower) !== false) {
             "id" => $row["GoalID"],
             "name" => $row["Description"],
             "workspace" => $row["Name"],
+            "workspaceid" => $row["WorkSpaceID"],
             "link" => "../GoalPage/Goal.php?goalid=" . $row["GoalID"]
         ];
         $goalIDs[] = $row["GoalID"];
@@ -133,6 +134,7 @@ while ($row = $goalRes->fetch_assoc()) {
             "id" => $row["GoalID"],
             "name" => $row["Description"],
             "workspace" => $row["Name"],
+            "workspaceid" => $row["WorkSpaceID"],
             "link" => "../GoalPage/Goal.php?goalid=" . $row["GoalID"]
         ];
     }

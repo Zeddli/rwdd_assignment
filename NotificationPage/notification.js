@@ -14,18 +14,15 @@ function renderNotifications() {
 
     if (!notifications || notifications.length === 0) {
         list.innerHTML = '<div class="no-notification">No Notifications</div>';
-        // Even if no notification, still show pagination control for 1 page
         renderPaginationControls(1, 1, pagelist);
         return;
     }
 
-    // Order by CreatedAt descending (latest first)
     const ordered = [...notifications].sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
     const totalPage = Math.ceil(ordered.length / perPage);
     const start = (currentPage-1)*perPage;
     const pageItems = ordered.slice(start, start+perPage);;
 
-    // Render notification cards
     pageItems.forEach(n => {
         const card = document.createElement('div');
         card.className = 'notification-card';
@@ -35,29 +32,11 @@ function renderNotifications() {
             <div class="notification-desc">${n.Description}</div>
             <div class="notification-date">${n.CreatedAt}</div>
         `;
-        card.onclick = () => {
-            if (n.RelatedTable === 'goal') {
-                openGoal(n.WorkSpaceID); // pass workspaceID for this goal
-            } else if (n.RelatedTable === 'task') {
-                fetch('../Navbar/navbar_api.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'action=set_task_session&task_id=' + n.RelatedID
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = '../TaskPage/Task.php';
-                    } else {
-                        alert('Failed to open task');
-                    }
-                });
-            }
-        };
+        card.onclick = () => navigateNotification(n);
         list.appendChild(card);
     });
 
-    // Always show pagination controls, even if only one page
+    // Always show pagination controls even if only one page
     renderPaginationControls(totalPage, currentPage, pagelist);
 }
 
@@ -178,21 +157,83 @@ function renderPaginationControls(totalPage, currentPage, pagelist) {
     pagelist.appendChild(rightmost);
 }
 
-function openGoal(workspaceID) {
-    fetch('../Navbar/navbar_api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'action=set_workspace_session&workspace_id=' + workspaceID
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = '../GoalPage/GoalPage.php';
-        } else {
-            alert('Failed to open goal page');
+// Handle reminder card clicks for navigation
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('reminder-list').addEventListener('click', function(e) {
+        const card = e.target.closest('.reminder-card');
+        if (card && card.dataset.taskid) {
+            const taskID = card.dataset.taskid;
+
+            fetch('../Navbar/navbar_api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=set_task_session&task_id=${taskID}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '../TaskPage/Task.php';
+                } else {
+                    alert('Failed to open task: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                alert('Error opening task. Please try again.');
+            });
         }
     });
-}
+});
 
+function navigateNotification(notif) {
+    if (notif.RelatedTable === 'task') {
+        // Set task session and redirect
+        fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=set_task_session&task_id=${notif.RelatedID}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) window.location.href = '../TaskPage/Task.php';
+            else alert('Failed to open task: ' + (data.message || 'Unknown error'));
+        });
+    } else if (notif.RelatedTable === 'goal') {
+        // Set goal and workspace session and redirect
+        const goalID = notif.RelatedID;
+        const workspaceID = notif.WorkspaceID;
+        if (!workspaceID) {
+            alert('Workspace for this goal not found!');
+            return;
+        }
+        fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=set_goal_session&goal_id=${goalID}&workspace_id=${workspaceID}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) window.location.href = '../GoalPage/GoalPage.php';
+            else alert('Failed to open goal: ' + (data.message || 'Unknown error'));
+        });
+    } else if (notif.RelatedTable === 'workspace') {
+        // Set workspace session and redirect
+        const workspaceID = notif.RelatedID;
+        fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=set_workspace_session&workspace_id=${workspaceID}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) window.location.href = '../WorkspacePage/Workspace.php';
+            else alert('Failed to open workspace: ' + (data.message || 'Unknown error'));
+        });
+    } else {
+        // Unknown type: fallback
+        alert('Unknown notification type');
+    }
+}
 
 renderNotifications();

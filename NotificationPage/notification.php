@@ -60,7 +60,27 @@ if ($userID && isset($conn)) {
     }
     $stmt->close();
 }
+
+// For goal notifications, add workspaceID to the array
+foreach ($notifications as &$notif) {
+    if ($notif['RelatedTable'] === 'goal') {
+        $goalID = $notif['RelatedID'];
+        $stmt2 = $conn->prepare("SELECT WorkSpaceID FROM goal WHERE GoalID = ?");
+        $stmt2->bind_param("i", $goalID);
+        $stmt2->execute();
+        $res2 = $stmt2->get_result();
+        $row2 = $res2->fetch_assoc();
+        $notif['WorkspaceID'] = $row2 ? $row2['WorkSpaceID'] : null;
+        $stmt2->close();
+    }
+    if ($notif['RelatedTable'] === 'workspace') {
+        $notif['WorkspaceID'] = $notif['RelatedID'];
+    }
+}
+unset($notif); // break reference
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -125,9 +145,9 @@ const notifications = <?= json_encode($notifications) ?>;
                         );
                     }
                 ?>
-                    <div class="reminder-card"
-                        data-taskid="<?= $task['TaskID'] ?>"
-                        data-deadline="<?= htmlspecialchars($task['Deadline']) ?>">
+                    <div class="reminder-card" 
+                        data-deadline="<?= htmlspecialchars($task['Deadline']) ?>" 
+                        data-taskid="<?= $task['TaskID'] ?>">
                         <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
                         Description: <?= htmlspecialchars($task['Description']) ?><br>
                         Status: <?= htmlspecialchars($task['Status']) ?><br>
