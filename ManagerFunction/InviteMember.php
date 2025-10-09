@@ -82,7 +82,7 @@
                 $workspacememberResult = $workspacememberStmt->get_result();
                 if($workspacememberResult->num_rows == 0){
                     //insert if not in the workspace
-                    $insertWorkspaceMember = $conn->prepare("INSERT INTO workspacemember VALUES (?, ?, ?)");
+                    $insertWorkspaceMember = $conn->prepare("INSERT INTO workspacemember (WorkSpaceID, UserID, UserRole) VALUES (?, ?, ?)");
                     $insertWorkspaceMember->bind_param("iis", $workspaceID, $userID, $role);
                     if($insertWorkspaceMember->execute()){
                         // do nothing when success
@@ -135,7 +135,7 @@
                 $workspacememberResult = $workspacememberStmt->get_result();
                 if($workspacememberResult->num_rows == 0){
                     //insert
-                    $insertWorkspaceMember = $conn->prepare("INSERT INTO workspacemember VALUES (?, ?, ?)");
+                    $insertWorkspaceMember = $conn->prepare("INSERT INTO workspacemember (WorkSpaceID, UserID, UserRole) VALUES (?, ?, ?)");
                     $insertWorkspaceMember->bind_param("iis", $id, $userID, $role);
                     if($insertWorkspaceMember->execute()){
                         echo json_encode(["success"=>true]);
