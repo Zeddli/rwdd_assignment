@@ -40,16 +40,21 @@ $tasksByStatus = [
 
 if ($selectedWorkspaceID) {
     $taskQuery = "
-    SELECT task.TaskID, task.Title, task.Description, task.Deadline, task.Priority, task.Status
-    FROM task
-    WHERE task.WorkSpaceID = $selectedWorkspaceID
-    ORDER BY task.Deadline ASC
+        SELECT t.TaskID, t.Title, t.Description, t.Deadline, t.Priority, t.Status
+        FROM task t
+        INNER JOIN taskaccess ta ON t.TaskID = ta.TaskID
+        WHERE t.WorkSpaceID = ? AND ta.UserID = ?
+        ORDER BY t.Deadline ASC
     ";
-    $taskResult = mysqli_query($conn, $taskQuery);
+    $taskStmt = $conn->prepare($taskQuery);
+    $taskStmt->bind_param("ii", $selectedWorkspaceID, $userID);
+    $taskStmt->execute();
+    $taskResult = $taskStmt->get_result();
     while ($row = mysqli_fetch_assoc($taskResult)) {
         $status = $row['Status'] ?? 'Pending'; // default fallback
         $tasksByStatus[$status][] = $row;
     }
+    $taskStmt->close();
 }
 ?>
 
