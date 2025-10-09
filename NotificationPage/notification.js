@@ -30,20 +30,30 @@ function renderNotifications() {
         const card = document.createElement('div');
         card.className = 'notification-card';
 
-        // Determine redirect URL based on RelatedTable
-        let redirectUrl = "#";
-        if (n.RelatedTable === 'goal') {
-            redirectUrl = `../GoalPage/Goal.php?goalid=${encodeURIComponent(n.RelatedID)}`;
-        } else if (n.RelatedTable === 'task') {
-            redirectUrl = `../TaskPage/Task.php?taskid=${encodeURIComponent(n.RelatedID)}`;
-        }
-
         card.innerHTML = `
             <div class="notification-title"><strong>${n.Title}</strong></div>
             <div class="notification-desc">${n.Description}</div>
             <div class="notification-date">${n.CreatedAt}</div>
         `;
-        card.onclick = () => { window.location.href = redirectUrl; };
+        card.onclick = () => {
+            if (n.RelatedTable === 'goal') {
+                openGoal(n.WorkSpaceID); // pass workspaceID for this goal
+            } else if (n.RelatedTable === 'task') {
+                fetch('../Navbar/navbar_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'action=set_task_session&task_id=' + n.RelatedID
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '../TaskPage/Task.php';
+                    } else {
+                        alert('Failed to open task');
+                    }
+                });
+            }
+        };
         list.appendChild(card);
     });
 
@@ -166,6 +176,22 @@ function renderPaginationControls(totalPage, currentPage, pagelist) {
         }
     };
     pagelist.appendChild(rightmost);
+}
+
+function openGoal(workspaceID) {
+    fetch('../Navbar/navbar_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=set_workspace_session&workspace_id=' + workspaceID
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '../GoalPage/GoalPage.php';
+        } else {
+            alert('Failed to open goal page');
+        }
+    });
 }
 
 

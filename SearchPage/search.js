@@ -32,7 +32,49 @@ searchBar.addEventListener('input', function() {
                         <div class="result-workspace" style="margin-top:2px; font-weight:500; color:#1565c0; font-size:0.98em;">Workspace: ${r.workspace}</div>`;
                     }
                     card.onclick = () => {
-                        window.location.href = r.link;
+                        if (r.type === 'task') {
+                            fetch('../Navbar/navbar_api.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: 'action=set_task_session&task_id=' + r.id
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.href = '../TaskPage/Task.php';
+                                } else {
+                                    alert('Failed to open task');
+                                }
+                            });
+                        } else if (r.type === 'goal') {
+                            fetch('../Navbar/navbar_api.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: 'action=set_goal_session&goal_id=' + r.id
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.href = '../GoalPage/Goal.php';
+                                } else {
+                                    alert('Failed to open goal');
+                                }
+                            });
+                        } else if (r.type === 'workspace') {
+                            fetch('../Navbar/navbar_api.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: 'action=set_workspace_session&workspace_id=' + r.id
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.href = '../WorkspacePage/Workspace.php';
+                                } else {
+                                    alert('Failed to open workspace');
+                                }
+                            });
+                        }
                     };
                     resultsDiv.appendChild(card);
                 });

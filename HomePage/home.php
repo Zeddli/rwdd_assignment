@@ -13,6 +13,7 @@ if (!$userID) {
 $selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : null;
 
 // Fetch all workspaces for this user
+global $conn;
 $workspaceQuery = "
     SELECT workspace.WorkSpaceID, workspace.Name as WorkspaceName
     FROM workspace
@@ -97,7 +98,7 @@ if ($selectedWorkspaceID) {
                 <?php if (!empty($tasksByStatus[$statusKey])): ?>
                     <?php foreach ($tasksByStatus[$statusKey] as $task): ?>
                         <div class="task-card"
-                             onclick="window.location.href='../TaskPage/Task.php?taskid=<?= $task['TaskID'] ?>'">
+                             onclick="openTask(<?= $task['TaskID'] ?>)">
                             <div class="task-card-content">
                                 <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
                                 Description: <?= htmlspecialchars($task['Description'] ?? 'No description') ?><br>
@@ -123,5 +124,22 @@ if ($selectedWorkspaceID) {
     <script src="../Navbar/tasks.js"></script>
     <script src="../Navbar/sidebar.js"></script>
     <script src="../Navbar/main.js"></script>
+    <script>
+        function openTask(taskID) {
+    fetch('../Navbar/navbar_api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=set_task_session&task_id=' + taskID
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '../TaskPage/Task.php';
+        } else {
+            alert('Failed to open task');
+        }
+    });
+}
+    </script>
 </body>
 </html>

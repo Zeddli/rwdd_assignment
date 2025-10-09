@@ -18,13 +18,13 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// make sure user is logged in first
-if (!isset($_SESSION['UserID'])) {
+// make sure user is logged in first (matching navbar.php session handling)
+if (!isset($_SESSION['userInfo']) || !isset($_SESSION['userInfo']['userID'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
 }
 
-$userID = $_SESSION['UserID'];
+$userID = (int)$_SESSION['userInfo']['userID'];
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 // figure out what the user wants to do
