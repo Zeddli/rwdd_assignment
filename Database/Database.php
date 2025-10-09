@@ -4,10 +4,12 @@
     $db_pass = "";
     $db_name = "assignment";
 
+    global $conn;
     try {
         $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
     }
     catch (mysqli_sql_exception) {
         echo "<script>alert('Database is not connected')</script>";
+        $conn = null;
     }
 ?>

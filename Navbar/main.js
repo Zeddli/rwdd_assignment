@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // start up the sidebar
     initializeSidebar();
     
+    // initialize invite member functionality
+    if (typeof initializeInviteMember === 'function') {
+        initializeInviteMember();
+    }
+    
     console.log('All modules loaded and sidebar initialized');
 });
 

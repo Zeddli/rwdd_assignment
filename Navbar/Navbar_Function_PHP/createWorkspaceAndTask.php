@@ -79,6 +79,7 @@ function createWorkspace($userID, $workspaceName) {
  * create a new task inside a workspace
  * user needs access to the workspace to do this
  */
+
 function createTask($userID, $workspaceID, $taskName) {
     global $conn;
     

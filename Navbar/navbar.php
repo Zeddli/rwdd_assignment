@@ -1,24 +1,23 @@
 
 
 <?php
-/**
- * Main Navbar Component
- * This is the main navigation sidebar that shows up on every page
- * It handles workspaces, tasks, and all the navigation stuff
- */
+
 
 // Get our database functions for workspaces and tasks
 require_once 'navbar_functions.php';
 
-// Quick hack for demo - normally you'd check if user is actually logged in
-// In a real app, this would redirect to login page if no session
-if (!isset($_SESSION['UserID'])) {
-    $_SESSION['UserID'] = 1; // Using user ID 1 for demo purposes
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-// Get the current user's ID and load all their workspaces from database
-$userID = $_SESSION['UserID'];
-$workspaces = getUserWorkspaces($userID); // This gets workspaces + tasks user has access to
+// Require login
+if (!isset($_SESSION['userInfo']) || !isset($_SESSION['userInfo']['userID'])) {
+    header("Location: ../LandingPage/landing.php");
+    exit();
+}
+
+$userID = (int)$_SESSION['userInfo']['userID'];
+$workspaces = getUserWorkspaces($userID);
 ?>
 
 <!DOCTYPE html>
@@ -197,7 +196,8 @@ $workspaces = getUserWorkspaces($userID); // This gets workspaces + tasks user h
         </div>
     </nav>
 
-   
+    <!-- Include Search Member Modal -->
+    <?php include '../Navbar/searchMemberWindow.php'; ?>
 
     <!-- Load js modules in dependency order -->
     <!-- Important: These need to load in this specific order because they depend on each other -->
@@ -205,7 +205,7 @@ $workspaces = getUserWorkspaces($userID); // This gets workspaces + tasks user h
     <script src="../Navbar/delete.js?v=2"></script>                    <!-- Delete functionality -->
     <script src="../Navbar/dropdowns.js?v=2"></script>                 <!-- Dropdown menu functionality -->
     <script src="../Navbar/editing.js?v=2"></script>                   <!-- Inline rename functionality -->
-    <script src="../Navbar/inviteMeneber.js?v=2"></script>             <!-- Invite member functionality -->
+    <script src="../Navbar/inviteMember.js?v=2"></script>             <!-- Invite member functionality -->
     <script src="../Navbar/workspaces.js?v=2"></script>                <!-- Workspace creation/management -->
     <script src="../Navbar/tasks.js?v=2"></script>                     <!-- Task operations -->
     <script src="../Navbar/sidebar.js?v=2"></script>                   <!-- Main sidebar functionality -->

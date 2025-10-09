@@ -13,6 +13,7 @@ if (!$userID) {
 $selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : null;
 
 // Fetch all workspaces for this user
+global $conn;
 $workspaceQuery = "
     SELECT workspace.WorkSpaceID, workspace.Name as WorkspaceName
     FROM workspace
