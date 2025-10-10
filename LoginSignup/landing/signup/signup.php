@@ -6,13 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../Assets/logo.png">
+    <link rel="icon" href="/rwdd_assignment/Assets/logo.png">
     <title>ProTask</title>
     <link rel="stylesheet" href="signup.css">
 </head>
 <body>
     <div class="logo">
-        <img src="../Assets/logo.png" alt="">
+        <img src="/rwdd_assignment/Assets/logo.png" alt="">
         <h1>ProTask</h1>
     </div>
 

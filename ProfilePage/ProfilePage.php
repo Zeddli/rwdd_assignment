@@ -11,6 +11,8 @@ enctype="multipart/form-data" is required for file uploads.
 accept="image/*" limits file selection to images.
 
 🔹 2. PHP backend (uploadProfile.php)
+
+when logout SESSION_DESTROY AND CLEAR COOKIE -->
 <?php
 session_start();
 include("../../database/database.php");

@@ -58,7 +58,7 @@ session_start();
         echo "data: []\n\n";
         flush();
     }
-    sleep(2);
+    // sleep(2);
 
     mysqli_close($conn);    
 ?>

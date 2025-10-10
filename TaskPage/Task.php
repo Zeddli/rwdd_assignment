@@ -66,7 +66,7 @@
                 
                 <div class="comment-section" id="comment-section">
                     <textarea class="comment-box" id="comment-box" placeholder="Write a comment..."></textarea>
-                    <img src="../Assets/send-icon.png" class="send" id="send"></img>
+                    <img src="/rwdd_assignment/Assets/send-icon.png" class="send" id="send"></img>
                 </div>
             </div>
         </div>
@@ -226,7 +226,7 @@
 
                 const dlIcon = document.createElement("img");
                 dlIcon.className = "download-icon";
-                dlIcon.src = "../Assets/download-icon.png"
+                dlIcon.src = "/rwdd_assignment/Assets/download-icon.png"
                 dlIcon.alt = "download-icon.png"
                 
                 // dlIcon.addEventListener("click", ()=>{
@@ -370,9 +370,9 @@
                 const profilePic = document.createElement("img");
                 profilePic.className = "profile-pic";
                 if(comment.PictureName === null || comment.PictureName === ""){
-                    profilePic.src = "../Assets/ProfilePic/anonymous.jpg";
+                    profilePic.src = "/rwdd_assignment/Assets/ProfilePic/anonymous.jpg";
                 } else {
-                    profilePic.src = `../Assets/ProfilePic/${comment.PictureName}`;
+                    profilePic.src = `/rwdd_assignment/Assets/ProfilePic/${comment.PictureName}`;
                 }
                 
                 //Name 
