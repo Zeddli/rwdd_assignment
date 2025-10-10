@@ -28,7 +28,7 @@
 </head>
 <body>
     <div class="logo">
-        <img src="../../../Assets/logo.png" alt="">
+        <img src="/rwdd_assignment/Assets/logo.png" alt="">
         <h1>ProTask</h1>
     </div>
 
