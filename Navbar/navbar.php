@@ -28,8 +28,8 @@ $workspaces = getUserWorkspaces($userID);
     <link rel="icon" type="image/png" href="./logo/logo.png">
     <title>Navigation Sidebar</title>
     <!-- Load base styles first, then our custom navbar styles -->
-    <link rel="stylesheet" href="../Navbar/base.css">
-    <link rel="stylesheet" href="../Navbar/navbar.css">
+    <link rel="stylesheet" href="../Navbar/styles/base.css">
+    <link rel="stylesheet" href="../Navbar/styles/navbar.css">
 </head>
 <body>
     <!-- Main Navigation Sidebar Container -->
@@ -197,19 +197,21 @@ $workspaces = getUserWorkspaces($userID);
     </nav>
 
     <!-- Include Search Member Modal -->
-    <?php include '../Navbar/searchMemberWindow.php'; ?>
+    <?php include '../Navbar/modals/searchMemberWindow.php'; ?>
+    <?php include '../Navbar/modals/taskDetailWindow.php'; ?>
+    <?php include '../Navbar/modals/grantAccessWindow.php'; ?>
 
     <!-- Load js modules in dependency order -->
     <!-- Important: These need to load in this specific order because they depend on each other -->
-    <script src="../Navbar/core.js?v=2"></script>                      <!-- Global state and DOM cache -->
-    <script src="../Navbar/delete.js?v=2"></script>                    <!-- Delete functionality -->
-    <script src="../Navbar/dropdowns.js?v=2"></script>                 <!-- Dropdown menu functionality -->
-    <script src="../Navbar/editing.js?v=2"></script>                   <!-- Inline rename functionality -->
-    <script src="../Navbar/inviteMember.js?v=2"></script>             <!-- Invite member functionality -->
-    <script src="../Navbar/workspaces.js?v=2"></script>                <!-- Workspace creation/management -->
-    <script src="../Navbar/tasks.js?v=2"></script>                     <!-- Task operations -->
-    <script src="../Navbar/sidebar.js?v=2"></script>                   <!-- Main sidebar functionality -->
-    <script src="../Navbar/main.js?v=2"></script>                      <!-- Entry point that starts everything -->
+    <script src="../Navbar/scripts/core.js?v=2"></script>                      <!-- Global state and DOM cache -->
+    <script src="../Navbar/scripts/delete.js?v=2"></script>                    <!-- Delete functionality -->
+    <script src="../Navbar/scripts/dropdowns.js?v=2"></script>                 <!-- Dropdown menu functionality -->
+    <script src="../Navbar/scripts/editing.js?v=2"></script>                   <!-- Inline rename functionality -->
+    <script src="../Navbar/scripts/inviteMember.js?v=2"></script>             <!-- Invite member functionality -->
+    <script src="../Navbar/scripts/workspaces.js?v=2"></script>                <!-- Workspace creation/management -->
+    <script src="../Navbar/scripts/tasks.js?v=2"></script>                     <!-- Task operations -->
+    <script src="../Navbar/scripts/sidebar.js?v=2"></script>                   <!-- Main sidebar functionality -->
+    <script src="../Navbar/scripts/main.js?v=2"></script>                      <!-- Entry point that starts everything -->
 
 </body>
 </html>

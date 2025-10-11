@@ -120,8 +120,8 @@ if ($selectedWorkspaceID) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Page</title>
-    <link rel="stylesheet" href="../Navbar/base.css">
-    <link rel="stylesheet" href="../Navbar/navbar.css">
+    <link rel="stylesheet" href="../Navbar/styles/base.css">
+    <link rel="stylesheet" href="../Navbar/styles/navbar.css">
     <link rel="stylesheet" href="analytics.css">
 </head>
 <body>
@@ -321,12 +321,15 @@ if ($selectedWorkspaceID) {
         });
     </script>
     <!-- JS modules for sidebar -->
-    <script src="../Navbar/core.js"></script>
-    <script src="../Navbar/dropdowns.js"></script>
-    <script src="../Navbar/editing.js"></script>
-    <script src="../Navbar/workspaces.js"></script>
-    <script src="../Navbar/tasks.js"></script>
-    <script src="../Navbar/sidebar.js"></script>
-    <script src="../Navbar/main.js"></script>
+    <script src="../Navbar/scripts/core.js"></script>                      <!-- Global state and DOM cache -->
+    <script src="../Navbar/scripts/delete.js"></script>                    <!-- Delete functionality -->
+    <script src="../Navbar/scripts/dropdowns.js"></script>                 <!-- Dropdown menu functionality -->
+    <script src="../Navbar/scripts/editing.js"></script>                   <!-- Inline rename functionality -->
+    <script src="../Navbar/scripts/inviteMember.js"></script>             <!-- Invite member functionality -->
+    <script src="../Navbar/scripts/workspaces.js"></script>                <!-- Workspace creation/management -->
+    <script src="../Navbar/scripts/tasks.js"></script>                     <!-- Task operations -->
+    <script src="../Navbar/scripts/sidebar.js"></script>                   <!-- Main sidebar functionality -->
+    <script src="../Navbar/scripts/main.js"></script>                      <!-- Entry point that starts everything -->
+
 </body>
 </html>

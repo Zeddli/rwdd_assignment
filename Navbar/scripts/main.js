@@ -18,6 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeInviteMember();
     }
     
+    // initialize task detail window functionality
+    if (typeof initializeTaskDetailWindow === 'function') {
+        initializeTaskDetailWindow();
+    }
+    
+    // initialize grant access window functionality
+    if (typeof initializeGrantAccessWindow === 'function') {
+        initializeGrantAccessWindow();
+    }
+    
     console.log('All modules loaded and sidebar initialized');
 });
 

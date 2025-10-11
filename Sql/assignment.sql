@@ -141,7 +141,7 @@ CREATE TABLE `task` (
   `Description` varchar(255) NOT NULL,
   `StartTime` datetime NOT NULL,
   `EndTime` datetime NOT NULL,
-  `Deadline` datetime NOT NULL,
+  `Deadline` datetime,
   `Priority` enum('High','Medium','Low','') NOT NULL,
   `Status` enum('Pending','InProgress','Completed','') NOT NULL DEFAULT 'Pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -4,8 +4,8 @@
 
 <!-- NAVBAR -->
 <!-- CSS Links -->
-<link rel="stylesheet" href="../Navbar/base.css">
-<link rel="stylesheet" href="../Navbar/navbar.css">
+<link rel="stylesheet" href="../Navbar/styles/base.css">
+<link rel="stylesheet" href="../Navbar/styles/navbar.css">
 
 <!-- PHP Include -->
 <?php include "../Navbar/navbar.php"; ?>

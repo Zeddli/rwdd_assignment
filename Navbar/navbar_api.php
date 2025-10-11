@@ -52,6 +52,15 @@ switch ($action) {
     case 'create_task':
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
         $taskName = trim($_POST['task_name'] ?? 'New Task');
+        $taskDescription = trim($_POST['task_description'] ?? '');
+        $startDate = $_POST['start_date'] ?? '';
+        $endDate = $_POST['end_date'] ?? '';
+        $deadline = $_POST['deadline'] ?? '';
+        $priority = $_POST['priority'] ?? 'Medium';
+        $status = $_POST['status'] ?? 'Pending';
+        
+        // Debug: Log received data
+        error_log("Task Creation Debug - WorkspaceID: $workspaceID, TaskName: $taskName, Description: $taskDescription, StartDate: $startDate, EndDate: $endDate, Deadline: $deadline, Priority: $priority, Status: $status");
         
         if ($workspaceID <= 0) {
             echo json_encode(['success' => false, 'message' => 'Invalid workspace ID']);
@@ -63,7 +72,7 @@ switch ($action) {
             break;
         }
         
-        $result = createTask($userID, $workspaceID, $taskName);
+        $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $endDate, $deadline, $priority, $status);
         echo json_encode($result);
         break;
         
@@ -212,12 +221,16 @@ switch ($action) {
         $invitedUserID = intval($_POST['invited_user_id'] ?? 0);
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
         
+        // Debug logging
+        error_log("Invite to Task Debug - ManagerID: $userID, TaskID: $taskID, InvitedUserID: $invitedUserID, WorkspaceID: $workspaceID");
+        
         if ($taskID <= 0 || $invitedUserID <= 0 || $workspaceID <= 0) {
             echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
             break;
         }
         
         $result = inviteToTask($userID, $taskID, $invitedUserID, $workspaceID);
+        error_log("Invite to Task Result: " . json_encode($result));
         echo json_encode($result);
         break;
         
@@ -225,12 +238,16 @@ switch ($action) {
     case 'get_workspace_members':
         $workspaceID = intval($_POST['workspace_id'] ?? $_GET['workspace_id'] ?? 0);
         
+        // Debug logging
+        error_log("Get Workspace Members Debug - UserID: $userID, WorkspaceID: $workspaceID");
+        
         if ($workspaceID <= 0) {
             echo json_encode(['success' => false, 'message' => 'Invalid workspace ID']);
             break;
         }
         
         $result = getWorkspaceMembers($userID, $workspaceID);
+        error_log("Get Workspace Members Result: " . json_encode($result));
         echo json_encode($result);
         break;
         

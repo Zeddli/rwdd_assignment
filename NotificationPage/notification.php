@@ -85,8 +85,8 @@ const notifications = <?= json_encode($notifications) ?>;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notification Page</title>
-    <link rel="stylesheet" href="../Navbar/base.css">
-    <link rel="stylesheet" href="../Navbar/navbar.css">
+    <link rel="stylesheet" href="../Navbar/styles/base.css">
+    <link rel="stylesheet" href="../Navbar/styles/navbar.css">
     <link rel="stylesheet" href="notification.css">
 </head>
 <body>
@@ -140,13 +140,13 @@ const notifications = <?= json_encode($notifications) ?>;
 </div>
     
     <!-- JS modules for sidebar -->
-   <script src="../Navbar/core.js"></script>
-    <script src="../Navbar/dropdowns.js"></script>
-    <script src="../Navbar/editing.js"></script>
-    <script src="../Navbar/workspaces.js"></script>
-    <script src="../Navbar/tasks.js"></script>
-    <script src="../Navbar/sidebar.js"></script>
-    <script src="../Navbar/main.js"></script>
+   <script src="../Navbar/scripts/navbar.js"></script>
+    <script src="../Navbar/scripts/dropdowns.js"></script>
+    <script src="../Navbar/scripts/editing.js"></script>
+    <script src="../Navbar/scripts/workspaces.js"></script>
+    <script src="../Navbar/scripts/tasks.js"></script>
+    <script src="../Navbar/scripts/sidebar.js"></script>
+    <script src="../Navbar/scripts/main.js"></script>
     <!-- JS for notifications and reminders -->
     <script src="notification.js"></script>
     <!-- JS to update reminder calculation countdowns -->
