@@ -3,9 +3,10 @@
 <head>
     <?php 
         include "../Head/Head.php";
-        // if(!isset($_SESSION["workspaceID"])){
-        //     header("Location: ../HomePage/Home.php");
-        // }
+        $_SESSION["workspaceID"] = 1; //CHANGEEEEEEEEEEEEE!!!!!!!!!!!!
+        if(!isset($_SESSION["workspaceID"])){
+            header("Location: ../HomePage/Home.php");
+        }
     ?>
     
     <link rel="stylesheet" href="../Navbar/styles/base.css">

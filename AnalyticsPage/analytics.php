@@ -56,9 +56,11 @@ $totalTaskTime = 0; // in seconds
 $numCompletedTasks = 0;
 if ($selectedWorkspaceID) {
     $taskQuery = "
-        SELECT TaskID, Title, Description, StartTime, EndTime, Deadline, Priority, Status
-        FROM task
-        WHERE WorkSpaceID = $selectedWorkspaceID
+        SELECT t.TaskID, t.Title, t.Description, t.StartTime, t.EndTime, t.Deadline, t.Priority, t.Status
+        FROM task t
+        JOIN taskaccess ta ON t.TaskID = ta.TaskID
+        WHERE t.WorkSpaceID = $selectedWorkspaceID
+        AND ta.UserID = $userID
     ";
     $taskResult = mysqli_query($conn, $taskQuery);
     while ($row = mysqli_fetch_assoc($taskResult)) {
@@ -81,6 +83,7 @@ if ($selectedWorkspaceID) {
         }
     }
 }
+
 // Average time (in seconds) PHP will pass seconds and JS will format
 $avgTaskTimeSeconds = $numCompletedTasks ? intval($totalTaskTime / $numCompletedTasks) : 0;
 

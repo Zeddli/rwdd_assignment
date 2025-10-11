@@ -187,6 +187,30 @@ switch ($action) {
         $_SESSION['taskID'] = $taskID;
         echo json_encode(['success' => true, 'taskID' => $taskID]);
         break;
+    
+    // set workspace ID in session for workspace page
+    case 'set_workspace_session':
+        $workspaceID = intval($_POST['workspace_id'] ?? 0);
+        if ($workspaceID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid workspace ID']);
+            break;
+        }
+        $_SESSION['workspaceID'] = $workspaceID;
+        echo json_encode(['success' => true, 'workspaceID' => $workspaceID]);
+        break;
+
+    // set goal ID and workspace ID in session for goal page
+    case 'set_goal_session':
+        $goalID = intval($_POST['goal_id'] ?? 0);
+        $workspaceID = intval($_POST['workspace_id'] ?? 0);
+        if ($goalID <= 0 || $workspaceID <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid goal or workspace ID']);
+            break;
+        }
+        $_SESSION['goalID'] = $goalID;
+        $_SESSION['workspaceID'] = $workspaceID;
+        echo json_encode(['success' => true, 'goalID' => $goalID, 'workspaceID' => $workspaceID]);
+        break;
         
     // search for users by email
     case 'search_user':

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../Assets/logo.png">
+    <link rel="icon" href="/rwdd_assignment/Assets/logo.png">
     <title>ProTask</title>
 </head>
 </html>
@@ -17,7 +17,7 @@
             $_SESSION["userInfo"] = $info;
         } else {
             // no cookie, go to landing page
-            header("Location: ../LandingPage/landing.php");
+            header("Location: /rwdd_assignment/LandingPage/landing.php");
             exit();
         }
     }

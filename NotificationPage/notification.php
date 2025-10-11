@@ -6,20 +6,18 @@ $userID = $_SESSION["userInfo"]["userID"] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['timezone'])) {
     $_SESSION['timezone'] = $_POST['timezone'];
-    // Optionally redirect to avoid resubmission
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
 }
 $userTimeZone = $_SESSION['timezone'] ?? 'UTC';
 date_default_timezone_set($userTimeZone);
 
-// Fetch tasks due within a week OR overdue for current user, only pending/in progress
+// Reminder Panel: Fetch tasks due within a week OR overdue for current user, only pending/in progress
 $reminderTasks = [];
 if ($userID && isset($conn)) {
     $today = date('Y-m-d');
     $weekLater = date('Y-m-d', strtotime('+7 days'));
 
-    // Filter for status and deadline
     $reminderQuery = "
         SELECT t.TaskID, t.Title, t.Description, t.Deadline, t.Status
         FROM task t
@@ -41,7 +39,7 @@ if ($userID && isset($conn)) {
     $stmt->close();
 }
 
-// Fetch notifications
+// Fetch notifications, but only show "task" notifications if user has access to the task
 $notifications = [];
 if ($userID && isset($conn)) {
     $notifQuery = "
@@ -56,10 +54,43 @@ if ($userID && isset($conn)) {
     $stmt->execute();
     $notifResult = $stmt->get_result();
     while ($row = $notifResult->fetch_assoc()) {
-        $notifications[] = $row;
+        $include = true;
+        if ($row['RelatedTable'] === 'task') {
+            // Only include if user has access to the task
+            $taskID = $row['RelatedID'];
+            $checkStmt = $conn->prepare("SELECT 1 FROM taskaccess WHERE UserID = ? AND TaskID = ?");
+            $checkStmt->bind_param("ii", $userID, $taskID);
+            $checkStmt->execute();
+            $checkRes = $checkStmt->get_result();
+            if ($checkRes->num_rows === 0) {
+                $include = false;
+            }
+            $checkStmt->close();
+        }
+        if ($include) {
+            $notifications[] = $row;
+        }
     }
     $stmt->close();
 }
+
+// For goal notifications, add workspaceID to the array
+foreach ($notifications as &$notif) {
+    if ($notif['RelatedTable'] === 'goal') {
+        $goalID = $notif['RelatedID'];
+        $stmt2 = $conn->prepare("SELECT WorkSpaceID FROM goal WHERE GoalID = ?");
+        $stmt2->bind_param("i", $goalID);
+        $stmt2->execute();
+        $res2 = $stmt2->get_result();
+        $row2 = $res2->fetch_assoc();
+        $notif['WorkspaceID'] = $row2 ? $row2['WorkSpaceID'] : null;
+        $stmt2->close();
+    }
+    if ($notif['RelatedTable'] === 'workspace') {
+        $notif['WorkspaceID'] = $notif['RelatedID'];
+    }
+}
+unset($notif); // break reference
 ?>
 
 <!DOCTYPE html>
@@ -91,7 +122,6 @@ const notifications = <?= json_encode($notifications) ?>;
 </head>
 <body>
     <!-- Sidebar -->
-    <!-- Main Navigation Sidebar Container -->
     <?php include "../Navbar/navbar.php"; ?>
     <?php require_once "../Navbar/navbar_functions.php"; ?>
     
@@ -127,7 +157,7 @@ const notifications = <?= json_encode($notifications) ?>;
                 ?>
                     <div class="reminder-card" 
                         data-deadline="<?= htmlspecialchars($task['Deadline']) ?>" 
-                         onclick="window.location.href='../TaskPage/Task.php?taskid=<?= $task['TaskID'] ?>'">
+                        data-taskid="<?= $task['TaskID'] ?>">
                         <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
                         Description: <?= htmlspecialchars($task['Description']) ?><br>
                         Status: <?= htmlspecialchars($task['Status']) ?><br>
@@ -180,6 +210,27 @@ const notifications = <?= json_encode($notifications) ?>;
     // Initial call and update every second
     updateDueTimes();
     setInterval(updateDueTimes, 1000);
+    </script>
+    <script>
+    document.querySelectorAll('.reminder-card').forEach(card => {
+        card.onclick = function() {
+            const taskid = this.getAttribute('onclick').match(/taskid=(\d+)/)?.[1] || this.getAttribute('data-taskid');
+            const trueTaskId = this.getAttribute('data-taskid');
+            fetch('../Navbar/navbar_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=set_task_session&task_id=' + trueTaskId
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '../TaskPage/Task.php';
+                } else {
+                    alert('Failed to open task');
+                }
+            });
+        };
+    });
     </script>
 </body>
 </html>
