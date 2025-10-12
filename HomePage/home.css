@@ -118,7 +118,7 @@ body:has(.sidebar.closed) .main-content {
     background: #f8f8f8;
 }
 
-/* Responsive Design Adjustments */
+/* Responsive Design */
 /* Tablet and Mobile View: Stacks all columns vertically */
 @media (max-width: 1000px) {
     .main-content {

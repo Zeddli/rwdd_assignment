@@ -11,21 +11,59 @@ body {
     min-height: 100vh;
 }
 
-body:has(.sidebar.closed) .main-content {
-    margin-left: 50px;
-    width: calc(100% - 50px);
-}
-
-/* Main Content Area */
+/* Base Main Content */
 .main-content {
     margin-left: 200px; 
     padding: 40px;
     width: calc(100% - 200px);
     flex: 1;
     transition: all 0.3s ease;
+    min-height: 100vh; /* Ensure it covers full screen height */
 }
 
-/* Notification Page Styles */
+body:has(.sidebar.closed) .main-content {
+    margin-left: 50px;
+    width: calc(100% - 50px);
+}
+
+/* --- Notification Page Layout --- */
+.notification-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+}
+
+.notification-panel {
+    flex: 3 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 80px); 
+}
+
+.notification-scroll-area {
+    flex: 1 1 0;
+    overflow-y: auto;
+    min-height: 300px;
+}
+
+/* --- Reminder Panel Layout --- */
+.reminder-panel {
+    flex: 1 0 320px;
+    min-width: 320px;
+    max-width: 400px;
+    position: sticky;
+    top: 40px;
+    height: calc(100vh - 60px); 
+    background: #fff;
+    border: 2px solid #222;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
 #notification-list {
     display: flex;
     flex-direction: column;
@@ -33,7 +71,6 @@ body:has(.sidebar.closed) .main-content {
     min-height: 300px;
     margin-bottom: 28px;
 }
-
 .notification-card {
     border: 2px solid #222;
     border-radius: 8px;
@@ -45,22 +82,12 @@ body:has(.sidebar.closed) .main-content {
     cursor: pointer;
     transition: box-shadow 0.2s;
 }
-
 .notification-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     background: #e3f2fd;
 }
-
-.notification-title {
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-
-.notification-desc {
-    margin-bottom: 6px;
-    color: #222;
-}
-
+.notification-title { font-weight: bold; margin-bottom: 4px; }
+.notification-desc { margin-bottom: 6px; color: #222; }
 .notification-date {
     font-size: 0.9em;
     color: #888;
@@ -68,33 +95,7 @@ body:has(.sidebar.closed) .main-content {
     bottom: 8px;
     right: 16px;
 }
-
-.notification-flex {
-    display: flex;
-    align-items: flex-start;
-    gap: 32px;
-    height: calc(100vh - 0px);
-}
-
-.notification-panel {
-    flex: 3 1 0;
-    min-width: 0;
-    /* stretch to fill available height */
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 80px); /* adjust if header/other elements present */
-}
-
-.notification-panel h1 {
-    flex-shrink: 0;
-}
-
-.notification-scroll-area {
-    flex: 1 1 0;
-    overflow-y: auto;
-    min-height: 0;
-}
-
+.notification-panel h1 { flex-shrink: 0; }
 .no-notification {
     text-align: center;
     color: #555;
@@ -102,30 +103,13 @@ body:has(.sidebar.closed) .main-content {
     font-weight: 500;
     padding: 56px 0;
 }
-
-.reminder-panel {
-    flex: 1 0 320px;
-    min-width: 320px;
-    max-width: 400px;
-    position: sticky;
-    top: 40px; /* aligns panel with Notification title; adjust as needed */
-    height: calc(100vh - 60px); /* stretches nearly full screen */
-    background: #fff;
-    border: 2px solid #222;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-}
-
 .reminder-panel h2 {
     font-size: 1.3em;
     text-align: center;
     font-weight: bold;
     margin-bottom: 18px;
+    flex-shrink: 0;
 }
-
 #reminder-list {
     flex: 1;
     overflow-y: auto;
@@ -134,7 +118,6 @@ body:has(.sidebar.closed) .main-content {
     gap: 16px;
     min-height: 120px;
 }
-
 .reminder-card {
     border: 2px solid #222;
     border-radius: 8px;
@@ -154,13 +137,11 @@ body:has(.sidebar.closed) .main-content {
     font-size: 1.1em;
     margin-top: 24px;
 }
-
 #pagination-controls {
     text-align: center;
     margin: 12px 0 0 0;
     flex-shrink: 0;
 }
-
 .page-btn {
     display: inline-block;
     padding: 6px 14px;
@@ -173,22 +154,36 @@ body:has(.sidebar.closed) .main-content {
     cursor: pointer;
     transition: background 0.3s, color 0.18s;
 }
-
 .page-btn.active,
 .page-btn:hover {
     background: #2196f3;
     color: white;
 }
 
+/* Responsive Design */
 @media (max-width: 900px) {
-    .notification-flex {
-        flex-direction: column;
+    .main-content {
+        padding: 20px; /* Reduced padding on smaller screens */
+        min-height: auto;
     }
+
+    .notification-flex {
+        flex-direction: column; /* Stacks Notification panel above Reminder panel */
+        gap: 0; /* Remove horizontal gap */
+    }
+    
+    .notification-panel {
+        width: 100%;
+        min-height: auto; /* Allow height to collapse to content size */
+        height: auto; 
+        margin-bottom: 30px; /* Space before reminder panel */
+    }
+    
     .reminder-panel {
         position: static;
-        min-width: 0;
-        max-width: none;
+        min-width: 100%;
+        max-width: 100%;
         height: auto;
-        margin-top: 24px;
+        margin-top: 0; 
     }
 }

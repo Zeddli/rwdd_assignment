@@ -23,7 +23,7 @@ if ($userID && isset($conn)) {
         FROM task t
         JOIN taskaccess ta ON t.TaskID = ta.TaskID
         WHERE ta.UserID = ?
-          AND t.Status IN ('pending', 'in progress')
+          AND t.Status IN ('pending', 'inprogress')
           AND DATE(t.Deadline) <= ?
         ORDER BY t.Deadline ASC
     ";
@@ -39,7 +39,7 @@ if ($userID && isset($conn)) {
     $stmt->close();
 }
 
-// Fetch notifications, but only show "task" notifications if user has access to the task
+// Fetch notifications, but only show task notifications if user has access to the task
 $notifications = [];
 if ($userID && isset($conn)) {
     $notifQuery = "
@@ -154,13 +154,15 @@ const notifications = <?= json_encode($notifications) ?>;
                             $interval->i
                         );
                     }
+                    // Format status for display
+                    $displayStatus = ucfirst($task['Status']) === 'InProgress' ? 'In Progress' : ucfirst($task['Status']);
                 ?>
                     <div class="reminder-card" 
                         data-deadline="<?= htmlspecialchars($task['Deadline']) ?>" 
                         data-taskid="<?= $task['TaskID'] ?>">
                         <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
                         Description: <?= htmlspecialchars($task['Description']) ?><br>
-                        Status: <?= htmlspecialchars($task['Status']) ?><br>
+                        Status: <?= htmlspecialchars($displayStatus) ?><br>
                         <span class="due-time">Calculating...</span>
                     </div>
                 <?php endforeach; ?>
