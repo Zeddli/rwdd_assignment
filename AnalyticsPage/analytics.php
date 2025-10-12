@@ -272,22 +272,40 @@ if ($selectedWorkspaceID) {
             ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
             const total = data.reduce((a,b)=>a+b,0);
             const barW = 48, gap = 38;
+            const numBars = data.length;
+
+            // Calculate total width of all bars and gaps
+            const totalBarsWidth = numBars * barW;
+            const totalGapsWidth = (numBars - 1) * gap;
+            const chartWidth = totalBarsWidth + totalGapsWidth;
+
+            // Calculate the starting X position for the first bar to center the chart
+            // Subtract 4 (or a small number) for slight aesthetic adjustment/padding
+            const startX = (ctx.canvas.width / 2) - (chartWidth / 2) + 4; 
+
             const maxVal = Math.max(...data, 1);
+            
             for (let i=0; i<data.length; i++) {
-                // Bar
-                const x = 28 + i*(barW+gap);
+                // Calculate the X position based on the new startX
+                const x = startX + i * (barW + gap);
+                
                 const h = Math.round((data[i]/maxVal) * (ctx.canvas.height-60));
+                
+                // Bar
                 ctx.fillStyle = colors[i];
                 ctx.fillRect(x, ctx.canvas.height-28-h, barW, h);
+                
                 // Value
                 ctx.fillStyle = "#444";
                 ctx.font = "bold 15px Arial";
                 ctx.textAlign = "center";
                 ctx.fillText(data[i], x+barW/2, ctx.canvas.height-34-h);
+                
                 // Label
                 ctx.font = "bold 15px Arial";
                 ctx.fillText(labels[i], x+barW/2, ctx.canvas.height-10);
             }
+            
             if (total === 0) {
                 ctx.fillStyle = "#888";
                 ctx.font = "bold 16px Arial";
