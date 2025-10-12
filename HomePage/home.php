@@ -139,5 +139,20 @@ if ($selectedWorkspaceID) {
     <script src="../Navbar/scripts/sidebar.js"></script>                   <!-- Main sidebar functionality -->
     <script src="../Navbar/scripts/main.js"></script>                      <!-- Entry point that starts everything -->
 
+    <script>
+        function openTask(taskID) {
+            fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=set_task_session&task_id=${taskID}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `../TaskPage/Task.php`;
+            }
+        });
+        }
+        </script>
 </body>
 </html>
