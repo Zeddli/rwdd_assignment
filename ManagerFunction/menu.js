@@ -28,14 +28,18 @@ export function createThreeDotMenu(actions = []) {
     const menu = document.createElement("div");
     menu.className = "three-dot-dropdown";
     menu.style.display = "none";
-    menu.style.position = "absolute";
+    // aaa
+    // menu.style.position = "absolute";
+    menu.style.position = "fixed";
     menu.style.right = "0";
     menu.style.background = "#fff";
     menu.style.border = "1px solid #ccc";
-    menu.style.zIndex = "1000";
+    menu.style.zIndex = "9999";
     menu.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.15)";
+    menu.style.borderRadius = "10px";
+    menu.style.maxWidth = "130px";
 
-    actions.forEach(action => {
+    actions.forEach((action, index) => {
         const item = document.createElement("div");
         const hr = document.createElement("hr");
         item.className = "three-dot-item";
@@ -48,6 +52,7 @@ export function createThreeDotMenu(actions = []) {
         // hover effect
         item.onmouseover = () => {
             item.style.backgroundColor = "lightgray";
+            item.style.borderRadius = "10px";
         };
         item.onmouseout = () => {
             item.style.backgroundColor = "transparent";
@@ -59,21 +64,36 @@ export function createThreeDotMenu(actions = []) {
         });
         menu.appendChild(item);
 
-        hr.style.margin = "0";
-        hr.style.border = "1px solid #eee";
-        menu.appendChild(hr);
+        if(!index === actions.length - 1){
+            hr.style.margin = "0";
+            hr.style.border = "1px solid #eee";
+            menu.appendChild(hr);
+        }
     });
 
+    function positionDropdown() {
+        const rect = button.getBoundingClientRect();
+        menu.style.top = `${rect.bottom + 5}px`; // 5px below button
+        menu.style.left = `${rect.left - 110}px`;
+    }
     button.addEventListener("click", (e) => {
         e.stopPropagation();
+        // const rect = button.getBoundingClientRect();
+        // menu.style.top = `${rect.bottom + 5}px`;
+        // menu.style.left = `${rect.left - 110}px`;
+        positionDropdown();
         menu.style.display = menu.style.display === "none" ? "block" : "none";
     });
 
-    // Hide menu when clicking outside
+    // Hide menu when clicking outside or scrolling
     document.addEventListener("click", () => {
         menu.style.display = "none";
     });
-
+    window.addEventListener("scroll", () => {
+        if (menu.style.display === "block") {
+            menu.style.display = "none";
+        }
+    }, true);
     menuContainer.appendChild(button);
     menuContainer.appendChild(menu);
 
