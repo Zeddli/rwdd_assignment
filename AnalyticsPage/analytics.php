@@ -203,20 +203,22 @@ if ($selectedWorkspaceID) {
             </div>
         </div>
         <h2>Members in Workspace</h2>
-        <table class="members-table">
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-            </tr>
-            <?php foreach ($members as $m): ?>
+        <div class="members-table-container">
+            <table class="members-table">
                 <tr>
-                    <td><?= htmlspecialchars($m['Username']) ?></td>
-                    <td><?= htmlspecialchars($m['Email']) ?></td>
-                    <td><?= htmlspecialchars($m['UserRole']) ?></td>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
                 </tr>
-            <?php endforeach; ?>
-        </table>
+                <?php foreach ($members as $m): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($m['Username']) ?></td>
+                        <td><?= htmlspecialchars($m['Email']) ?></td>
+                        <td><?= htmlspecialchars($m['UserRole']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
     </div>
 
     <script>
