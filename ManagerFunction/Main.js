@@ -20,14 +20,14 @@
     //     font-size: 14px;
     //     animation: fadeIn 0.5s;
     // }
-import { createThreeDotMenu } from "/rwdd_assignment/ManagerFunction/menu.js";
+import { createThreeDotMenu } from "../ManagerFunction/menu.js";
 export function edit(taskID){
     // alert("Edit function called for taskID (Main.js): " + taskID);
 
     checkPermission(taskID).then(hasPermission => {
         if(hasPermission){
             //proceed to edit
-            fetch("/rwdd_assignment/TaskPage/FetchTask.php", {
+            fetch("../TaskPage/FetchTask.php", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: new URLSearchParams({
@@ -53,7 +53,7 @@ export function edit(taskID){
                     const form = document.createElement("form");
                     form.id = "edit-form";
                     form.method = "POST";
-                    form.action = "/rwdd_assignment/ManagerFunction/Edit.php";
+                    form.action = "../ManagerFunction/Edit.php";
 
                     const workspaceLabel = document.createElement("label");
                     workspaceLabel.for = "text";
@@ -342,7 +342,7 @@ export function member(id, type){
 
     // FetchMember.php(two type) KickMember.php(two type) GrantAccess.php(workspace only) InviteMember.php(two type, role set default to NULL)
 
-    fetch("/rwdd_assignment/ManagerFunction/FetchMember.php", {
+    fetch("../ManagerFunction/FetchMember.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -401,7 +401,7 @@ export function member(id, type){
 
             const inviteForm = document.createElement("form");
             inviteForm.method = "POST";
-            inviteForm.action = "/rwdd_assignment/ManagerFunction/InviteMember.php";
+            inviteForm.action = "../ManagerFunction/InviteMember.php";
             inviteForm.style.display = "flex";
             inviteForm.style.width = "100%";
             inviteForm.style.gap = "10px";
@@ -528,7 +528,7 @@ export function member(id, type){
                 info.style.gap = "10px";
 
                 const img = document.createElement("img");
-                img.src = member.PictureName == null? "/rwdd_assignment/Assets/ProfilePic/anonymous.jpg" : `/rwdd_assignment/Assets/ProfilePic/${member.PictureName}`;
+                img.src = member.PictureName == null? "../Assets/ProfilePic/anonymous.jpg" : `../Assets/ProfilePic/${member.PictureName}`;
                 img.style.width = "35px";
                 img.style.height = "35px";
                 img.style.borderRadius = "50%";
@@ -567,7 +567,7 @@ export function member(id, type){
                     { label: "Grant Access", onClick: () => {
                         checkPermission(member.TaskID).then(hasPermission => {
                             if(hasPermission){
-                                fetch("/rwdd_assignment/ManagerFunction/GrantAccess.php", {
+                                fetch("../ManagerFunction/GrantAccess.php", {
                                     method: "POST",
                                     headers: {"Content-Type": "application/x-www-form-urlencoded"},
                                     body: new URLSearchParams({
@@ -596,7 +596,7 @@ export function member(id, type){
                         checkPermission(member.TaskID).then(hasPermission => {
                             if(hasPermission){
                                 if(confirm(`Are you sure you want to kick member: ${member.Username}`)){
-                                    fetch("/rwdd_assignment/ManagerFunction/KickMember.php", {
+                                    fetch("../ManagerFunction/KickMember.php", {
                                         method: "POST",
                                         headers: {"Content-Type": "application/x-www-form-urlencoded"},
                                         body: new URLSearchParams({
@@ -668,7 +668,7 @@ export function dlt(id, type){
     checkPermission(id, "workspace").then(hasPermission => {
         if(hasPermission){
             if(confirm("Are you sure you want to delete this task?")){
-                fetch("/rwdd_assignment/ManagerFunction/Delete.php", {
+                fetch("../ManagerFunction/Delete.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
@@ -685,7 +685,7 @@ export function dlt(id, type){
                         data.failed.forEach(element => {
                             console.log(`File failed: ${element}`);
                         });
-                        window.location.href = "/rwdd_assignment/HomePage/home.php"
+                        window.location.href = "../HomePage/home.php"
                         return;
                     } else {
                         alert(`Error occur when deleting task: ${data.error}`);
@@ -710,7 +710,7 @@ function checkPermission(id, type = "task"){
     const params = new URLSearchParams();
     params.append(paramName, id);
 
-    return fetch("/rwdd_assignment/ManagerFunction/CheckPermission.php", {
+    return fetch("../ManagerFunction/CheckPermission.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",

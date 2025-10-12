@@ -80,7 +80,7 @@ function createWorkspace($userID, $workspaceName) {
  * user needs access to the workspace to do this
  */
 
-function createTask($userID, $workspaceID, $taskName) {
+function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $startDate = '', $endDate = '', $deadline = '', $priority = 'Medium', $status = 'Pending') {
     global $conn;
     
     if (!$conn) {
@@ -98,14 +98,26 @@ function createTask($userID, $workspaceID, $taskName) {
         return ['success' => false, 'message' => 'No access to workspace'];
     }
     
-    // create the task with some default values
+    // Prepare the task data with proper date handling
     $currentTime = date('Y-m-d H:i:s');
+    
+    // Handle date fields - convert empty strings to current time
+    $startTime = !empty($startDate) ? $startDate . ' 00:00:00' : $currentTime;
+    $endTime = !empty($endDate) ? $endDate . ' 23:59:59' : $currentTime;
+    $deadlineTime = !empty($deadline) ? $deadline . ' 23:59:59' : $currentTime;
+    
+    // Set default description if empty
+    if (empty($taskDescription)) {
+        $taskDescription = 'New task description';
+    }
+    
+    // create the task with all the provided values
     $insertTask = "
         INSERT INTO task (WorkSpaceID, Title, Description, StartTime, EndTime, Deadline, Priority, Status) 
-        VALUES (?, ?, 'New task description', ?, ?, ?, 'Medium', 'Pending')
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ";
     $stmt = mysqli_prepare($conn, $insertTask);
-    mysqli_stmt_bind_param($stmt, "issss", $workspaceID, $taskName, $currentTime, $currentTime, $currentTime);
+    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTime, $deadlineTime, $priority, $status);
     
     if (mysqli_stmt_execute($stmt)) {
         $taskID = mysqli_insert_id($conn);

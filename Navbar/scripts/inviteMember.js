@@ -37,7 +37,7 @@ async function checkPermissionAndShowModal(workspaceId) {
         const formData = new FormData();
         formData.append('workspaceID', workspaceId);
         
-        const response = await fetch('../Navbar/Navbar_Function_PHP/inviteMember.php', {
+        const response = await fetch('../Navbar/functions/inviteMember.php', {
             method: 'POST',
             body: formData
         });

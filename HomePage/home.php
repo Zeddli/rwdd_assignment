@@ -14,6 +14,13 @@ $selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : 
 
 // Fetch all workspaces for this user
 global $conn;
+
+// Check if database connection is valid
+if (!$conn) {
+    echo "<div style='color:red;'>Database connection failed! Please check your database configuration.</div>";
+    exit;
+}
+
 $workspaceQuery = "
     SELECT workspace.WorkSpaceID, workspace.Name as WorkspaceName
     FROM workspace
@@ -64,8 +71,8 @@ if ($selectedWorkspaceID) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <link rel="stylesheet" href="../Navbar/base.css">
-    <link rel="stylesheet" href="../Navbar/navbar.css">
+    <link rel="stylesheet" href="../Navbar/styles/base.css">
+    <link rel="stylesheet" href="../Navbar/styles/navbar.css">
     <link rel="stylesheet" href="home.css">
 </head>
 <body>
@@ -122,29 +129,15 @@ if ($selectedWorkspaceID) {
     </div>
     
     <!-- JS modules -->
-    <script src="../Navbar/core.js"></script>
-    <script src="../Navbar/dropdowns.js"></script>
-    <script src="../Navbar/editing.js"></script>
-    <script src="../Navbar/workspaces.js"></script>
-    <script src="../Navbar/tasks.js"></script>
-    <script src="../Navbar/sidebar.js"></script>
-    <script src="../Navbar/main.js"></script>
-    <script>
-        function openTask(taskID) {
-    fetch('../Navbar/navbar_api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'action=set_task_session&task_id=' + taskID
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = '../TaskPage/Task.php';
-        } else {
-            alert('Failed to open task');
-        }
-    });
-}
-    </script>
+    <script src="../Navbar/scripts/core.js"></script>                      <!-- Global state and DOM cache -->
+    <script src="../Navbar/scripts/delete.js"></script>                    <!-- Delete functionality -->
+    <script src="../Navbar/scripts/dropdowns.js"></script>                 <!-- Dropdown menu functionality -->
+    <script src="../Navbar/scripts/editing.js"></script>                   <!-- Inline rename functionality -->
+    <script src="../Navbar/scripts/inviteMember.js"></script>             <!-- Invite member functionality -->
+    <script src="../Navbar/scripts/workspaces.js"></script>                <!-- Workspace creation/management -->
+    <script src="../Navbar/scripts/tasks.js"></script>                     <!-- Task operations -->
+    <script src="../Navbar/scripts/sidebar.js"></script>                   <!-- Main sidebar functionality -->
+    <script src="../Navbar/scripts/main.js"></script>                      <!-- Entry point that starts everything -->
+
 </body>
 </html>

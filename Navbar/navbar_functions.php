@@ -6,11 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once '../Database/Database.php';
 
 // load organized function files
-require_once 'Navbar_Function_PHP/getWorkspace.php';
-require_once 'Navbar_Function_PHP/createWorkspaceAndTask.php';
-require_once 'Navbar_Function_PHP/renameWorkspaceTaskAndGoal.php';
-require_once 'Navbar_Function_PHP/deleteWorkspaceAndTask.php';
-// require_once 'Navbar_Function_PHP/inviteMember.php';
+require_once '../Navbar/functions/getWorkspace.php';
+require_once '../Navbar/functions/createWorkspaceAndTask.php';
+require_once '../Navbar/functions/renameWorkspaceTaskAndGoal.php';
+require_once '../Navbar/functions/deleteWorkspaceAndTask.php';
+require_once '../Navbar/functions/getWorkspaceMembers.php';
+require_once '../Navbar/functions/inviteToTask.php';
+// require_once 'functions/inviteMember.php';
 
 
 ?>
