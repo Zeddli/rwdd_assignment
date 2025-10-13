@@ -80,7 +80,7 @@ function createWorkspace($userID, $workspaceName) {
  * user needs access to the workspace to do this
  */
 
-function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $startDate = '', $endDate = '', $deadline = '', $priority = 'Medium', $status = 'Pending') {
+function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $startDate = '', $deadline = '', $priority = 'Medium', $status = 'Pending') {
     global $conn;
     
     if (!$conn) {
@@ -101,10 +101,10 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // Prepare the task data with proper date handling
     $currentTime = date('Y-m-d H:i:s');
     
-    // Handle date fields - convert empty strings to current time
-    $startTime = !empty($startDate) ? $startDate . ' 00:00:00' : $currentTime;
-    $endTime = !empty($endDate) ? $endDate . ' 23:59:59' : $currentTime;
-    $deadlineTime = !empty($deadline) ? $deadline . ' 23:59:59' : $currentTime;
+    // Handle date fields - convert to proper datetime format
+    $startTime = $startDate . ' 00:00:00';
+    $endTime = $currentTime; // Use current time as end time since end date is removed
+    $deadlineTime = $deadline . ' 23:59:59';
     
     // Set default description if empty
     if (empty($taskDescription)) {
