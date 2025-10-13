@@ -54,13 +54,12 @@ switch ($action) {
         $taskName = trim($_POST['task_name'] ?? 'New Task');
         $taskDescription = trim($_POST['task_description'] ?? '');
         $startDate = $_POST['start_date'] ?? '';
-        $endDate = $_POST['end_date'] ?? '';
         $deadline = $_POST['deadline'] ?? '';
         $priority = $_POST['priority'] ?? 'Medium';
         $status = $_POST['status'] ?? 'Pending';
         
         // Debug: Log received data
-        error_log("Task Creation Debug - WorkspaceID: $workspaceID, TaskName: $taskName, Description: $taskDescription, StartDate: $startDate, EndDate: $endDate, Deadline: $deadline, Priority: $priority, Status: $status");
+        error_log("Task Creation Debug - WorkspaceID: $workspaceID, TaskName: $taskName, Description: $taskDescription, StartDate: $startDate, Deadline: $deadline, Priority: $priority, Status: $status");
         
         if ($workspaceID <= 0) {
             echo json_encode(['success' => false, 'message' => 'Invalid workspace ID']);
@@ -72,7 +71,17 @@ switch ($action) {
             break;
         }
         
-        $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $endDate, $deadline, $priority, $status);
+        if (empty($startDate)) {
+            echo json_encode(['success' => false, 'message' => 'Start date is required']);
+            break;
+        }
+        
+        if (empty($deadline)) {
+            echo json_encode(['success' => false, 'message' => 'Deadline is required']);
+            break;
+        }
+        
+        $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $deadline, $priority, $status);
         echo json_encode($result);
         break;
         

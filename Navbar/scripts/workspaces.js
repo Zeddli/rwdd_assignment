@@ -205,7 +205,6 @@ async function handleTaskFormSubmit(event) {
     const taskName = document.getElementById('taskNameInput').value.trim();
     const description = document.getElementById('taskDescriptionInput').value.trim();
     const startDate = document.getElementById('startDateInput').value;
-    const endDate = document.getElementById('endDateInput').value;
     const deadline = document.getElementById('deadlineInput').value;
     const priority = document.getElementById('prioritySelect').value;
     const status = document.getElementById('statusSelect').value;
@@ -213,6 +212,16 @@ async function handleTaskFormSubmit(event) {
     // Basic validation
     if (!taskName) {
         alert('Task name is required');
+        return;
+    }
+    
+    if (!startDate) {
+        alert('Start date is required');
+        return;
+    }
+    
+    if (!deadline) {
+        alert('Deadline is required');
         return;
     }
     
@@ -228,7 +237,6 @@ async function handleTaskFormSubmit(event) {
         formData.append('task_name', taskName);
         formData.append('task_description', description);
         formData.append('start_date', startDate);
-        formData.append('end_date', endDate);
         formData.append('deadline', deadline);
         formData.append('priority', priority);
         formData.append('status', status);
@@ -238,7 +246,6 @@ async function handleTaskFormSubmit(event) {
         console.log('Task Name:', taskName);
         console.log('Description:', description);
         console.log('Start Date:', startDate);
-        console.log('End Date:', endDate);
         console.log('Deadline:', deadline);
         console.log('Priority:', priority);
         console.log('Status:', status);

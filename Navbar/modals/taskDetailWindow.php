@@ -27,20 +27,16 @@
                 <!-- Date Selection Fields -->
                 <div class="date-fields">
                     <div class="form-group">
-                        <label for="startDateInput">Start date</label>
-                        <input type="date" id="startDateInput" class="date-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="endDateInput">End date</label>
-                        <input type="date" id="endDateInput" class="date-input">
+                        <label for="startDateInput">Start date *</label>
+                        <input type="date" id="startDateInput" class="date-input" required>
                     </div>
                 </div>
                 
                 <!-- Task Attribute Fields -->
                 <div class="attribute-fields">
                     <div class="form-group">
-                        <label for="deadlineInput">Deadline:</label>
-                        <input type="date" id="deadlineInput" class="attribute-input">
+                        <label for="deadlineInput">Deadline: *</label>
+                        <input type="date" id="deadlineInput" class="attribute-input" required>
                     </div>
                     
                     <div class="form-group">
@@ -50,7 +46,6 @@
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
-                            <option value="Urgent">Urgent</option>
                         </select>
                     </div>
                     
@@ -60,7 +55,6 @@
                             <option value="Pending">Pending</option>
                             <option value="In Progress">In Progress</option>
                             <option value="Completed">Completed</option>
-                            <option value="Delayed">Delayed</option>
                         </select>
                     </div>
                 </div>
@@ -181,9 +175,6 @@
 }
 
 .date-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
     margin-bottom: 20px;
 }
 

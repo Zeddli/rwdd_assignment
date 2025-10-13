@@ -262,12 +262,11 @@ class Calendar {
      * @returns {string} Formatted date string
      */
     getTaskDate(task) {
-        // Priority: StartTime > EndTime > Deadline
+        // Priority: StartTime > Deadline
         const startDate = task.startTime ? new Date(task.startTime) : null;
-        const endDate = task.endTime ? new Date(task.endTime) : null;
         const deadline = task.deadline ? new Date(task.deadline) : null;
         
-        const taskDate = startDate || endDate || deadline;
+        const taskDate = startDate || deadline;
         return taskDate ? this.formatDate(taskDate) : null;
     }
     
