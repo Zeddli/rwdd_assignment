@@ -28,7 +28,6 @@ export function createThreeDotMenu(actions = []) {
     const menu = document.createElement("div");
     menu.className = "three-dot-dropdown";
     menu.style.display = "none";
-    // aaa
     // menu.style.position = "absolute";
     menu.style.position = "fixed";
     menu.style.right = "0";

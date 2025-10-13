@@ -127,7 +127,7 @@ p{
 .three-dot-btn {
     color: white;
     background: rgba(50, 50, 50, 0.85);
-    position: static !important;
+    position: none !important;
     border: none !important;
     margin: 0px 0 !important;
     /* right: 2% !important;
@@ -135,7 +135,12 @@ p{
     transition: all 0.25s ease !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
-
+.three-dot-menu-container{
+    position: unset !important;
+}
+.popup .popup-container .three-dot-menu-container .three-dot-btn{
+    color: black;
+}
 #task-menu .three-dot-btn {
   color: #000 !important;
 }
@@ -212,6 +217,14 @@ p{
 }
 .container::-webkit-scrollbar-thumb:hover {
     background: #999;
+}
+.task-desc{
+    font-size: 14px;
+    color: #555;
+}
+.task-detail {
+    font-size: 13px;
+    color: #777;
 }
 
 /* small-screen tweaks */

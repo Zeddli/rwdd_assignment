@@ -20,7 +20,7 @@
     //     font-size: 14px;
     //     animation: fadeIn 0.5s;
     // }
-import { createThreeDotMenu } from "../ManagerFunction/menu.js";
+import { createThreeDotMenu } from "/rwdd_assignment/ManagerFunction/menu.js";
 export function edit(taskID){
     // alert("Edit function called for taskID (Main.js): " + taskID);
 
@@ -201,7 +201,9 @@ export function edit(taskID){
 
                     //style
                     // Popup styling
-                    popup.style.position = "absolute";
+                    popup.style.position = "fixed";
+                    popup.style.top = "0";
+                    popup.style.left = "0";
                     popup.style.zIndex = "1000";
                     popup.style.width = "100%";
                     popup.style.height = "100%";
@@ -324,7 +326,7 @@ export function edit(taskID){
         }
     });
     
-    document.body.appendChild();
+    // document.body.appendChild();
 }
 
 export function member(id, type){
@@ -361,7 +363,9 @@ export function member(id, type){
 
             const popup = document.createElement("div");
             popup.className = "popup";
-            popup.style.position = "absolute";
+            popup.style.position = "fixed";
+            popup.style.top = "0";
+            popup.style.left = "0";
             popup.style.zIndex = "1000";
             popup.style.width = "100%";
             popup.style.height = "100%";
@@ -462,7 +466,7 @@ export function member(id, type){
             inviteBtn.addEventListener("click", (e) => {
                 // need to check permission
                 e.preventDefault();
-                checkPermission(data.members[0]["TaskID"]).then(hasPermission => {
+                checkPermission(id, type).then(hasPermission => {
                     // alert(hasPermission);
                     if(hasPermission){
                         // have permission, proceed to invite
@@ -565,15 +569,22 @@ export function member(id, type){
 
                 const menu = createThreeDotMenu([
                     { label: "Grant Access", onClick: () => {
-                        checkPermission(member.TaskID).then(hasPermission => {
+                        checkPermission(id, type).then(hasPermission => {
                             if(hasPermission){
+                                const info = {
+                                    userID: member.UserID
+                                }
+                                if(type === "workspace"){
+                                    info.workspaceID = id;
+                                } else if (type === "task"){
+                                    info.taskID = id;
+                                }
+                                const params = new URLSearchParams(info);
+                                
                                 fetch("../ManagerFunction/GrantAccess.php", {
                                     method: "POST",
                                     headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                                    body: new URLSearchParams({
-                                        taskID: member.TaskID,
-                                        userID: member.UserID
-                                    })
+                                    body: params
                                 }).then(data => data.json())
                                 .then(data => {
                                     if(data.success){
@@ -593,7 +604,7 @@ export function member(id, type){
                         })
                     }},
                     { label: "Kick", onClick: () => {
-                        checkPermission(member.TaskID).then(hasPermission => {
+                        checkPermission(id, type).then(hasPermission => {
                             if(hasPermission){
                                 if(confirm(`Are you sure you want to kick member: ${member.Username}`)){
                                     fetch("../ManagerFunction/KickMember.php", {
@@ -665,7 +676,7 @@ export function member(id, type){
 }
 
 export function dlt(id, type){
-    checkPermission(id, "workspace").then(hasPermission => {
+    checkPermission(id, type).then(hasPermission => {
         if(hasPermission){
             if(confirm("Are you sure you want to delete this task?")){
                 fetch("../ManagerFunction/Delete.php", {
@@ -680,12 +691,18 @@ export function dlt(id, type){
                 }).then(data=>data.json())
                 .then(data => {
                     if(data.success){
-                        alert("Delete task successfully");
+                        alert("Delete " + type + " successfully");
                         console.log(`file deleted: ${data.deleted}`);
                         data.failed.forEach(element => {
                             console.log(`File failed: ${element}`);
                         });
-                        window.location.href = "../HomePage/home.php"
+                        const currentPage = window.location.pathname.split('/').pop();
+                        if(type === "task" && currentPage.includes("Task.php")){
+                            window.location.href = "../HomePage/home.php";
+                        }
+                        if(type === "workspace" && currentPage.includes("Workspace.php")){
+                            window.location.href = "../HomePage/home.php";
+                        }
                         return;
                     } else {
                         alert(`Error occur when deleting task: ${data.error}`);
