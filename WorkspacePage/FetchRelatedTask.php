@@ -43,13 +43,16 @@
         $completed = [];
 
         // Categorize tasks
-        foreach ($allTask as $task) {
+        foreach ($allTask as &$task) { // & for reference
             $deadline = new DateTime($task['Deadline']);
             $startTime = new DateTime($task['StartTime']);
             
             // Check if overdue
-            $isOverdue = ($deadline < $now);
-            $task['isOverdue'] = $isOverdue;
+            if($task["Status"] === "In Progress"){
+                $isOverdue = ($deadline < $now);
+                $task['isOverdue'] = $isOverdue;
+            }
+
             
             // Categorize based on status
             if ($task['Status'] === 'In Progress'){
@@ -60,6 +63,7 @@
                 $completed[] = $task;
             }
         }
+        unset($task);
 
         // Sort dueSoon
         usort($dueSoon, function($a, $b) {

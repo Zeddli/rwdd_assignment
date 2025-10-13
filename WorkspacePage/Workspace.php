@@ -24,6 +24,7 @@
             <div class="header-content">
                 <!-- background img and workspace name -->
                 <p class="workspace-name" id="workspace-name">Workspace name</p>
+                <div class="workspace-id" id="workspace-id" hidden></div>
             </div>
             <p class="workspace-created-by" id="workspace-created-by">Created by</p>
         </div>
@@ -63,6 +64,7 @@
             if(data.success){
                 document.getElementById("workspace-name").textContent = data.workspace["Name"];
                 document.getElementById("workspace-created-by").textContent = `Created by ${data.workspace["Username"]}`;
+                document.getElementById("workspace-id").textContent = data.workspace["WorkSpaceID"];
             } else {
                 alert(`Failed to fetch workspace: ${data.error}`);
             }
@@ -73,7 +75,6 @@
 
         // fetch task
         // if no task, show no task
-        // vertical scroll for dueSoon upcoming completed
         // show all grid for allTask
         // need to redirect(/rwdd_assignment/TaskPage/Task.php) and set SESSION["taskID"] when click
         // add threedotmenu for each task
@@ -86,14 +87,24 @@
             upcoming: [],
             completed: []
         };
+        let isEditing = false;
         function fetchTask(){
+            console.log("isEditing: " + isEditing);
+            if(isEditing){
+                console.log("add listener");       
+                document.getElementById("cancel-button").addEventListener("click", ()=>{
+                    isEditing = false;
+                });
+                return;
+            }
+            console.log("start to fetch");
             fetch("FetchRelatedTask.php", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"}
             }).then(data => data.json())
             .then(data => {
-                console.log("current: " + JSON.stringify(currentdata));
-                console.log("new: " + JSON.stringify(data));
+                // console.log("current: " + JSON.stringify(currentdata));
+                // console.log("new: " + JSON.stringify(data));
                 if(data.success){
                     if(!(JSON.stringify(currentdata) === JSON.stringify(data))){
                         currentdata = data;
@@ -150,52 +161,81 @@
                             });
 
                             // Title
+                            const titleContainer = document.createElement("div");
+                            titleContainer.className = "title-container";
+                            titleContainer.style.display = "flex";
+                            titleContainer.style.gap = "5px";
+                            titleContainer.style.alignItems = "center";
+                            titleContainer.style.justifyContent = "flex-start";
+
                             const title = document.createElement("h3");
                             title.textContent = task.Title;
-                            title.style.margin = "0 0 5px 0";
+                            titleContainer.appendChild(title);
 
                             // Description
                             const desc = document.createElement("p");
+                            desc.className = "task-desc";
+                            // more details
                             desc.textContent = task.Description || "No description.";
-                            desc.style.fontSize = "14px";
-                            desc.style.color = "#555";
+
 
                             // Deadline
                             const deadline = document.createElement("p");
+                            deadline.className = "task-detail";
                             deadline.textContent = "Deadline: " + (task.Deadline || "N/A");
-                            deadline.style.fontSize = "13px";
-                            deadline.style.color = "#777";
+
+                            //start
+                            const start = document.createElement("p");
+                            start.className = "task-detail";
+                            start.textContent = "Start At: " + (task.StartTime || "N/A");
+
+                            // status
+                            const status = document.createElement("p");
+                            status.className = "task-detail";
+                            status.textContent = "Status: " + (task.Status || "N/A");
 
                             // Overdue indicator
-                            if (!task.Status === "Completed" && task.isOverdue) {
-                                const overdueTag = document.createElement("span");
-                                overdueTag.textContent = "⚠ Overdue";
-                                overdueTag.style.color = "red";
-                                overdueTag.style.fontWeight = "bold";
-                                overdueTag.style.fontSize = "13px";
-                                overdueTag.style.position = "absolute";
-                                overdueTag.style.top = "10px";
-                                overdueTag.style.right = "10px";
-                                card.appendChild(overdueTag);
+                            if (task.isOverdue) {
+                                const overdueTag = document.createElement("img");
+                                overdueTag.src = "../Assets/overdue.png";
+                                overdueTag.alt = "Overdue";
+                                overdueTag.style.width = "30px";
+                                overdueTag.style.height = "30px";
+                                overdueTag.style.objectFit = "contain";
+                                titleContainer.appendChild(overdueTag);
                             }
 
-                            // Three-dot menu (imported)
-                            import("../ManagerFunction/menu.js").then(module => {
-                                const menu = module.createThreeDotMenu([
-                                    { label: "Edit", onClick: () => alert(`Editing task: ${task.Title}`) },
-                                    { label: "Member", onClick: () => alert(`Member: ${task.Title}`) },
-                                    { label: "Delete Task", onClick: () => alert(`Deleting task: ${task.Title}`) }
-                                ]);
-                                menu.setAttribute('id', "task-menu");
-                                menu.style.position = "absolute";
-                                menu.style.top = "10px";
-                                menu.style.right = "10px";
-                                card.appendChild(menu);
+                            // Three-dot menu
+                            import("../ManagerFunction/Main.js").then(func => {
+                                const edit = func.edit;
+                                const member = func.member;
+                                const dlt = func.dlt;
+
+                                import("../ManagerFunction/menu.js").then(module => {
+                                    const menu = module.createThreeDotMenu([
+                                        { label: "Edit", onClick: () =>  {
+                                            isEditing = true;
+                                            edit(task.TaskID);
+                                        } 
+                                        },
+                                        { label: "Member", onClick: () => member(task.TaskID, "task") },
+                                        { label: "Delete Task", onClick: () => dlt(task.TaskID, "task") }
+                                    ]);
+                                    menu.setAttribute('id', "task-menu");
+                                    menu.style.position = "absolute";
+                                    menu.style.top = "10px";
+                                    menu.style.right = "10px";
+                                    menu.style.margin = "0 0 0 auto";
+                                    // card.appendChild(menu);
+                                    titleContainer.appendChild(menu);
+                                });
                             });
 
-                            card.appendChild(title);
+                            card.appendChild(titleContainer);
                             card.appendChild(desc);
+                            card.appendChild(start);
                             card.appendChild(deadline);
+                            card.appendChild(status);
 
                             return card;
                         };
@@ -220,7 +260,7 @@
                                 container.style.maxHeight = "250px";
                             } else if (layout === "grid") {
                                 container.style.display = "grid";
-                                container.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+                                container.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
                                 container.style.gap = "10px";
                             }
 
@@ -252,12 +292,13 @@
 
     <script type = "module">
         import {createThreeDotMenu} from "../ManagerFunction/menu.js";
+        import {member, dlt} from "../ManagerFunction/Main.js";
 
         const workspaceMenu = createThreeDotMenu([
             {label: "Rename", onClick: () => alert("You click on edit button")},
             {label: "Add Task", onClick: () => alert("You click on add task button")},
-            {label: "Member", onClick: () => alert("You click on member button")},
-            {label: "Delete Workspace", onClick: () => alert("You click on delete button")}
+            {label: "Member", onClick: () => member(<?php echo $_SESSION["workspaceID"] ?>, "workspace")},
+            {label: "Delete Workspace", onClick: () => dlt(<?php echo $_SESSION["workspaceID"] ?>, "workspace")}
 
         ]);
 

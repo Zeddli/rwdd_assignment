@@ -12,20 +12,15 @@
         if (isset($_POST["workspaceID"])) {
             // Direct workspace permission check
             $workspaceId = intval($_POST["workspaceID"]);
+
         } elseif (isset($_POST["taskID"])) {
             // Get workspaceID from taskID
             $getWorkspaceStmt = $conn->prepare("SELECT WorkSpaceID FROM task WHERE TaskID = ?");
             $getWorkspaceStmt->bind_param("i", $_POST["taskID"]);
             if ($getWorkspaceStmt->execute()) {
                 $result = $getWorkspaceStmt->get_result();
-                if ($result->num_rows === 1) {
-                    $workspaceId = $result->fetch_assoc()["WorkSpaceID"];
-                } else {
-                    echo json_encode(["success" => false, "error" => "No such task"]);
-                    $getWorkspaceStmt->close();
-                    $conn->close();
-                    exit();
-                }
+                $workspaceId = $result->fetch_assoc()["WorkSpaceID"];
+
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to execute"]);
                 $getWorkspaceStmt->close();
@@ -52,6 +47,7 @@
                 $role = $row["UserRole"];
                 if($role === "Manager"){
                     echo json_encode(["success" => true]);
+                    exit();
                 }
                 else{
                     echo json_encode(["success" => false, "error" => "You are not manager"]);
