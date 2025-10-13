@@ -718,7 +718,187 @@ export function dlt(id, type){
             return;
         }
     })
-    
+}
+
+export function renameWorkspace(workspaceID){
+    checkPermission(workspaceID, "workspace").then(hasPermission=>{
+        if(hasPermission){
+            // for background
+            const popup = document.createElement("div");
+            popup.className = "popup";
+            popup.id = "popup";
+
+            // for form
+            const  popupContainer = document.createElement("div");
+            popupContainer.className = "popup-container";
+            popupContainer.id = "popup-container";
+
+            //form
+            const form = document.createElement("form");
+            form.id = "rename-form";
+            form.method = "POST";
+            form.action = "../ManagerFunction/renameWorkspace.php";
+
+            const workspaceLabel = document.createElement("label");
+            workspaceLabel.for = "text";
+            workspaceLabel.textContent = "Rename to:";
+            const workspaceInput = document.createElement("input");
+            workspaceInput.type = "text";
+            workspaceInput.name = "workspace";
+            workspaceInput.id = "workspace";
+            workspaceInput.required = true;
+
+            //hidden input for workspaceID
+            const workspaceIDInput = document.createElement("input");
+            workspaceIDInput.type = "hidden";
+            workspaceIDInput.name = "workspaceID";
+            workspaceIDInput.value = workspaceID;
+
+            const submit = document.createElement("input");
+            submit.type = "submit";
+            submit.value = "Save";
+            submit.id = "submit-button";
+            submit.className = "button";
+            submit.addEventListener("click", (e) => {
+                e.preventDefault();
+
+                //trim empty space
+                workspaceInput.value = workspaceInput.value.trim();
+
+                if(form.reportValidity()){
+                    const newName = workspaceInput.value;
+                    const workspaceID = workspaceIDInput.value;
+                    fetch(form.action, {
+                        method: form.method,
+                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                        body: new URLSearchParams({
+                            workspaceID: workspaceID,
+                            newName: newName
+                        })
+                    }).then(data => data.json())
+                    .then(data => {
+                        if(data.success){
+                            alert("Changes Saved!");
+                            window.location.href = window.location.href; //reload
+                        } else {
+                            alert("Rename failed: " + data.error);
+                        }
+                    }).catch((err) => {
+                        alert("Rename fetch failed: " + err);
+                    });
+                     
+                }
+                
+            });
+
+            const cancel = document.createElement("button");
+            cancel.type = "button";
+            cancel.id = "cancel-button";
+            cancel.className = "button";
+            cancel.textContent = "Cancel";
+            cancel.addEventListener("click", () => {
+                document.getElementById("popup").remove();
+            });
+
+            //style
+            // Popup styling
+            popup.style.position = "fixed";
+            popup.style.top = "0";
+            popup.style.left = "0";
+            popup.style.zIndex = "1000";
+            popup.style.width = "100%";
+            popup.style.height = "100%";
+            popup.style.backgroundColor = "#00000090";
+            popup.style.display = "grid";
+            popup.style.transition = "0.3s";
+            popup.style.opacity = "1";
+
+            popup.style.backdropFilter = "blur(2px)"; 
+
+            // Popup container styling
+            popupContainer.style.placeSelf = "center";
+            popupContainer.style.width = "max(23vw, 330px)";
+            popupContainer.style.backgroundColor = "white";
+            popupContainer.style.display = "flex";
+            popupContainer.style.flexDirection = "column";
+            popupContainer.style.gap = "15px";
+            popupContainer.style.padding = "20px 30px";
+            popupContainer.style.borderRadius = "8px";
+            popupContainer.style.fontSize = "15px";
+            popupContainer.style.animation = "fadeIn 0.5s";
+            popupContainer.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
+            popupContainer.style.fontFamily = "Arial, sans-serif";
+
+            // Form styling
+            form.style.display = "flex";
+            form.style.flexDirection = "column";
+            form.style.gap = "8px";
+
+            // Label
+            workspaceLabel.style.fontWeight = "600";
+            workspaceLabel.style.color = "#333";
+            
+            // Input
+            workspaceInput.style.padding = "8px";
+            workspaceInput.style.border = "1px solid #ccc";
+            workspaceInput.style.borderRadius = "5px";
+            workspaceInput.style.fontSize = "14px";
+            workspaceInput.style.outline = "none";
+            workspaceInput.addEventListener("focus", () => {
+                workspaceInput.style.borderColor = "#4A90E2";
+                workspaceInput.style.boxShadow = "0 0 5px rgba(74,144,226,0.5)";
+            });
+            workspaceInput.addEventListener("blur", () => {
+                workspaceInput.style.borderColor = "#ccc";
+                workspaceInput.style.boxShadow = "none";
+            });
+            
+
+            // Submit button styling
+            submit.style.backgroundColor = "#007bff";
+            submit.style.color = "white";
+            submit.style.border = "none";
+            submit.style.padding = "10px";
+            submit.style.borderRadius = "5px";
+            submit.style.cursor = "pointer";
+            submit.style.fontWeight = "600";
+            submit.style.transition = "0.3s";
+            submit.addEventListener("mouseover", () => {
+                submit.style.backgroundColor = "#26598cff";
+            });
+            submit.addEventListener("mouseout", () => {
+                submit.style.backgroundColor = "#007bff";
+            });
+
+            // Cancel button styling
+            cancel.style.backgroundColor = "#ccc";
+            cancel.style.color = "#333";
+            cancel.style.border = "none";
+            cancel.style.padding = "10px";
+            cancel.style.borderRadius = "5px";
+            cancel.style.cursor = "pointer";
+            cancel.style.fontWeight = "600";
+            cancel.style.transition = "0.3s";
+            cancel.addEventListener("mouseover", () => {
+                cancel.style.backgroundColor = "#999";
+            });
+            cancel.addEventListener("mouseout", () => {
+                cancel.style.backgroundColor = "#ccc";
+            });
+
+            form.appendChild(workspaceLabel);
+            form.appendChild(workspaceInput);
+            form.appendChild(workspaceIDInput);
+            form.appendChild(submit);
+            form.appendChild(cancel);
+            popupContainer.appendChild(form);
+            popup.appendChild(popupContainer);
+            document.body.appendChild(popup);
+
+        } else {
+            alert("You do not have permission to rename workspace");
+        }
+    })
 }
 
 function checkPermission(id, type = "task"){

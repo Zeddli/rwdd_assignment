@@ -292,10 +292,23 @@
 
     <script type = "module">
         import {createThreeDotMenu} from "../ManagerFunction/menu.js";
-        import {member, dlt} from "../ManagerFunction/Main.js";
+        import {member, dlt, renameWorkspace} from "../ManagerFunction/Main.js";
 
         const workspaceMenu = createThreeDotMenu([
-            {label: "Rename", onClick: () => alert("You click on edit button")},
+            {label: "Rename", onClick: () => {
+                renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>)
+                isEditing = true;
+                const stopFetching = {
+                    while(isEditing){
+                        console.log("workspace add listener");       
+                        document.getElementById("cancel-button").addEventListener("click", ()=>{
+                            isEditing = false;
+                        });
+                        return;
+                    }
+                }
+                setTimeout(stopFetching, 1000);
+            }},
             {label: "Add Task", onClick: () => alert("You click on add task button")},
             {label: "Member", onClick: () => member(<?php echo $_SESSION["workspaceID"] ?>, "workspace")},
             {label: "Delete Workspace", onClick: () => dlt(<?php echo $_SESSION["workspaceID"] ?>, "workspace")}
