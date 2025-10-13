@@ -20,18 +20,16 @@ if (!isset($_SESSION['userInfo']['userID'])) {
     <link rel="stylesheet" href="css/calendar.css">
     <link rel="stylesheet" href="css/to-do-list.css">
 </head>
-<body>
+<body class="calendar-page">
     <!-- Main Navigation Sidebar Container -->
     <?php include "../Navbar/navbar.php"; ?>
 
     <!-- Main Content Area -->
     <div class="main-content" id="mainContent">
         <h1>Calendar</h1>
-        <div class="calendar-container">
-            <!-- Calendar will be rendered here -->
-            <h2>Calendar page</h2>
-            <p>Your calendar view goes here. Click the button in the top-right to open the To-Do sidebar.</p>
-        </div>
+        
+        <!-- Include Monthly Calendar View -->
+        <?php include "monthlyView.php"; ?>
     </div>
 
     <!-- Include To-Do Sidebar Component -->
@@ -49,6 +47,9 @@ if (!isset($_SESSION['userInfo']['userID'])) {
     <script src="../Navbar/scripts/main.js"></script>                      <!-- Entry point that starts everything -->
 
 
+    <!-- Calendar JavaScript -->
+    <script src="js/monthlyCalendar.js"></script>
+    
     <!-- To-Do List Client-Side Script -->
     <script src="js/to-do-list.js"></script>
 </body>
