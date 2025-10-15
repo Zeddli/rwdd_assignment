@@ -28,7 +28,7 @@
                 <div class="date-fields">
                     <div class="form-group">
                         <label for="startDateInput">Start date *</label>
-                        <input type="date" id="startDateInput" class="date-input" required>
+                        <input type="datetime-local" id="startDateInput" class="date-input" required>
                     </div>
                 </div>
                 
@@ -36,7 +36,7 @@
                 <div class="attribute-fields">
                     <div class="form-group">
                         <label for="deadlineInput">Deadline: *</label>
-                        <input type="date" id="deadlineInput" class="attribute-input" required>
+                        <input type="datetime-local" id="deadlineInput" class="attribute-input" required>
                     </div>
                     
                     <div class="form-group">
