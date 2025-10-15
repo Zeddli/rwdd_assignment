@@ -29,18 +29,22 @@
 
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $uploadPath)){
                 echo json_encode(["success" => true]);
+                exit();
             } else{
                 // failed to upload
                 $conn->query("DELETE FROM fileshared WHERE FileID=$fileID");
                 echo json_encode(["success"=> false]);
+                exit();
             }
         }
         else{
             // failed to insert
             echo json_encode(["success"=> false]);
+            exit();
         }
 
     }
     $stmt->close();
     $conn->close();
+    exit();
  ?>
