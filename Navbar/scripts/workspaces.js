@@ -8,7 +8,6 @@
  * create a brand new workspace for the user
  */
 function addNewWorkspace() {
-    console.log('Creating new workspace...');
     
     // create workspace via API
         fetch('../Navbar/navbar_api.php', {
@@ -353,6 +352,7 @@ function handleHideUnhide(workspaceItem) {
  * Handle workspace click to open workspace page
  * Redirects to ../WorkspacePage/workspace.php/{workspaceID}
  */
+// ...existing code...
 function handleWorkspaceClick(event, workspaceItem) {
     if (!workspaceItem) return;
     
@@ -364,9 +364,50 @@ function handleWorkspaceClick(event, workspaceItem) {
         console.error('Workspace ID not found');
         return;
     }
-    
-    window.location.href = `../WorkspacePage/workspace.php/${workspaceID}`;
+
+    const formData = new FormData();
+    // backend expects 'set_workspace_session'
+    formData.append('action', 'set_workspace_session');
+    formData.append('workspace_id', workspaceID);
+
+    fetch('../Navbar/navbar_api.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(async response => {
+        // if server returned non-OK, capture body for debugging
+        const text = await response.text();
+        const ct = response.headers.get('content-type') || '';
+        // try to parse JSON if possible
+        if (ct.includes('application/json')) {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Failed to parse JSON from response:', text);
+                throw new Error('Invalid JSON from server');
+            }
+        }
+        // not JSON — surface the body for debugging
+        console.error('Non-JSON response from server:', text);
+        throw new Error('Server returned non-JSON response');
+    })
+    .then(data => {
+        console.log('set_workspace_session response:', data);
+        if (data && data.success) {
+            window.location.href = `../WorkspacePage/Workspace.php`;
+        } else {
+            const msg = (data && data.message) ? data.message : 'Unknown error';
+            console.error('Failed to set workspace session:', data);
+            alert('Failed to open workspace: ' + msg);
+        }
+    })
+    .catch(error => {
+        console.error('Error setting workspace:', error);
+        alert('Error setting workspace. Check console and network tab for details.');
+    });
 }
+// ...existing code...
 
 /**
  * delete an entire workspace (dangerous!)

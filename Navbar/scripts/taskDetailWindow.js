@@ -265,3 +265,11 @@ window.initializeTaskDetailWindow = initializeTaskDetailWindow;
 
 console.log('TaskDetailWindow.js: Functions exported to window object');
 console.log('showTaskDetailWindow available:', typeof window.showTaskDetailWindow === 'function');
+
+// Add these at the bottom instead:
+export { 
+    showTaskDetailWindow, 
+    showEditTaskWindow, 
+    hideTaskDetailWindow, 
+    initializeTaskDetailWindow 
+};
