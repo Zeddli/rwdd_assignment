@@ -3,7 +3,11 @@
 <head>
     <?php 
         include "../Head/Head.php";
-        $_SESSION["workspaceID"] = 1; //CHANGEEEEEEEEEEEEE!!!!!!!!!!!!
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        // $_SESSION["workspaceID"] = 1; //CHANGEEEEEEEEEEEEE!!!!!!!!!!!!
         if(!isset($_SESSION["workspaceID"])){
             header("Location: ../HomePage/Home.php");
         }
@@ -290,33 +294,65 @@
         
     </script>
 
-    <script type = "module">
-        import {createThreeDotMenu} from "../ManagerFunction/menu.js";
-        import {member, dlt, renameWorkspace} from "../ManagerFunction/Main.js";
 
-        const workspaceMenu = createThreeDotMenu([
-            {label: "Rename", onClick: () => {
-                renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>)
-                isEditing = true;
-                const stopFetching = {
-                    while(isEditing){
-                        console.log("workspace add listener");       
-                        document.getElementById("cancel-button").addEventListener("click", ()=>{
+<script type="module">
+    import { createThreeDotMenu } from "../ManagerFunction/menu.js";
+    import { member, dlt, renameWorkspace } from "../ManagerFunction/Main.js";
+    import { 
+        showTaskDetailWindow, 
+        showEditTaskWindow, 
+        hideTaskDetailWindow, 
+        initializeTaskDetailWindow 
+    } from "../Navbar/scripts/TaskDetailWindow.js"; 
+
+    // init the task detail window when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeTaskDetailWindow();
+    });
+
+    const workspaceMenu = createThreeDotMenu([
+        {
+            label: "Rename", 
+            onClick: () => {
+                renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>);
+                let isEditing = true;
+                
+                const checkCancelButton = () => {
+                    const cancelBtn = document.getElementById("cancel-button");
+                    if (cancelBtn) {
+                        cancelBtn.addEventListener("click", () => {
                             isEditing = false;
                         });
-                        return;
                     }
-                }
-                setTimeout(stopFetching, 1000);
-            }},
-            {label: "Add Task", onClick: () => alert("You click on add task button")},
-            {label: "Member", onClick: () => member(<?php echo $_SESSION["workspaceID"] ?>, "workspace")},
-            {label: "Delete Workspace", onClick: () => dlt(<?php echo $_SESSION["workspaceID"] ?>, "workspace")}
+                };
+                
+                setTimeout(checkCancelButton, 1000);
+            }
+        },
+        {
+            label: "Add Task",
+            onClick: () => {
+                if (typeof showTaskDetailWindow === 'function') showTaskDetailWindow(<?php echo $_SESSION["workspaceID"] ?>);
+            }
+        },
+        {
+            label: "Member", 
+            onClick: () => member(<?php echo $_SESSION["workspaceID"] ?>, "workspace")
+        },
+        {
+            label: "Delete Workspace", 
+            onClick: () => dlt(<?php echo $_SESSION["workspaceID"] ?>, "workspace")
+        }
+    ]);
 
-        ]);
+    document.getElementById("workspace-menu").appendChild(workspaceMenu);
 
-        document.getElementById("workspace-menu").appendChild(workspaceMenu);
-    </script>
+    // Make functions available globally 
+    window.showTaskDetailWindow = showTaskDetailWindow;
+    window.showEditTaskWindow = showEditTaskWindow;
+</script>
+
+
 
     <!-- navbar -->
     <script src="../Navbar/scripts/core.js"></script>                      <!-- Global state and DOM cache -->
