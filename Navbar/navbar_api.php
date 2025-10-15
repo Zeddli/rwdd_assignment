@@ -81,6 +81,12 @@ switch ($action) {
             break;
         }
         
+        // Validate that deadline is after start date
+        if ($startDate && $deadline && $deadline <= $startDate) {
+            echo json_encode(['success' => false, 'message' => 'Deadline must be after the start date']);
+            break;
+        }
+        
         $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $deadline, $priority, $status);
         echo json_encode($result);
         break;

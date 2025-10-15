@@ -101,9 +101,14 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // Prepare the task data with proper date handling
     $currentTime = date('Y-m-d H:i:s');
     
+    // Validate that deadline is after start date
+    if ($startDate && $deadline && $deadline <= $startDate) {
+        return ['success' => false, 'message' => 'Deadline must be after the start date'];
+    }
+    
     // Handle date fields - convert to proper datetime format
     $startTime = $startDate . ' 00:00:00';
-    $endTime = $currentTime; // Use current time as end time since end date is removed
+    $endTime = null; // End time is null since end date is removed
     $deadlineTime = $deadline . ' 23:59:59';
     
     // Set default description if empty

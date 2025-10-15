@@ -116,6 +116,12 @@ async function handleTaskSubmit(event) {
         return;
     }
     
+    // Validate that deadline is after start date
+    if (startDate && deadline && deadline <= startDate) {
+        showTaskMessage('Deadline must be after the start date', 'error');
+        return;
+    }
+    
     if (!currentWorkspaceId) {
         showTaskMessage('No workspace selected', 'error');
         return;
