@@ -284,6 +284,10 @@
         document.getElementById("choose-file").addEventListener("change", (event) => {
             const file = event.target.files[0]; //first file only
             if(!file) return;
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                alert("File size exceeds 5MB limit");
+            }
 
             const formData = new FormData();
             formData.append("file", file);
@@ -299,9 +303,10 @@
                 if(data.success){
                     alert("File uploaded successfully");
                 } else {
-                    alert("File upload failed");
+                    alert("File upload failed: " + data.error);
                 }
             })
+
         });
 
         //send comment
