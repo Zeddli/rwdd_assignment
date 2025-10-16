@@ -44,9 +44,7 @@ body:has(.sidebar.closed) .main-content {
     position: absolute;
     bottom: 10%;
     left: 3vw;
-    padding: 0 40px;
-    box-sizing: border-box;
-    width: 100%;
+    animation: fadeIn 1s; 
 }
 
 .analytics-header .analytics-text {

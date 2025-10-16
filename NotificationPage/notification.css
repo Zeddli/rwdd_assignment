@@ -70,6 +70,7 @@ body:has(.sidebar.closed) .main-content {
     position: absolute;
     bottom: 10%;
     left: 3vw;
+    animation: fadeIn 1s;
 }
 
 .notification-header .notification-text {
