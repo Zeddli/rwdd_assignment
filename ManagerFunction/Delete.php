@@ -23,6 +23,24 @@
             $taskID = $id;
             $tableInclude = ["fileshared", "comment", "taskaccess", "task"];
 
+            $taskNameStmt = $conn->prepare("SELECT Title FROM task WHERE TaskID = ?");
+            $taskNameStmt->bind_param("i", $taskID);
+            if($taskNameStmt->execute()){
+                $taskNameResult = $taskNameStmt->get_result();
+                if($taskNameResult->num_rows==1){
+                    $taskNameRow = $taskNameResult->fetch_assoc();
+                    $taskname = $taskNameRow["Title"];
+                    $taskNameStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when getting task name"]);
+                    exit();
+                }
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Failed to get task name"]);
+                exit();
+
+            }
+
             //get file name
             $getFileStmt = $conn->prepare("SELECT FileID, Extension FROM fileshared WHERE TaskID = ?");
             $getFileStmt->bind_param("i", $taskID);
@@ -54,6 +72,35 @@
                 }
             }
 
+            // notification
+            $relatedID = $taskID;
+            $relatedTable = "task";
+            $title = "Task deleted";
+            $desc = "The task: ". $taskname . " has been deleted.";
+            $insertNoti = $conn->prepare("INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+            $insertNoti->bind_param("isss", $relatedID, $relatedTable, $title, $desc);
+            $insertNoti->execute();
+            $notiID = $insertNoti->insert_id;
+
+            //receivers
+            $receiverStmt = $conn->prepare("SELECT UserID FROM taskaccess WHERE TaskID = ?");
+            $receiverStmt->bind_param("i", $taskID);
+            if($receiverStmt->execute()){
+                $receiverResult = $receiverStmt->get_result();
+                $receivers = [];
+                while($row = $receiverResult->fetch_assoc()){
+                    $receivers[] = $row["UserID"];
+                }
+                $receiverStmt->close();
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Failed to get receivers"]);
+                exit();
+            }
+            foreach($receivers as $receiver){
+                $insertReceiver = $conn->prepare("INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                $insertReceiver->bind_param("ii", $notiID, $receiver);
+                $insertReceiver->execute();
+            }
             foreach($tableInclude as $table){
                 $dltStmt = $conn->prepare("DELETE FROM $table WHERE TaskID = ?");
                 $dltStmt->bind_param("i", $taskID);
@@ -121,7 +168,55 @@
                     $failed[] = $file . " not found";
                 }
             }
+            //get workspace name
+            $workspacenameStmt = $conn->prepare("SELECT Name FROM workspace WHERE WorkSpaceID = ?");
+            $workspacenameStmt->bind_param("i", $workspaceID);
+            if($workspacenameStmt->execute()){
+                $workspacenameResult = $workspacenameStmt->get_result();
+                if($workspacenameResult->num_rows==1){
+                    $workspacenameRow = $workspacenameResult->fetch_assoc();
+                    $workspacename = $workspacenameRow["Name"];
+                    $workspacenameStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when getting workspace name"]);
+                    exit();
+                }
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Failed to get workspace name"]);
+                exit();
 
+            }
+
+            // notification
+            $relatedID = $workspaceID;
+            $relatedTable = "workspace";
+            $title = "Workspace deleted";
+            $desc = "The workspace: ". $workspacename . " has been deleted.";
+            $insertNoti = $conn->prepare("INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+            $insertNoti->bind_param("isss", $relatedID, $relatedTable, $title, $desc);
+            $insertNoti->execute();
+
+            $notiID = $insertNoti->insert_id;
+
+            //receivers
+            $receiverStmt = $conn->prepare("SELECT UserID FROM workspacemember WHERE WorkSpaceID = ?");
+            $receiverStmt->bind_param("i", $workspaceID);
+            if($receiverStmt->execute()){
+                $receiverResult = $receiverStmt->get_result();
+                $receivers = [];
+                while($row = $receiverResult->fetch_assoc()){
+                    $receivers[] = $row["UserID"];
+                }
+                $receiverStmt->close();
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Failed to get receivers"]);
+                exit();
+            }
+            foreach($receivers as $receiver){
+                $insertReceiver = $conn->prepare("INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                $insertReceiver->bind_param("ii", $notiID, $receiver);
+                $insertReceiver->execute();
+            }
             //dlt related table
             $taskIncluded = ["comment", "fileshared", "taskaccess", "task"];
             if(!empty($taskID)){
@@ -152,6 +247,7 @@
                     exit();
                 }
             }
+
             echo json_encode(["success"=>true, "deleted"=>$deleted, "failed"=>$failed]);
             exit();
 

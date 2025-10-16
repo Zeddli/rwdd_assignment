@@ -55,16 +55,6 @@ export function edit(taskID){
                     form.method = "POST";
                     form.action = "../ManagerFunction/Edit.php";
 
-                    const workspaceLabel = document.createElement("label");
-                    workspaceLabel.for = "text";
-                    workspaceLabel.textContent = "Workspace";
-                    const workspaceInput = document.createElement("input");
-                    workspaceInput.type = "text";
-                    workspaceInput.name = "workspace";
-                    workspaceInput.id = "workspace";
-                    workspaceInput.value = data.task.Name;
-                    workspaceInput.required = true;
-
                     const titleLabel = document.createElement("label");
                     titleLabel.for = "text";
                     titleLabel.textContent = "Title";
@@ -164,7 +154,6 @@ export function edit(taskID){
                         e.preventDefault();
 
                         //trim empty space
-                        workspaceInput.value = workspaceInput.value.trim();
                         titleInput.value = titleInput.value.trim();
                         descInput.value = descInput.value.trim();
 
@@ -234,13 +223,13 @@ export function edit(taskID){
                     form.style.gap = "8px";
 
                     // Label
-                    [workspaceLabel, titleLabel, descLabel, startLabel, deadlineLabel, priorityLabel, statusLabel].forEach(label => {
+                    [titleLabel, descLabel, startLabel, deadlineLabel, priorityLabel, statusLabel].forEach(label => {
                         label.style.fontWeight = "600";
                         label.style.color = "#333";
                     });
 
                     // Input, select, textarea
-                    [workspaceInput, titleInput, descInput, startInput, deadlineInput, prioritySelect, statusSelect].forEach(input => {
+                    [titleInput, descInput, startInput, deadlineInput, prioritySelect, statusSelect].forEach(input => {
                         input.style.padding = "8px";
                         input.style.border = "1px solid #ccc";
                         input.style.borderRadius = "5px";
@@ -288,8 +277,6 @@ export function edit(taskID){
                         cancel.style.backgroundColor = "#ccc";
                     });
 
-                    form.appendChild(workspaceLabel);
-                    form.appendChild(workspaceInput);
                     form.appendChild(titleLabel);
                     form.appendChild(titleInput);
                     form.appendChild(descLabel);
@@ -678,7 +665,7 @@ export function member(id, type){
 export function dlt(id, type){
     checkPermission(id, type).then(hasPermission => {
         if(hasPermission){
-            if(confirm("Are you sure you want to delete this task?")){
+            if(confirm("Are you sure you want to delete this task/workspace?")){
                 fetch("../ManagerFunction/Delete.php", {
                     method: "POST",
                     headers: {
@@ -906,6 +893,7 @@ function checkPermission(id, type = "task"){
     const paramName = type === "workspace" ? "workspaceID" : "taskID";
     const params = new URLSearchParams();
     params.append(paramName, id);
+    // console.log(params.toString());
 
     return fetch("../ManagerFunction/CheckPermission.php", {
         method: "POST",
@@ -919,7 +907,6 @@ function checkPermission(id, type = "task"){
             // alert("You are manager");
             return true;
         }else{
-            // alert("You are not manager");
             // alert(`Error: ${data.error}`);
             return false
         }
