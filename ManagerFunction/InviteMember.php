@@ -23,6 +23,12 @@
         $email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_EMAIL); //will return empty
         // return success: false, error: Invalid email
         $role = htmlspecialchars(strip_tags($_POST['role']), ENT_QUOTES, 'UTF-8');
+        
+        // Validate role - only allow Employee and Manager
+        if (!in_array($role, ['Employee', 'Manager'])) {
+            echo json_encode(["success" => false, "error" => "Invalid role. Only Employee and Manager roles are allowed."]);
+            exit();
+        }
 
         // flow:
         // get the UserID use email ->

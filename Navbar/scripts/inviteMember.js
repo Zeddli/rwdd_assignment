@@ -93,7 +93,7 @@ function clearInviteForm() {
     const messageDiv = document.getElementById('inviteMessage');
     
     if (emailInput) emailInput.value = '';
-    if (roleSelect) roleSelect.value = 'Member';
+    if (roleSelect) roleSelect.value = 'Employee';
     if (messageDiv) {
         messageDiv.style.display = 'none';
         messageDiv.textContent = '';
