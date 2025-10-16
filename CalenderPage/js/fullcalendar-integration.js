@@ -131,21 +131,65 @@ class FullCalendarIntegration {
      * @returns {Object} FullCalendar event object
      */
     transformTaskToEvent(task) {
-        // Determine event date (prioritize startTime, then deadline)
-        const eventDate = task.startTime ? new Date(task.startTime) : 
-                         task.deadline ? new Date(task.deadline) : 
-                         new Date();
+        const hasStart = !!task.startTime;
+        const hasDeadline = !!task.deadline;
+        const hasEnd = !!task.endTime;
 
-        // Determine end date
-        const endDate = task.endTime ? new Date(task.endTime) : 
-                       new Date(eventDate.getTime() + (60 * 60 * 1000)); // 1 hour default
+        // Helper to normalize a date to local midnight
+        const atStartOfDay = (d) => {
+            const nd = new Date(d);
+            nd.setHours(0, 0, 0, 0);
+            return nd;
+        };
+        // Helper to add days (FullCalendar end is exclusive for all-day)
+        const addDays = (d, days) => {
+            const nd = new Date(d);
+            nd.setDate(nd.getDate() + days);
+            return nd;
+        };
+
+        let start, end, allDay = false;
+
+        if (hasStart && hasDeadline) {
+            // Display as an all-day multi-day event spanning start -> deadline
+            const startDay = atStartOfDay(new Date(task.startTime));
+            const deadlineDay = atStartOfDay(new Date(task.deadline));
+            start = startDay.toISOString();
+            end = addDays(deadlineDay, 1).toISOString(); // exclusive end
+            allDay = true;
+        } else if (hasStart && hasEnd) {
+            // Timed event using provided start/end
+            const s = new Date(task.startTime);
+            const e = new Date(task.endTime);
+            start = s.toISOString();
+            end = e.toISOString();
+            allDay = false;
+        } else if (hasStart) {
+            // Timed single slot defaulting to 1 hour
+            const s = new Date(task.startTime);
+            const e = new Date(s.getTime() + 60 * 60 * 1000);
+            start = s.toISOString();
+            end = e.toISOString();
+            allDay = false;
+        } else if (hasDeadline) {
+            // Deadline-only all-day marker
+            const d = atStartOfDay(new Date(task.deadline));
+            start = d.toISOString();
+            end = addDays(d, 1).toISOString();
+            allDay = true;
+        } else {
+            const now = new Date();
+            start = now.toISOString();
+            end = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
+            allDay = false;
+        }
 
         return {
             id: task.id,
             title: task.title,
-            start: eventDate.toISOString(),
-            end: endDate.toISOString(),
-            allDay: this.isAllDayTask(task),
+            start,
+            end,
+            allDay,
             backgroundColor: this.getPriorityColor(task.priority),
             borderColor: this.getPriorityColor(task.priority),
             textColor: '#ffffff',
