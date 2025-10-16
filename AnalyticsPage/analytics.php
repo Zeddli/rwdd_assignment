@@ -130,7 +130,11 @@ if ($selectedWorkspaceID) {
 <body>
     <?php include "../Navbar/navbar.php"; ?>
     <div class="main-content">
-        <h1>Analytics</h1>
+            <div class="header analytics-header" id="analytics-header">
+        <div class="header-content">
+            <p class="analytics-text" id="analytics-name">Analytics</p>
+        </div>
+     </div>
         <div class="workspace-picker">
             <form method="get" action="analytics.php">
                 <label for="workspace" class="workspace">Select workspace:</label>
