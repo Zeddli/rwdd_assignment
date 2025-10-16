@@ -23,6 +23,60 @@ body:has(.sidebar.closed) .main-content {
     margin-left: 50px;
 }
 
+.main-content h1 {
+    display: none;
+}
+
+.analytics-header {
+    height: 250px;
+    width: 100%;
+    background: url('/rwdd_assignment/Assets/analyticsbg.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.analytics-header .header-content {
+    position: absolute;
+    bottom: 10%;
+    left: 3vw;
+    animation: fadeIn 1s; 
+}
+
+.analytics-header .analytics-text {
+    margin: 0;
+    color: #eaeaea;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: 600;
+    font-size: clamp(30px, 4vw, 50px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-align: left;
+    text-shadow:
+        0 1px 0 rgba(255,255,255,0.02),
+        0 6px 20px rgba(3, 18, 51, 0.45); 
+    padding: 0.25rem 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+}
+
+.analytics-header .analytics-text::after {
+    content: "";
+    display: block;
+    width: min(200px, 80%); 
+    height: 3px;
+    margin: 0.6rem 0 0;
+    background: rgba(255, 255, 255, 0.695);
+    border-radius: 2px;
+}
+
 .workspace-picker {
     margin: 18px 0 0 0;
     display: flex;

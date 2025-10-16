@@ -81,50 +81,63 @@ if ($selectedWorkspaceID) {
     
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Home</h1>
-        <div class="workspace-picker">
-            <form method="get" action="home.php">
-                <label for="workspace" class="workspace">Select workspace:</label>
-                <select name="workspace" id="workspace" onchange="this.form.submit()">
-                    <?php foreach ($workspaces as $ws): ?>
-                        <option value="<?= htmlspecialchars($ws['WorkSpaceID']) ?>" <?= ($ws['WorkSpaceID'] == $selectedWorkspaceID) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($ws['WorkspaceName']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </form>
-        </div>
-        <h2 style="text-align:center;">Recent Tasks</h2>
-        <div class="task-board">
-            <?php
-            $statuses = [
-                "Pending" => "Pending",
-                "InProgress" => "In Progress",
-                "Completed" => "Completed"
-            ];
-            foreach ($statuses as $statusKey => $statusLabel):
-            ?>
-            <div class="task-column">
-                <div class="task-column-header"><?= $statusLabel ?></div>
-                <div class="task-list">
-                <?php if (!empty($tasksByStatus[$statusKey])): ?>
-                    <?php foreach ($tasksByStatus[$statusKey] as $task): ?>
-                        <div class="task-card"
-                             onclick="openTask(<?= $task['TaskID'] ?>)">
-                            <div class="task-card-content">
-                                <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
-                                Description: <?= htmlspecialchars($task['Description'] ?? 'No description') ?><br>
-                                Due: <?= htmlspecialchars(date("Y-m-d H:i:s", strtotime($task['Deadline']))) ?><br>
-                                Priority: <?= htmlspecialchars($task['Priority'] ?? 'N/A') ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="no-task">No tasks</div>
-                <?php endif; ?>
-                </div>
+        <div class="header home-header" id="home-header">
+            <div class="header-content">
+                <p class="home-text" id="home-name">Home</p>
             </div>
-            <?php endforeach; ?>
+        </div>
+
+        <div class="home-content-body">
+            <div class="workspace-picker">
+                <form method="get" action="home.php">
+                    <label for="workspace" class="workspace">Select workspace:</label>
+                    <select name="workspace" id="workspace" onchange="this.form.submit()">
+                        <?php foreach ($workspaces as $ws): ?>
+                            <option value="<?= htmlspecialchars($ws['WorkSpaceID']) ?>"
+                                <?= ($ws['WorkSpaceID'] == $selectedWorkspaceID) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($ws['WorkspaceName']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+            </div>
+
+            <h2 style="text-align:center;">Recent Tasks</h2>
+
+            <div class="task-board">
+                <?php
+                $statuses = [
+                    "Pending" => "Pending",
+                    "InProgress" => "In Progress",
+                    "Completed" => "Completed"
+                ];
+
+                foreach ($statuses as $statusKey => $statusLabel):
+                ?>
+                    <div class="task-column">
+                        <div class="task-column-header"><?= $statusLabel ?></div>
+                        <div class="task-list">
+                            <?php if (!empty($tasksByStatus[$statusKey])): ?>
+                                <?php foreach ($tasksByStatus[$statusKey] as $task): ?>
+                                    <div class="task-card" onclick="openTask(<?= $task['TaskID'] ?>)">
+                                        <div class="task-card-content">
+                                            <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
+                                            Description:
+                                            <?= htmlspecialchars($task['Description'] ?? 'No description') ?><br>
+                                            Due:
+                                            <?= htmlspecialchars(date("Y-m-d H:i:s", strtotime($task['Deadline']))) ?><br>
+                                            Priority:
+                                            <?= htmlspecialchars($task['Priority'] ?? 'N/A') ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="no-task">No tasks</div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
     

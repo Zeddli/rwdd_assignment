@@ -36,7 +36,6 @@
 
         // check permission for the workspace
         $stmt = $conn->prepare("SELECT UserRole FROM workspacemember
-                                JOIN task ON workspacemember.WorkSpaceID = task.WorkSpaceID
                                 WHERE workspacemember.UserID = ? AND workspacemember.WorkSpaceID = ?");
         $stmt->bind_param("ii", $userID, $workspaceId);
         if($stmt->execute()){

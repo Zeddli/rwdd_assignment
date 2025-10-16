@@ -75,6 +75,24 @@
             }
             
             //after workspaceID
+            // get workspacename
+            $workspacenameStmt = $conn->prepare("SELECT Name FROM workspace WHERE WorkSpaceID = ?");
+            $workspacenameStmt->bind_param("i", $workspaceID);
+            if($workspacenameStmt->execute()){
+                $workspacenameResult = $workspacenameStmt->get_result();
+                if($workspacenameResult->num_rows == 1){
+                    $workspacenameRow = $workspacenameResult->fetch_assoc();
+                    $workspacename = $workspacenameRow["Name"];
+                    $workspacenameStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when getting workspace name"]);
+                    exit();
+                }
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Failed to get workspace name"]);
+                exit();
+            }
+
             // insert to workspacemember
             $workspacememberStmt = $conn->prepare("SELECT * FROM workspacemember WHERE UserID = ? and WorkSpaceID = ?");
             $workspacememberStmt->bind_param("ii", $userID, $workspaceID);
@@ -85,7 +103,25 @@
                     $insertWorkspaceMember = $conn->prepare("INSERT INTO workspacemember (WorkSpaceID, UserID, UserRole) VALUES (?, ?, ?)");
                     $insertWorkspaceMember->bind_param("iis", $workspaceID, $userID, $role);
                     if($insertWorkspaceMember->execute()){
-                        // do nothing when success
+                        // insert to notification
+                        $relatedID = $workspaceID;
+                        $relatedTable = "workspace";
+                        $title = "Added to workspace";
+                        $desc = "You have been added to a new workspace: ".$workspacename;
+                        $insertNoti = $conn->prepare("INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+                        $insertNoti->bind_param("isss", $relatedID, $relatedTable, $title, $desc);
+                        $insertNoti->execute();
+
+                        // receiver
+                        $notiID = $conn->insert_id;
+                        $notiReceiver = $userID;
+                        $notiReceiverStmt = $conn->prepare("INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                        $notiReceiverStmt->bind_param("ii", $notiID, $notiReceiver);
+                        $notiReceiverStmt->execute();
+
+                        $notiReceiverStmt->close();
+                        $insertNoti->close();
+
                     } else {
                         echo json_encode(["success"=>false, "error"=>"Failed to insert to workspace member"]);
                         exit();
@@ -107,6 +143,41 @@
                     $insertTaskaccess = $conn->prepare("INSERT INTO taskaccess VALUES (?, ?)");
                     $insertTaskaccess->bind_param("ii", $userID, $id);
                     if($insertTaskaccess->execute()){
+                        // get task name
+                        $tasknameStmt = $conn->prepare("SELECT Title FROM task WHERE TaskID = ?");
+                        $tasknameStmt->bind_param("i", $id);
+                        if($tasknameStmt->execute()){
+                            $tasknameResult = $tasknameStmt->get_result();
+                            if($tasknameResult->num_rows == 1){
+                                $tasknameRow = $tasknameResult->fetch_assoc();
+                                $taskname = $tasknameRow["Title"];
+                                $tasknameStmt->close();
+                            } else {
+                                echo json_encode(["success"=>false, "error"=>"Error when getting task name"]);
+                                exit();
+                            }
+                        } else {
+                            echo json_encode(["success"=>false, "error"=>"Failed to get task name"]);
+                            exit();
+                        }
+
+                        //insert noti
+                        $relatedID = $id;
+                        $relatedTable = "task";
+                        $title = "Added to task";
+                        $desc = "You have been added to a new task in ".$workspacename.": ". $taskname;
+                        $insertNoti = $conn->prepare("INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+                        $insertNoti->bind_param("isss", $relatedID, $relatedTable, $title, $desc);
+                        $insertNoti->execute();
+                        // receiver
+                        $notiID = $conn->insert_id;
+                        $notiReceiver = $userID;
+                        $notiReceiverStmt = $conn->prepare("INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                        $notiReceiverStmt->bind_param("ii", $notiID, $notiReceiver);
+                        $notiReceiverStmt->execute();
+                        $notiReceiverStmt->close();
+                        $insertNoti->close();
+
                         echo json_encode(["success"=>true]);
                         exit();
                     }else{
@@ -129,6 +200,24 @@
             //table: workspacemember
             //  check for existance in workspacemember(if yes success: false, error: member exits)(if no insert)
 
+            //get workspacename
+            $workspacenameStmt = $conn->prepare("SELECT Name FROM workspace WHERE WorkSpaceID = ?");
+            $workspacenameStmt->bind_param("i", $id);
+            if($workspacenameStmt->execute()){
+                $workspacenameResult = $workspacenameStmt->get_result();
+                if($workspacenameResult->num_rows == 1){
+                    $workspacenameRow = $workspacenameResult->fetch_assoc();
+                    $workspacename = $workspacenameRow["Name"];
+                    $workspacenameStmt->close();
+                } else {
+                    echo json_encode(["success"=>false, "error"=>"Error when getting workspace name"]);
+                    exit();
+                }
+            } else {
+                echo json_encode(["success"=>false, "error"=>"Failed to get workspace name"]);
+                exit();
+            }
+
             $workspacememberStmt = $conn->prepare("SELECT * FROM workspacemember WHERE UserID = ? and WorkSpaceID = ?");
             $workspacememberStmt->bind_param("ii", $userID, $id);
             if($workspacememberStmt->execute()){
@@ -138,6 +227,22 @@
                     $insertWorkspaceMember = $conn->prepare("INSERT INTO workspacemember (WorkSpaceID, UserID, UserRole) VALUES (?, ?, ?)");
                     $insertWorkspaceMember->bind_param("iis", $id, $userID, $role);
                     if($insertWorkspaceMember->execute()){
+                        $relatedID = $id;
+                        $relatedTable = "workspace";
+                        $title = "Added to workspace";
+                        $desc = "You have been added to a new workspace: ".$workspacename;
+                        $insertNoti = $conn->prepare("INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+                        $insertNoti->bind_param("isss", $relatedID, $relatedTable, $title, $desc);
+                        $insertNoti->execute();
+                        // receiver
+                        $notiID = $conn->insert_id;
+                        $notiReceiver = $userID;
+                        $notiReceiverStmt = $conn->prepare("INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                        $notiReceiverStmt->bind_param("ii", $notiID, $notiReceiver);
+                        $notiReceiverStmt->execute();
+                        $notiReceiverStmt->close();
+                        $insertNoti->close();
+
                         echo json_encode(["success"=>true]);
                         exit();
                         

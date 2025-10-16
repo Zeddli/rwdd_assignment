@@ -96,197 +96,214 @@
             console.log("isEditing: " + isEditing);
             if(isEditing){
                 console.log("add listener");       
-                document.getElementById("cancel-button").addEventListener("click", ()=>{
+                try {
+                    document.getElementById("cancel-button").addEventListener("click", ()=>{
+                        isEditing = false;
+                    });
+                } catch (error) {
+                    console.log(error);
                     isEditing = false;
-                });
+                }
                 return;
             }
-            console.log("start to fetch");
-            fetch("FetchRelatedTask.php", {
-                method: "POST",
-                headers: {"Content-Type": "application/x-www-form-urlencoded"}
-            }).then(data => data.json())
-            .then(data => {
-                // console.log("current: " + JSON.stringify(currentdata));
-                // console.log("new: " + JSON.stringify(data));
-                if(data.success){
-                    if(!(JSON.stringify(currentdata) === JSON.stringify(data))){
-                        currentdata = data;
-                        const { allTask, dueSoon, completed, upcoming } = data;
+            if(!isEditing){
+                console.log("start to fetch");
+                fetch("FetchRelatedTask.php", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"}
+                }).then(data => data.json())
+                .then(data => {
+                    // console.log("current: " + JSON.stringify(currentdata));
+                    // console.log("new: " + JSON.stringify(data));
+                    if(data.success){
+                        if(!(JSON.stringify(currentdata) === JSON.stringify(data))){
+                            currentdata = data;
+                            const { allTask, dueSoon, completed, upcoming } = data;
 
-                        // Get container references
-                        const allTaskContainer = document.getElementById("all-task-container");
-                        const dueSoonContainer = document.getElementById("recent-task-container");
-                        const completedContainer = document.getElementById("completed-task-container");
-                        const upcomingContainer = document.getElementById("upcoming-task-container");
+                            // Get container references
+                            const allTaskContainer = document.getElementById("all-task-container");
+                            const dueSoonContainer = document.getElementById("recent-task-container");
+                            const completedContainer = document.getElementById("completed-task-container");
+                            const upcomingContainer = document.getElementById("upcoming-task-container");
 
-                        // Clear previous content
-                        [allTaskContainer, dueSoonContainer, completedContainer, upcomingContainer].forEach(c => c.innerHTML = "");
+                            // Clear previous content
+                            [allTaskContainer, dueSoonContainer, completedContainer, upcomingContainer].forEach(c => c.innerHTML = "");
 
-                        // Helper: create a task card
-                        const createTaskCard = (task, section) => {
-                            const card = document.createElement("div");
-                            card.id = task.TaskID;
-                            card.className = "task-card";
-                            card.style.border = "1px solid #ddd";
-                            card.style.borderRadius = "10px";
-                            card.style.padding = "10px";
-                            card.style.margin = "5px";
-                            card.style.background = "#fefefe";
-                            card.style.display = "flex";
-                            card.style.flexDirection = "column";
-                            card.style.justifyContent = "space-between";
-                            card.style.position = "relative";
-                            card.style.cursor = "pointer";
-                            card.style.transition = "0.3s";
+                            // Helper: create a task card
+                            const createTaskCard = (task, section) => {
+                                const card = document.createElement("div");
+                                card.id = task.TaskID;
+                                card.className = "task-card";
+                                card.style.border = "1px solid #ddd";
+                                card.style.borderRadius = "10px";
+                                card.style.padding = "10px";
+                                card.style.margin = "5px";
+                                card.style.background = "#fefefe";
+                                card.style.display = "flex";
+                                card.style.flexDirection = "column";
+                                card.style.justifyContent = "space-between";
+                                card.style.position = "relative";
+                                card.style.cursor = "pointer";
+                                card.style.transition = "0.3s";
 
-                            card.addEventListener("mouseover", () => {
-                                card.style.backgroundColor = "#f3f3f3";
-                            });
-                            card.addEventListener("mouseout", () => {
-                                card.style.backgroundColor = "#fefefe";
-                            });
-
-                            // Redirect when clicked
-                            card.addEventListener("click", () => {
-                                fetch('../Navbar/navbar_api.php', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                    body: 'action=set_task_session&task_id=' + task.TaskID
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        window.location.href = '../TaskPage/Task.php';
-                                    } else {
-                                        alert('Failed to open task');
-                                    }
+                                card.addEventListener("mouseover", () => {
+                                    card.style.backgroundColor = "#f3f3f3";
                                 });
-                            });
-
-                            // Title
-                            const titleContainer = document.createElement("div");
-                            titleContainer.className = "title-container";
-                            titleContainer.style.display = "flex";
-                            titleContainer.style.gap = "5px";
-                            titleContainer.style.alignItems = "center";
-                            titleContainer.style.justifyContent = "flex-start";
-
-                            const title = document.createElement("h3");
-                            title.textContent = task.Title;
-                            titleContainer.appendChild(title);
-
-                            // Description
-                            const desc = document.createElement("p");
-                            desc.className = "task-desc";
-                            // more details
-                            desc.textContent = task.Description || "No description.";
-
-
-                            // Deadline
-                            const deadline = document.createElement("p");
-                            deadline.className = "task-detail";
-                            deadline.textContent = "Deadline: " + (task.Deadline || "N/A");
-
-                            //start
-                            const start = document.createElement("p");
-                            start.className = "task-detail";
-                            start.textContent = "Start At: " + (task.StartTime || "N/A");
-
-                            // status
-                            const status = document.createElement("p");
-                            status.className = "task-detail";
-                            status.textContent = "Status: " + (task.Status || "N/A");
-
-                            // Overdue indicator
-                            if (task.isOverdue) {
-                                const overdueTag = document.createElement("img");
-                                overdueTag.src = "../Assets/overdue.png";
-                                overdueTag.alt = "Overdue";
-                                overdueTag.style.width = "30px";
-                                overdueTag.style.height = "30px";
-                                overdueTag.style.objectFit = "contain";
-                                titleContainer.appendChild(overdueTag);
-                            }
-
-                            // Three-dot menu
-                            import("../ManagerFunction/Main.js").then(func => {
-                                const edit = func.edit;
-                                const member = func.member;
-                                const dlt = func.dlt;
-
-                                import("../ManagerFunction/menu.js").then(module => {
-                                    const menu = module.createThreeDotMenu([
-                                        { label: "Edit", onClick: () =>  {
-                                            isEditing = true;
-                                            edit(task.TaskID);
-                                        } 
-                                        },
-                                        { label: "Member", onClick: () => member(task.TaskID, "task") },
-                                        { label: "Delete Task", onClick: () => dlt(task.TaskID, "task") }
-                                    ]);
-                                    menu.setAttribute('id', "task-menu");
-                                    menu.style.position = "absolute";
-                                    menu.style.top = "10px";
-                                    menu.style.right = "10px";
-                                    menu.style.margin = "0 0 0 auto";
-                                    // card.appendChild(menu);
-                                    titleContainer.appendChild(menu);
+                                card.addEventListener("mouseout", () => {
+                                    card.style.backgroundColor = "#fefefe";
                                 });
-                            });
 
-                            card.appendChild(titleContainer);
-                            card.appendChild(desc);
-                            card.appendChild(start);
-                            card.appendChild(deadline);
-                            card.appendChild(status);
+                                // Redirect when clicked
+                                card.addEventListener("click", () => {
+                                    fetch('../Navbar/navbar_api.php', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                        body: 'action=set_task_session&task_id=' + task.TaskID
+                                    })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            window.location.href = '../TaskPage/Task.php';
+                                        } else {
+                                            alert('Failed to open task');
+                                        }
+                                    });
+                                });
 
-                            return card;
-                        };
+                                // Title
+                                const titleContainer = document.createElement("div");
+                                titleContainer.className = "title-container";
+                                titleContainer.style.display = "flex";
+                                titleContainer.style.gap = "5px";
+                                titleContainer.style.alignItems = "center";
+                                titleContainer.style.justifyContent = "flex-start";
 
-                        // Helper: display tasks
-                        const renderTasks = (tasks, container, layout) => {
-                            if (!tasks || tasks.length === 0) {
-                                const msg = document.createElement("p");
-                                msg.textContent = "No tasks available.";
-                                msg.style.color = "#777";
-                                msg.style.textAlign = "center";
-                                msg.style.margin = "10px";
-                                container.appendChild(msg);
-                                return;
-                            }
+                                const title = document.createElement("h3");
+                                title.textContent = task.Title;
+                                titleContainer.appendChild(title);
 
-                            // Set layout style
-                            if (layout === "scroll") {
-                                container.style.display = "flex";
-                                container.style.flexDirection = "column";
-                                container.style.overflowY = "auto";
-                                container.style.maxHeight = "250px";
-                            } else if (layout === "grid") {
-                                container.style.display = "grid";
-                                container.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
-                                container.style.gap = "10px";
-                            }
+                                // Description
+                                const desc = document.createElement("p");
+                                desc.className = "task-desc";
+                                // more details
+                                desc.textContent = task.Description || "No description.";
 
-                            tasks.forEach(task => {
-                                const card = createTaskCard(task, layout);
-                                container.appendChild(card);
-                            });
-                        };
 
-                        // Render each section
-                        renderTasks(dueSoon, dueSoonContainer, "scroll");
-                        renderTasks(upcoming, upcomingContainer, "scroll");
-                        renderTasks(completed, completedContainer, "scroll");
-                        renderTasks(allTask, allTaskContainer, "grid");
+                                // Deadline
+                                const deadline = document.createElement("p");
+                                deadline.className = "task-detail";
+                                deadline.textContent = "Deadline: " + (task.Deadline || "N/A");
+
+                                //start
+                                const start = document.createElement("p");
+                                start.className = "task-detail";
+                                start.textContent = "Start At: " + (task.StartTime || "N/A");
+
+                                // status
+                                const status = document.createElement("p");
+                                status.className = "task-detail";
+                                status.textContent = "Status: " + (task.Status || "N/A");
+
+                                // Overdue indicator
+                                if (task.isOverdue) {
+                                    const overdueTag = document.createElement("img");
+                                    overdueTag.src = "../Assets/overdue.png";
+                                    overdueTag.alt = "Overdue";
+                                    overdueTag.style.width = "30px";
+                                    overdueTag.style.height = "30px";
+                                    overdueTag.style.objectFit = "contain";
+                                    titleContainer.appendChild(overdueTag);
+                                }
+
+                                // Three-dot menu
+                                import("../ManagerFunction/Main.js").then(func => {
+                                    const edit = func.edit;
+                                    const member = func.member;
+                                    const dlt = func.dlt;
+
+                                    import("../ManagerFunction/menu.js").then(module => {
+                                        const menu = module.createThreeDotMenu([
+                                            { label: "Edit", onClick: () =>  {
+                                                // edit(task.TaskID);
+                                                // isEditing = true;
+                                                async function handleEdit(task) {
+                                                    try {
+                                                        const result = await edit(task.TaskID);
+                                                        isEditing = true; // only after full success
+                                                    } catch (error) {
+                                                        console.error(error);
+                                                        isEditing = false;
+                                                    }
+                                                }
+                                                handleEdit(task);
+                                            } 
+                                            },
+                                            { label: "Member", onClick: () => member(task.TaskID, "task") },
+                                            { label: "Delete Task", onClick: () => dlt(task.TaskID, "task") }
+                                        ]);
+                                        menu.setAttribute('id', "task-menu");
+                                        menu.style.position = "absolute";
+                                        menu.style.top = "10px";
+                                        menu.style.right = "10px";
+                                        menu.style.margin = "0 0 0 auto";
+                                        // card.appendChild(menu);
+                                        titleContainer.appendChild(menu);
+                                    });
+                                });
+
+                                card.appendChild(titleContainer);
+                                card.appendChild(desc);
+                                card.appendChild(start);
+                                card.appendChild(deadline);
+                                card.appendChild(status);
+
+                                return card;
+                            };
+
+                            // Helper: display tasks
+                            const renderTasks = (tasks, container, layout) => {
+                                if (!tasks || tasks.length === 0) {
+                                    const msg = document.createElement("p");
+                                    msg.textContent = "No tasks available.";
+                                    msg.style.color = "#777";
+                                    msg.style.textAlign = "center";
+                                    msg.style.margin = "10px";
+                                    container.appendChild(msg);
+                                    return;
+                                }
+
+                                // Set layout style
+                                if (layout === "scroll") {
+                                    container.style.display = "flex";
+                                    container.style.flexDirection = "column";
+                                    container.style.overflowY = "auto";
+                                    container.style.maxHeight = "250px";
+                                } else if (layout === "grid") {
+                                    container.style.display = "grid";
+                                    container.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
+                                    container.style.gap = "10px";
+                                }
+
+                                tasks.forEach(task => {
+                                    const card = createTaskCard(task, layout);
+                                    container.appendChild(card);
+                                });
+                            };
+
+                            // Render each section
+                            renderTasks(dueSoon, dueSoonContainer, "scroll");
+                            renderTasks(upcoming, upcomingContainer, "scroll");
+                            renderTasks(completed, completedContainer, "scroll");
+                            renderTasks(allTask, allTaskContainer, "grid");
+                        }
+                    } else{
+                        alert(`Error when getting related task: ${data.error}`);
+                        return;
                     }
-                } else{
-                    alert(`Error when getting related task: ${data.error}`);
-                    return;
-                }
-            }).catch((err)=>{
-                alert(`Failed to fetch related task: ${err}`);
-            })
+                }).catch((err)=>{
+                    alert(`Failed to fetch related task: ${err}`);
+                })
+            }
         }
         setInterval(fetchTask, 1000);
         
@@ -314,19 +331,19 @@
         {
             label: "Rename", 
             onClick: () => {
-                renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>);
-                let isEditing = true;
+                // isEditing = true;
+                // renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>);
                 
-                const checkCancelButton = () => {
-                    const cancelBtn = document.getElementById("cancel-button");
-                    if (cancelBtn) {
-                        cancelBtn.addEventListener("click", () => {
-                            isEditing = false;
-                        });
+                async function handleRename() {
+                    try {
+                        const result = await renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>);
+                        isEditing = true; // only after full success
+                    } catch (error) {
+                        console.error(error);
+                        isEditing = false;
                     }
-                };
-                
-                setTimeout(checkCancelButton, 1000);
+                }
+                handleRename();
             }
         },
         {
