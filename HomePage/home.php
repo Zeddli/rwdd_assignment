@@ -81,7 +81,12 @@ if ($selectedWorkspaceID) {
     
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Home</h1>
+            <div class="header home-header" id="home-header">
+        <div class="header-content">
+            <p class="workspace-name" id="home-name">Home</p>
+        </div>
+    </div>
+            <div class="home-content-body">
         <div class="workspace-picker">
             <form method="get" action="home.php">
                 <label for="workspace" class="workspace">Select workspace:</label>
@@ -126,6 +131,7 @@ if ($selectedWorkspaceID) {
             </div>
             <?php endforeach; ?>
         </div>
+    </div>
     </div>
     
     <!-- JS modules -->
