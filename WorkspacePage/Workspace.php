@@ -301,7 +301,7 @@
                         return;
                     }
                 }).catch((err)=>{
-                    alert(`Failed to fetch related task: ${err}`);
+                    console.log(`Failed to fetch related task: ${err}`);
                 })
             }
         }
