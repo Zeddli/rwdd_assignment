@@ -45,7 +45,7 @@ body:has(.sidebar.closed) .main-content {
     animation: fadeIn 1s; 
 }
 
-.home-header .workspace-name {
+.home-header .home-text {
     margin: 0;
     color: #eaeaea;
     font-family: Georgia, "Times New Roman", Times, serif;
@@ -65,7 +65,7 @@ body:has(.sidebar.closed) .main-content {
     display: block;
 }
 
-.home-header .workspace-name::after {
+.home-header .home-text::after {
     content: "";
     display: block;
     width: min(160px, 40%); 

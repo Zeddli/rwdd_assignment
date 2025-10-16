@@ -18,7 +18,7 @@ body {
     width: calc(100% - 200px);
     flex: 1;
     transition: all 0.3s ease;
-    min-height: 100vh; /* Ensure it covers full screen height */
+    min-height: 100vh;
 }
 
 body:has(.sidebar.closed) .main-content {
@@ -39,6 +39,67 @@ body:has(.sidebar.closed) .main-content {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 80px); 
+}
+
+.notification-panel h1 {
+    display: none;
+}
+.notification-panel h2 {
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 18px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+.notification-header {
+    height: 250px;
+    width: 100%;
+    background: url('/rwdd_assignment/Assets/notificationbg.png') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+}
+
+.notification-header .header-content {
+    position: absolute;
+    bottom: 10%;
+    left: 3vw;
+}
+
+.notification-header .notification-text {
+    margin: 0;
+    color: #eaeaea;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: 600;
+    font-size: clamp(35px, 5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-align: left;
+    text-shadow:
+        0 1px 0 rgba(255,255,255,0.02),
+        0 6px 20px rgba(3, 18, 51, 0.45); 
+    padding: 0.25rem 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+}
+
+.notification-header .notification-text::after {
+    content: "";
+    display: block;
+    width: min(200px, 50%); 
+    height: 3px;
+    margin: 0.6rem 0 0;
+    background: rgba(255, 255, 255, 0.695);
+    border-radius: 2px;
 }
 
 .notification-scroll-area {
@@ -82,10 +143,12 @@ body:has(.sidebar.closed) .main-content {
     cursor: pointer;
     transition: box-shadow 0.2s;
 }
+
 .notification-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     background: #e3f2fd;
 }
+
 .notification-title { font-weight: bold; margin-bottom: 4px; }
 .notification-desc { margin-bottom: 6px; color: #222; }
 .notification-date {
@@ -95,6 +158,7 @@ body:has(.sidebar.closed) .main-content {
     bottom: 8px;
     right: 16px;
 }
+
 .notification-panel h1 { flex-shrink: 0; }
 .no-notification {
     text-align: center;
@@ -103,6 +167,7 @@ body:has(.sidebar.closed) .main-content {
     font-weight: 500;
     padding: 56px 0;
 }
+
 .reminder-panel h2 {
     font-size: 1.3em;
     text-align: center;
@@ -110,6 +175,7 @@ body:has(.sidebar.closed) .main-content {
     margin-bottom: 18px;
     flex-shrink: 0;
 }
+
 #reminder-list {
     flex: 1;
     overflow-y: auto;
@@ -118,6 +184,7 @@ body:has(.sidebar.closed) .main-content {
     gap: 16px;
     min-height: 120px;
 }
+
 .reminder-card {
     border: 2px solid #222;
     border-radius: 8px;
@@ -127,21 +194,25 @@ body:has(.sidebar.closed) .main-content {
     font-size: 1.06em;
     transition: background 0.18s, box-shadow 0.18s;
 }
+
 .reminder-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     background: #e3f2fd;
 }
+
 .no-reminder {
     text-align: center;
     color: #888;
     font-size: 1.1em;
     margin-top: 24px;
 }
+
 #pagination-controls {
     text-align: center;
     margin: 12px 0 0 0;
     flex-shrink: 0;
 }
+
 .page-btn {
     display: inline-block;
     padding: 6px 14px;
@@ -154,6 +225,7 @@ body:has(.sidebar.closed) .main-content {
     cursor: pointer;
     transition: background 0.3s, color 0.18s;
 }
+
 .page-btn.active,
 .page-btn:hover {
     background: #2196f3;
@@ -161,7 +233,7 @@ body:has(.sidebar.closed) .main-content {
 }
 
 /* Responsive Design */
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
     .main-content {
         padding: 20px; /* Reduced padding on smaller screens */
         min-height: auto;

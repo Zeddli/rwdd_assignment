@@ -83,7 +83,7 @@ if ($selectedWorkspaceID) {
     <div class="main-content">
             <div class="header home-header" id="home-header">
         <div class="header-content">
-            <p class="workspace-name" id="home-name">Home</p>
+            <p class="home-text" id="home-name">Home</p>
         </div>
     </div>
             <div class="home-content-body">
