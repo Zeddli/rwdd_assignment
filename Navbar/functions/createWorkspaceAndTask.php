@@ -119,8 +119,8 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     
     $startTime = $normalizeDateTime($startDate);
     $deadlineTime = $normalizeDateTime($deadline);
-    // Schema requires EndTime NOT NULL; set it equal to StartTime if no separate end provided
-    $endTime = $startTime;
+    // End time must be NULL on creation; it will be set when task is completed
+    $endTime = null;
     
     if ($startDate && !$startTime) {
         return ['success' => false, 'message' => 'Invalid start date'];
@@ -142,8 +142,8 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // Map UI status to DB enum values
     $statusMap = [
         'Pending' => 'Pending',
-        'In Progress' => 'In Progress',
-        'In Progress' => 'In Progress',
+        'In Progress' => 'InProgress',
+        'InProgress' => 'InProgress',
         'Completed' => 'Completed'
     ];
     $statusForDb = $statusMap[$status] ?? 'Pending';
@@ -151,10 +151,12 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // create the task with all the provided values
     $insertTask = "
         INSERT INTO task (WorkSpaceID, Title, Description, StartTime, EndTime, Deadline, Priority, Status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)
     ";
     $stmt = mysqli_prepare($conn, $insertTask);
-    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTime, $deadlineTime, $priority, $statusForDb);
+    // Ensure nulls pass through correctly; use empty string when null so NULLIF makes it NULL
+    $endTimeParam = $endTime === null ? '' : $endTime;
+    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTimeParam, $deadlineTime, $priority, $statusForDb);
     
     if (mysqli_stmt_execute($stmt)) {
         $taskID = mysqli_insert_id($conn);
@@ -170,9 +172,10 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
             'taskID' => $taskID,
             'taskName' => $taskName
         ];
+    } else {
+        $errorMsg = mysqli_error($conn);
+        return ['success' => false, 'message' => 'Failed to create task: ' . ($errorMsg ?: 'Unknown DB error')];
     }
-    
-    return ['success' => false, 'message' => 'Failed to create task'];
 }
 ?>
 
