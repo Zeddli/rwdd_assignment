@@ -37,6 +37,23 @@ function showDeletePopup(options) {
     
     // Store callback function for when user confirms
     window.currentDeleteCallback = options.onConfirm;
+    
+    // Add keyboard support (Escape key to cancel)
+    const handleKeyPress = (event) => {
+        if (event.key === 'Escape') {
+            hideDeletePopup();
+            document.removeEventListener('keydown', handleKeyPress);
+        }
+    };
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Add click outside to close
+    const handleOverlayClick = (event) => {
+        if (event.target === overlay) {
+            hideDeletePopup();
+        }
+    };
+    overlay.addEventListener('click', handleOverlayClick);
 }
 
 /**

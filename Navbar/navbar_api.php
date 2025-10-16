@@ -119,19 +119,6 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // change goal name/description
-    case 'rename_goal':
-        $goalID = intval($_POST['goal_id'] ?? 0);
-        $newName = trim($_POST['new_name'] ?? '');
-        
-        if ($goalID <= 0 || empty($newName)) {
-            echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
-            break;
-        }
-        
-        $result = renameGoal($userID, $goalID, $newName);
-        echo json_encode($result);
-        break;
         
     // delete a single task
     case 'delete_task':
