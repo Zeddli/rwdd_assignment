@@ -9,6 +9,7 @@ let currentWorkspaceId = null;
 let currentTaskId = null;
 let isEditMode = false;
 let showWorkspaceSelection = false;
+let taskDetailWindowInitialized = false; // prevent double initialization
 
 /**
  * Show task detail window for creating a new task
@@ -355,39 +356,60 @@ function handleGrantAccessClick() {
  * Initialize task detail window functionality
  */
 function initializeTaskDetailWindow() {
+    // Avoid duplicate event bindings
+    if (taskDetailWindowInitialized) {
+        return;
+    }
     // Close modal button
     const closeBtn = document.getElementById('closeTaskDetailModal');
     if (closeBtn) {
-        closeBtn.addEventListener('click', hideTaskDetailWindow);
+        if (!closeBtn.dataset.listenerAdded) {
+            closeBtn.addEventListener('click', hideTaskDetailWindow);
+            closeBtn.dataset.listenerAdded = 'true';
+        }
     }
     
     // Cancel button
     const cancelBtn = document.getElementById('cancelTaskBtn');
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', hideTaskDetailWindow);
+        if (!cancelBtn.dataset.listenerAdded) {
+            cancelBtn.addEventListener('click', hideTaskDetailWindow);
+            cancelBtn.dataset.listenerAdded = 'true';
+        }
     }
     
     // Grant access button
     const grantAccessBtn = document.getElementById('grantAccessBtn');
     if (grantAccessBtn) {
-        grantAccessBtn.addEventListener('click', handleGrantAccessClick);
+        if (!grantAccessBtn.dataset.listenerAdded) {
+            grantAccessBtn.addEventListener('click', handleGrantAccessClick);
+            grantAccessBtn.dataset.listenerAdded = 'true';
+        }
     }
     
     // Form submission
     const form = document.getElementById('taskDetailForm');
     if (form) {
-        form.addEventListener('submit', handleTaskSubmit);
+        if (!form.dataset.listenerAdded) {
+            form.addEventListener('submit', handleTaskSubmit);
+            form.dataset.listenerAdded = 'true';
+        }
     }
     
     // Close modal when clicking outside
     const modal = document.getElementById('taskDetailModal');
     if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                hideTaskDetailWindow();
-            }
-        });
+        if (!modal.dataset.listenerAdded) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideTaskDetailWindow();
+                }
+            });
+            modal.dataset.listenerAdded = 'true';
+        }
     }
+
+    taskDetailWindowInitialized = true;
 }
 
 // Export functions for use in other files
@@ -421,3 +443,16 @@ window.debugShowWorkspaceSelection = function() {
 
 console.log('TaskDetailWindow.js: Functions exported to window object');
 console.log('showTaskDetailWindow available:', typeof window.showTaskDetailWindow === 'function');
+
+export {
+    showTaskDetailWindow,
+    showEditTaskWindow,
+    hideTaskDetailWindow,
+    initializeTaskDetailWindow,
+    showTaskMessage,
+    handleTaskSubmit,
+    handleGrantAccessClick,
+    loadWorkspaces,
+    populateWorkspaceDropdown,
+    resetTaskForm,
+}
