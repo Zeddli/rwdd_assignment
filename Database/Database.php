@@ -9,7 +9,7 @@
         $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
     }
     catch (mysqli_sql_exception) {
-        echo "<script>alert('Database is not connected')</script>";
+        // Do not echo anything here to keep API responses as valid JSON
         $conn = null;
     }
 ?>

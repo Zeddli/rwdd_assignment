@@ -1,4 +1,11 @@
 <?php
+// Ensure PHP notices/warnings don't leak into JSON responses
+if (function_exists('ini_set')) {
+    @ini_set('display_errors', '0');
+}
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 /**
  * navbar api endpoint
  * receives ajax requests from the js
@@ -17,6 +24,12 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET');
 header('Access-Control-Allow-Headers: Content-Type');
+
+// Ensure database connection is available before proceeding
+if (!isset($conn) || !$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
+}
 
 // make sure user is logged in first (matching navbar.php session handling)
 if (!isset($_SESSION['userInfo']) || !isset($_SESSION['userInfo']['userID'])) {
