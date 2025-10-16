@@ -3,7 +3,7 @@
  * Handles the invite member modal and permission checking
  */
 
-let currentWorkspaceId = null;
+var currentWorkspaceId = null;
 
 /**
  * Handle invite member action from workspace dropdown
