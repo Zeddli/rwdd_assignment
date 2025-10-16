@@ -1,6 +1,6 @@
 <?php
-include "../Head/Head.php";
-include "../Database/Database.php";
+include "/rwdd_assignment/Head/Head.php";
+include "/rwdd_assignment/Database/Database.php";
 
 // Start session and check authentication
 if (session_status() === PHP_SESSION_NONE) {
@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Require login
 if (!isset($_SESSION['userInfo']) || !isset($_SESSION['userInfo']['userID'])) {
-    header("Location: ../LandingPage/landing.php");
+    header("Location: /rwdd_assignment/LandingPage/landing.php");
     exit();
 }
 
@@ -18,7 +18,7 @@ $workspace_id = isset($_GET['workspace_id']) ? (int)$_GET['workspace_id'] : null
 
 if (!$workspace_id) {
     // Redirect to home page if no workspace ID provided
-    header("Location: ../HomePage/home.php");
+    header("Location: /rwdd_assignment/HomePage/home.php");
     exit();
 }
 
@@ -70,7 +70,7 @@ $workspace_info = getWorkspaceInfo($conn, $workspace_id, $userID);
 
 if (!$workspace_info) {
     // User doesn't have access to this workspace
-    header("Location: ../HomePage/home.php");
+    header("Location: /rwdd_assignment/HomePage/home.php");
     exit();
 }
 
@@ -89,11 +89,11 @@ $goals = getWorkspaceGoals($conn, $workspace_id);
 </head>
 <body>
 
-    <?php include "../Navbar/navbar.php"; ?>
-    <?php include "../GoalPage/createGoal.php"; ?>
-    <?php include "../GoalPage/getGoals.php"; ?>
-    <?php include "../GoalPage/updateGoal.php"; ?>
-    <?php include "../GoalPage/deleteGoal.php"; ?>
+    <?php include "/rwdd_assignment/Navbar/navbar.php"; ?>
+    <?php include "/rwdd_assignment/GoalPage/createGoal.php"; ?>
+    <?php include "/rwdd_assignment/GoalPage/getGoals.php"; ?>
+    <?php include "/rwdd_assignment/GoalPage/updateGoal.php"; ?>
+    <?php include "/rwdd_assignment/GoalPage/deleteGoal.php"; ?>
 
     <div class="main-content">
         <div class="goal-container">
@@ -134,7 +134,7 @@ $goals = getWorkspaceGoals($conn, $workspace_id);
                                             </svg>
                                         </div>
                                         <h3 class="goal-title"><?php echo htmlspecialchars($workspace['GoalTitle']); ?></h3>
-                                        <span><img src="../GoalPage/icon/three-dots.png" alt="Goal Image"></span>
+                                        <span><img src="/rwdd_assignment/GoalPage/icon/three-dots.png" alt="Goal Image"></span>
                                     </div>
                                     <div class="goal-progress">
                                         <div class="progress-status" >Pending</div>
@@ -247,13 +247,12 @@ $goals = getWorkspaceGoals($conn, $workspace_id);
     </div>
 </body>
 
-    <script src="../Navbar/scripts/core.js?v=2"></script>
-    <script src="../Navbar/scripts/dropdowns.js?v=2"></script>
-    <script src="../Navbar/scripts/editing.js?v=2"></script>
-    <script src="../Navbar/scripts/workspaces.js?v=2"></script>
-    <script src="../Navbar/scripts/tasks.js?v=2"></script>
-    <script src="../Navbar/scripts/sidebar.js?v=2"></script>
-    <script src="../Navbar/scripts/main.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/core.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/dropdowns.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/editing.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/workspaces.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/tasks.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/sidebar.js?v=2"></script>
+    <script src="/rwdd_assignment/Navbar/scripts/main.js?v=2"></script>
     <!-- Goal page specific JavaScript -->
     <script src="scripts/goalPage.js"></script>
-</html>

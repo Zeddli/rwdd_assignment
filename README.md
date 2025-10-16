@@ -4,11 +4,11 @@
 
 <!-- NAVBAR -->
 <!-- CSS Links -->
-<link rel="stylesheet" href="../Navbar/styles/base.css">
-<link rel="stylesheet" href="../Navbar/styles/navbar.css">
+<link rel="stylesheet" href="/rwdd_assignment/Navbar/styles/base.css">
+<link rel="stylesheet" href="/rwdd_assignment/Navbar/styles/navbar.css">
 
 <!-- PHP Include -->
-<?php include "../Navbar/navbar.php"; ?>
+<?php include "/rwdd_assignment/Navbar/navbar.php"; ?>
 
 <!-- Main Navigation Sidebar Container -->
 <div class="main-content">
@@ -20,10 +20,10 @@
 </div>
 
 <!-- js Files -->
-<script src="../Navbar/core.js"></script>
-<script src="../Navbar/dropdowns.js"></script>
-<script src="../Navbar/editing.js"></script>
-<script src="../Navbar/workspaces.js"></script>
-<script src="../Navbar/tasks.js"></script>
-<script src="../Navbar/sidebar.js"></script>
-<script src="../Navbar/main.js"></script>
+<script src="/rwdd_assignment/Navbar/core.js"></script>
+<script src="/rwdd_assignment/Navbar/dropdowns.js"></script>
+<script src="/rwdd_assignment/Navbar/editing.js"></script>
+<script src="/rwdd_assignment/Navbar/workspaces.js"></script>
+<script src="/rwdd_assignment/Navbar/tasks.js"></script>
+<script src="/rwdd_assignment/Navbar/sidebar.js"></script>
+<script src="/rwdd_assignment/Navbar/main.js"></script>

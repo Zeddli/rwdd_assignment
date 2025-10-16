@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const workspaceId = getWorkspaceId();
     if (!workspaceId) {
         alert('No workspace ID found. Redirecting to home page.');
-        window.location.href = '../HomePage/home.php';
+        window.location.href = '/rwdd_assignment/HomePage/home.php';
     }
     
     console.log('Goal page initialized for workspace ID:', workspaceId);
