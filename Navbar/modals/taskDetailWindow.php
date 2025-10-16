@@ -17,7 +17,7 @@
                 <!-- Workspace Selection (shown only when opened from calendar) -->
                 <div class="form-group" id="workspaceSelectionGroup" style="display: none;">
                     <label for="workspaceSelect">Workspace *</label>
-                    <select id="workspaceSelect" class="attribute-input" required>
+                    <select id="workspaceSelect" name="workspaceSelect" class="attribute-input">
                         <option value="">Select Workspace</option>
                         <!-- Workspace options will be populated by JavaScript -->
                     </select>
