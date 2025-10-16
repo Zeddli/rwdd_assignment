@@ -142,8 +142,8 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // Map UI status to DB enum values
     $statusMap = [
         'Pending' => 'Pending',
-        'In Progress' => 'InProgress',
-        'InProgress' => 'InProgress',
+        'In Progress' => 'In Progress',
+        'In Progress' => 'In Progress',
         'Completed' => 'Completed'
     ];
     $statusForDb = $statusMap[$status] ?? 'Pending';

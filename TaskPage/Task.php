@@ -101,7 +101,7 @@
                 clearInterval(timer);
                 return;
             } else {
-                //inprogress
+                //In Progress
                 const now = new Date().getTime();
                 const dis = targetDate - now;
                 const distance = Math.abs(dis);

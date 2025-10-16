@@ -31,7 +31,7 @@ try {
               ORDER BY 
                 CASE 
                     WHEN t.Status = 'Pending' THEN 0 
-                    WHEN t.Status = 'InProgress' THEN 1 
+                    WHEN t.Status = 'In Progress' THEN 1 
                     ELSE 2 
                 END,
                 t.Deadline ASC";

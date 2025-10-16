@@ -1,156 +1,155 @@
-/**
- * Goal Page JavaScript Functionality
- * Handles goal creation, editing, and deletion for workspace-specific goals
- */
+(() => {
+  const api = {
+    getGoals: (workspaceId) => fetch(`backend/getGoal.php?workspace=${encodeURIComponent(workspaceId || '')}`).then(r => r.json()),
+    createGoal: (payload) => fetch('backend/createGoal.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json()),
+    updateGoal: (payload) => fetch('backend/updateGoal.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json()),
+    deleteGoal: (goalId) => fetch('backend/deleteGoal.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goalId }) }).then(r => r.json()),
+  };
 
-// Get workspace ID from URL parameters
-function getWorkspaceId() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('workspace_id');
-}
+  const els = {
+    longRow: document.getElementById('long-goal-row'),
+    shortRow: document.getElementById('short-goal-row'),
+    createBtn: document.getElementById('create-goal-btn'),
+    createModal: document.getElementById('create-goal-modal'),
+    editModal: document.getElementById('edit-goal-modal'),
+  };
 
-// Add new goal functionality
-function addNewGoal() {
-    const workspaceId = getWorkspaceId();
-    if (!workspaceId) {
-        alert('Workspace ID not found');
-        return;
-    }
-    
-    // Get goal description from user (database only stores description)
-    const description = prompt('Enter goal description:');
-    if (!description || description.trim() === '') {
-        return;
-    }
-    
-    const dueDate = prompt('Enter due date (YYYY-MM-DD) or leave empty:');
-    
-    // Create goal object
-    const goalData = {
-        workspace_id: workspaceId,
-        description: description.trim(),
-        due_date: dueDate.trim() || null,
-        status: 'Pending'
+  const state = {
+    workspaceId: window?.GLOBAL_STATE?.selectedWorkspaceId || null,
+    goals: [],
+  };
+
+  function formatDateRange(start, end) {
+    try {
+      const s = new Date(start);
+      const e = new Date(end);
+      const fmt = (d) => d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      return `${fmt(s)} → ${fmt(e)}`;
+    } catch (_) { return `${start} → ${end}`; }
+  }
+
+  function render() {
+    const long = state.goals.filter(g => g.Type === 'Long');
+    const short = state.goals.filter(g => g.Type === 'Short');
+    const createCard = (g) => {
+      const div = document.createElement('div');
+      div.className = 'goal-card';
+      div.setAttribute('role', 'listitem');
+      div.innerHTML = `
+        <div class="goal-card-title">🎯 <span>${escapeHtml(g.GoalTitle || 'Untitled')}</span></div>
+        <div class="goal-card-status">Status: ${escapeHtml(g.Progress)}</div>
+        <div class="goal-card-daterange">Date range:<br>${formatDateRange(g.StartTime, g.EndTime)}</div>
+        <div class="goal-card-actions">
+          <button class="goal-card-btn" data-action="open-edit" data-id="${g.GoalID}">Open</button>
+        </div>
+      `;
+      return div;
     };
-    
-    // Send AJAX request to create goal
-    createGoal(goalData);
-}
+    els.longRow.replaceChildren(...long.map(createCard));
+    els.shortRow.replaceChildren(...short.map(createCard));
+  }
 
-// Edit existing goal
-function editGoal(goalId) {
-    // Get current goal data (you might want to fetch this from the server)
-    const description = prompt('Edit goal description:');
-    if (!description || description.trim() === '') {
-        return;
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
+  }
+
+  async function load() {
+    const res = await api.getGoals(state.workspaceId).catch(() => ({ ok:false, data:[] }));
+    state.goals = res?.data || [];
+    render();
+  }
+
+  // Create modal wiring
+  els.createBtn?.addEventListener('click', () => {
+    openModal(els.createModal);
+  });
+
+  document.addEventListener('click', async (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+
+    if (t.matches('[data-close-modal]')) {
+      t.closest('.modal-backdrop')?.classList.remove('show');
     }
-    
-    const dueDate = prompt('Edit due date (YYYY-MM-DD) or leave empty:');
-    
-    const goalData = {
-        goal_id: goalId,
-        description: description.trim(),
-        due_date: dueDate.trim() || null
-    };
-    
-    // Send AJAX request to update goal
-    updateGoal(goalData);
-}
 
-// Delete goal
-function deleteGoal(goalId) {
-    if (confirm('Are you sure you want to delete this goal?')) {
-        // Send AJAX request to delete goal
-        deleteGoalRequest(goalId);
+    if (t.matches('[data-action="open-edit"]')) {
+      const id = Number(t.getAttribute('data-id'));
+      const goal = state.goals.find(g => Number(g.GoalID) === id);
+      if (goal) openEdit(goal);
     }
-}
+  });
 
-// AJAX function to create a new goal
-function createGoal(goalData) {
-    fetch('backend/createGoal.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(goalData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Goal created successfully!');
-            location.reload(); // Refresh the page to show new goal
-        } else {
-            alert('Error creating goal: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error creating goal. Please try again.');
-    });
-}
+  function openModal(modal) {
+    if (!modal) return;
+    modal.classList.add('show');
+    const form = modal.querySelector('form');
+    if (!form) return;
+    form.reset();
+    form.querySelector('[name="workspaceId"]').value = state.workspaceId || '';
+  }
 
-// AJAX function to update an existing goal
-function updateGoal(goalData) {
-    fetch('backend/updateGoal.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(goalData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Goal updated successfully!');
-            location.reload(); // Refresh the page to show updated goal
-        } else {
-            alert('Error updating goal: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating goal. Please try again.');
-    });
-}
+  function openEdit(goal) {
+    const modal = els.editModal;
+    if (!modal) return;
+    modal.classList.add('show');
+    modal.querySelector('[name="goalId"]').value = goal.GoalID;
+    modal.querySelector('[name="goalTitle"]').value = goal.GoalTitle || '';
+    modal.querySelector('[name="description"]').value = goal.Description || '';
+    modal.querySelector('[name="type"]').value = goal.Type;
+    modal.querySelector('[name="startTime"]').value = goal.StartTime?.replace(' ', 'T');
+    modal.querySelector('[name="endTime"]').value = goal.EndTime?.replace(' ', 'T');
+    modal.querySelector('[name="deadline"]').value = goal.Deadline?.replace(' ', 'T');
+    modal.querySelector('[name="progress"]').value = goal.Progress;
+  }
 
-// AJAX function to delete a goal
-function deleteGoalRequest(goalId) {
-    fetch('backend/deleteGoal.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ goal_id: goalId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Goal deleted successfully!');
-            location.reload(); // Refresh the page to remove deleted goal
-        } else {
-            alert('Error deleting goal: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error deleting goal. Please try again.');
-    });
-}
-
-// Initialize goal page functionality when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Add event listeners for buttons
-    const addGoalBtn = document.getElementById('addGoalBtn');
-    if (addGoalBtn) {
-        addGoalBtn.addEventListener('click', addNewGoal);
+  // Create submit
+  document.getElementById('create-goal-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const payload = Object.fromEntries(fd.entries());
+    const res = await api.createGoal(payload).catch(() => ({ ok:false }));
+    if (res?.ok) {
+      els.createModal.classList.remove('show');
+      await load();
+    } else {
+      alert(res?.message || 'Failed to create goal');
     }
-    
-    // Check if workspace ID is present
-    const workspaceId = getWorkspaceId();
-    if (!workspaceId) {
-        alert('No workspace ID found. Redirecting to home page.');
-        window.location.href = '/rwdd_assignment/HomePage/home.php';
+  });
+
+  // Edit submit
+  document.getElementById('edit-goal-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const payload = Object.fromEntries(fd.entries());
+    const res = await api.updateGoal(payload).catch(() => ({ ok:false }));
+    if (res?.ok) {
+      els.editModal.classList.remove('show');
+      await load();
+    } else {
+      alert(res?.message || 'Failed to update goal');
     }
-    
-    console.log('Goal page initialized for workspace ID:', workspaceId);
-});
+  });
+
+  // Delete
+  document.getElementById('delete-goal-btn')?.addEventListener('click', async () => {
+    const id = Number(document.querySelector('#edit-goal-form [name="goalId"]').value);
+    if (!id) return;
+    if (!confirm('Delete this goal?')) return;
+    const res = await api.deleteGoal(id).catch(() => ({ ok:false }));
+    if (res?.ok) {
+      els.editModal.classList.remove('show');
+      await load();
+    } else {
+      alert(res?.message || 'Failed to delete goal');
+    }
+  });
+
+  // Initial load after navbar initializes selected workspace
+  const ready = () => {
+    state.workspaceId = window?.GLOBAL_STATE?.selectedWorkspaceId || state.workspaceId;
+    load();
+  };
+  if (document.readyState === 'complete' || document.readyState === 'interactive') ready();
+  else document.addEventListener('DOMContentLoaded', ready);
+})();
+

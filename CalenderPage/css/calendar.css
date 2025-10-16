@@ -397,7 +397,7 @@
 .priority-low { background: #d4edda; color: #155724; }
 
 .status-pending { background: #e2e3e5; color: #383d41; }
-.status-inprogress { background: #cce5ff; color: #004085; }
+.status-In Progress { background: #cce5ff; color: #004085; }
 .status-completed { background: #d4edda; color: #155724; }
 
 .workspace {

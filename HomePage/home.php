@@ -41,7 +41,7 @@ if (!$selectedWorkspaceID && count($workspaces) > 0) {
 // Fetch tasks for selected workspace grouped by status
 $tasksByStatus = [
     "Pending" => [],
-    "InProgress" => [],
+    "In Progress" => [],
     "Completed" => []
 ];
 
@@ -108,7 +108,7 @@ if ($selectedWorkspaceID) {
                 <?php
                 $statuses = [
                     "Pending" => "Pending",
-                    "InProgress" => "In Progress",
+                    "In Progress" => "In Progress",
                     "Completed" => "Completed"
                 ];
 

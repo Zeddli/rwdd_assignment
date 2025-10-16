@@ -1,106 +1,56 @@
 <?php
-/**
- * Update Goal Backend API
- * Handles updating existing goals
- */
-
-include "../../Database/Database.php";
-
-// Start session and check authentication
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Set content type to JSON
 header('Content-Type: application/json');
+require_once __DIR__ . '/../../Database/Database.php';
+require_once __DIR__ . '/../../Head/Head.php';
 
-// Require login
-if (!isset($_SESSION['userInfo']) || !isset($_SESSION['userInfo']['userID'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit();
-}
+$userID = $_SESSION['userInfo']['userID'] ?? null;
+if (!$userID) { echo json_encode([ 'ok' => false, 'message' => 'Unauthenticated' ]); exit; }
 
-// Check if request method is POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
-    exit();
-}
+global $conn;
+if (!$conn) { echo json_encode([ 'ok' => false, 'message' => 'DB connection failed' ]); exit; }
 
-// Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+$payload = json_decode(file_get_contents('php://input'), true);
+if (!is_array($payload)) { $payload = $_POST; }
 
-// Validate required fields
-if (!isset($input['goal_id']) || !isset($input['description'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Missing required fields']);
-    exit();
-}
+$goalId = intval($payload['goalId'] ?? 0);
+$type = $payload['type'] ?? null;
+$title = isset($payload['goalTitle']) ? trim($payload['goalTitle']) : null;
+$description = isset($payload['description']) ? trim($payload['description']) : null;
+$start = $payload['startTime'] ?? null;
+$end = $payload['endTime'] ?? null;
+$deadline = $payload['deadline'] ?? null;
+$progress = $payload['progress'] ?? null;
 
-$userID = (int)$_SESSION['userInfo']['userID'];
-$goal_id = (int)$input['goal_id'];
-$description = trim($input['description']);
-$due_date = isset($input['due_date']) && !empty($input['due_date']) ? $input['due_date'] : null;
+if (!$goalId) { echo json_encode([ 'ok' => false, 'message' => 'Missing goalId' ]); exit; }
 
-// Validate input
-if (empty($description)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Description cannot be empty']);
-    exit();
-}
+// Check access by joining goal->workspace->workspacemember
+$sqlCheck = "SELECT g.WorkSpaceID FROM goal g JOIN workspacemember wm ON wm.WorkSpaceID = g.WorkSpaceID AND wm.UserID = ? WHERE g.GoalID = ? LIMIT 1";
+$stmtC = mysqli_prepare($conn, $sqlCheck);
+mysqli_stmt_bind_param($stmtC, 'ii', $userID, $goalId);
+mysqli_stmt_execute($stmtC);
+$resC = mysqli_stmt_get_result($stmtC);
+if (!$resC || mysqli_num_rows($resC) === 0) { echo json_encode([ 'ok' => false, 'message' => 'No access' ]); exit; }
 
-// Validate due date format if provided
-if ($due_date) {
-    $date_check = DateTime::createFromFormat('Y-m-d', $due_date);
-    if (!$date_check || $date_check->format('Y-m-d') !== $due_date) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Invalid date format. Use YYYY-MM-DD']);
-        exit();
-    }
-}
+$fields = [];
+$params = [];
+$types = '';
+function add(&$fields, &$params, &$types, $field, $value, $typeChar='s') { if ($value !== null) { $fields[] = "$field = ?"; $params[] = $value; $types .= $typeChar; } }
+add($fields, $params, $types, 'Type', $type);
+add($fields, $params, $types, 'GoalTitle', $title);
+add($fields, $params, $types, 'Description', $description);
+add($fields, $params, $types, 'StartTime', $start);
+add($fields, $params, $types, 'EndTime', $end);
+add($fields, $params, $types, 'Deadline', $deadline);
+add($fields, $params, $types, 'Progress', $progress);
 
-try {
-    // Check if user has access to the goal (through workspace membership)
-    $stmt = $conn->prepare("
-        SELECT COUNT(*) as count 
-        FROM goal g
-        INNER JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID
-        WHERE g.GoalID = ? AND wm.UserID = ?
-    ");
-    $stmt->bind_param("ii", $goal_id, $userID);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
+if (empty($fields)) { echo json_encode([ 'ok' => true ]); exit; }
 
-    if ($row['count'] == 0) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Access denied to goal']);
-        exit();
-    }
+$sql = "UPDATE goal SET " . implode(', ', $fields) . " WHERE GoalID = ?";
+$types .= 'i';
+$params[] = $goalId;
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, $types, ...$params);
+$ok = mysqli_stmt_execute($stmt);
 
-    // Update goal - only update description and deadline as per database schema
-    $stmt = $conn->prepare("
-        UPDATE goal 
-        SET Description = ?, Deadline = ?
-        WHERE GoalID = ?
-    ");
-    $stmt->bind_param("ssi", $description, $due_date, $goal_id);
-    
-    if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) {
-            echo json_encode(['success' => true, 'message' => 'Goal updated successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'No changes made to goal']);
-        }
-    } else {
-        throw new Exception('Failed to update goal');
-    }
-    
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-}
+echo json_encode([ 'ok' => (bool)$ok ]);
 
-$conn->close();
-?>

@@ -1,8 +1,8 @@
-<div id="create-goal-modal" class="modal-backdrop" aria-hidden="true">
+<div id="edit-goal-modal" class="modal-backdrop" aria-hidden="true">
   <div class="modal-card">
-    <div class="modal-title">Create goal</div>
-    <form id="create-goal-form">
-      <input type="hidden" name="workspaceId" value="" />
+    <div class="modal-title">Goal details</div>
+    <form id="edit-goal-form">
+      <input type="hidden" name="goalId" />
       <div class="modal-row">
         <label>Type</label>
         <select class="select" name="type" required>
@@ -12,11 +12,11 @@
       </div>
       <div class="modal-row">
         <label>Title</label>
-        <input class="input" type="text" name="goalTitle" placeholder="Goal title" required />
+        <input class="input" type="text" name="goalTitle" required />
       </div>
       <div class="modal-row">
         <label>Description</label>
-        <input class="input" type="text" name="description" placeholder="Optional" />
+        <input class="input" type="text" name="description" />
       </div>
       <div class="modal-row">
         <label>Start</label>
@@ -39,11 +39,11 @@
         </select>
       </div>
       <div class="modal-actions">
-        <button type="button" class="goal-card-btn" data-close-modal>Cancel</button>
-        <button type="submit" class="goal-card-btn">Create</button>
+        <button type="button" id="delete-goal-btn" class="goal-card-btn" style="margin-right:auto;color:#b00020;border-color:#b00020;">Delete</button>
+        <button type="button" class="goal-card-btn" data-close-modal>Close</button>
+        <button type="submit" class="goal-card-btn">Save</button>
       </div>
     </form>
   </div>
-  
 </div>
 

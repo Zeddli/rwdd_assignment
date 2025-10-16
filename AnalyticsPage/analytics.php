@@ -49,7 +49,7 @@ $totalMembers = count($members);
 // Tasks
 $tasks = [];
 $completedTasks = [];
-$taskStatusCounts = ['Pending'=>0, 'InProgress'=>0, 'Completed'=>0];
+$taskStatusCounts = ['Pending'=>0, 'In Progress'=>0, 'Completed'=>0];
 $taskOnTime = 0;
 $taskOverdue = 0;
 $totalTaskTime = 0; // in seconds
@@ -90,7 +90,7 @@ $avgTaskTimeSeconds = $numCompletedTasks ? intval($totalTaskTime / $numCompleted
 // Goals
 $goals = [];
 $completedGoals = [];
-$goalStatusCounts = ['Pending'=>0, 'InProgress'=>0, 'Completed'=>0];
+$goalStatusCounts = ['Pending'=>0, 'In Progress'=>0, 'Completed'=>0];
 $goalOnTime = 0;
 $goalOverdue = 0;
 if ($selectedWorkspaceID) {
@@ -192,7 +192,7 @@ if ($selectedWorkspaceID) {
                 <canvas id="taskBar" width="320" height="180" style="margin:auto; display:block;"></canvas>
                 <div class="chart-legend chart-legend-center">
                 <span class="legend-item"><span style="color:#f4b400;font-weight:600;">&#9632;</span> Pending (<?= $taskStatusCounts['Pending'] ?>)</span>
-                <span class="legend-item"><span style="color:#2196f3;font-weight:600;">&#9632;</span> In Progress (<?= $taskStatusCounts['InProgress'] ?>)</span>
+                <span class="legend-item"><span style="color:#2196f3;font-weight:600;">&#9632;</span> In Progress (<?= $taskStatusCounts['In Progress'] ?>)</span>
                 <span class="legend-item"><span style="color:#4caf50;font-weight:600;">&#9632;</span> Completed (<?= $taskStatusCounts['Completed'] ?>)</span>
             </div>
             </div>
@@ -201,7 +201,7 @@ if ($selectedWorkspaceID) {
                 <canvas id="goalBar" width="320" height="180" style="margin:auto; display:block;"></canvas>
                 <div class="chart-legend chart-legend-center">
                     <span class="legend-item"><span style="color:#f4b400;font-weight:600;">&#9632;</span> Pending (<?= $taskStatusCounts['Pending'] ?>)</span>
-                    <span class="legend-item"><span style="color:#2196f3;font-weight:600;">&#9632;</span> In Progress (<?= $taskStatusCounts['InProgress'] ?>)</span>
+                    <span class="legend-item"><span style="color:#2196f3;font-weight:600;">&#9632;</span> In Progress (<?= $taskStatusCounts['In Progress'] ?>)</span>
                     <span class="legend-item"><span style="color:#4caf50;font-weight:600;">&#9632;</span> Completed (<?= $taskStatusCounts['Completed'] ?>)</span>
                 </div>
             </div>
@@ -231,12 +231,12 @@ if ($selectedWorkspaceID) {
         const goalPieData = {onTime: <?= $goalOnTime ?>, overdue: <?= $goalOverdue ?>};
         const taskBarData = {
             pending: <?= $taskStatusCounts['Pending'] ?>,
-            inProgress: <?= $taskStatusCounts['InProgress'] ?>,
+            In Progress: <?= $taskStatusCounts['In Progress'] ?>,
             completed: <?= $taskStatusCounts['Completed'] ?>
         };
         const goalBarData = {
             pending: <?= $goalStatusCounts['Pending'] ?>,
-            inProgress: <?= $goalStatusCounts['InProgress'] ?>,
+            In Progress: <?= $goalStatusCounts['In Progress'] ?>,
             completed: <?= $goalStatusCounts['Completed'] ?>
         };
 
@@ -335,13 +335,13 @@ if ($selectedWorkspaceID) {
             );
             drawBar(
                 document.getElementById('taskBar').getContext('2d'),
-                [taskBarData.pending, taskBarData.inProgress, taskBarData.completed],
+                [taskBarData.pending, taskBarData.In Progress, taskBarData.completed],
                 ["#f4b400","#2196f3","#4caf50"],
                 ["Pending","In Progress","Completed"]
             );
             drawBar(
                 document.getElementById('goalBar').getContext('2d'),
-                [goalBarData.pending, goalBarData.inProgress, goalBarData.completed],
+                [goalBarData.pending, goalBarData.In Progress, goalBarData.completed],
                 ["#f4b400","#2196f3","#4caf50"],
                 ["Pending","In Progress","Completed"]
             );

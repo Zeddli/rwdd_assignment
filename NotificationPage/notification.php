@@ -23,7 +23,7 @@ if ($userID && isset($conn)) {
         FROM task t
         JOIN taskaccess ta ON t.TaskID = ta.TaskID
         WHERE ta.UserID = ?
-          AND t.Status IN ('pending', 'inprogress')
+          AND t.Status IN ('pending', 'In Progress')
           AND DATE(t.Deadline) <= ?
         ORDER BY t.Deadline ASC
     ";
@@ -159,7 +159,7 @@ const notifications = <?= json_encode($notifications) ?>;
                         );
                     }
                     // Format status for display
-                    $displayStatus = ucfirst($task['Status']) === 'InProgress' ? 'In Progress' : ucfirst($task['Status']);
+                    $displayStatus = ucfirst($task['Status']) === 'In Progress' ? 'In Progress' : ucfirst($task['Status']);
                 ?>
                     <div class="reminder-card" 
                         data-deadline="<?= htmlspecialchars($task['Deadline']) ?>" 

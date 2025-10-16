@@ -73,12 +73,13 @@ INSERT INTO `fileshared` (`FileID`, `UserID`, `TaskID`, `FileName`, `Extension`,
 CREATE TABLE `goal` (
   `GoalID` int(11) NOT NULL,
   `WorkSpaceID` int(11) NOT NULL,
+  `GoalTitle` varchar(255),
   `Description` varchar(255) NOT NULL,
   `Type` enum('Short','Long','','') NOT NULL,
   `StartTime` datetime NOT NULL,
   `EndTime` datetime NOT NULL,
   `Deadline` datetime NOT NULL,
-  `Progress` enum('Pending','InProgress','Completed','') NOT NULL DEFAULT 'Pending'
+  `Progress` enum('Pending','In Progress','Completed','') NOT NULL DEFAULT 'Pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -143,7 +144,7 @@ CREATE TABLE `task` (
   `EndTime` datetime NOT NULL,
   `Deadline` datetime,
   `Priority` enum('High','Medium','Low','') NOT NULL,
-  `Status` enum('Pending','InProgress','Completed','') NOT NULL DEFAULT 'Pending'
+  `Status` enum('Pending','In Progress','Completed','') NOT NULL DEFAULT 'Pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
