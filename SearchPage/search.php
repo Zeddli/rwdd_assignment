@@ -19,7 +19,11 @@ include "../Database/Database.php";
     <?php include "../Navbar/navbar.php"; ?>
 
     <div class="main-content">
-        <h1>Search</h1>
+        <div class="header search-header" id="search-header">
+            <div class="header-content">
+                <p class="search-text" id="search-name">Search</p>
+            </div>
+        </div>
         <div class="search-container">
             <input type="text" id="search-bar" class="search-bar" placeholder="Enter to search...">
         </div>

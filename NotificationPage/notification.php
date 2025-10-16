@@ -126,9 +126,13 @@ const notifications = <?= json_encode($notifications) ?>;
     <?php require_once "../Navbar/navbar_functions.php"; ?>
     
     <!-- Main Content Area -->
-    <div class="main-content notification-flex">
+        <div class="main-content notification-flex">
     <div class="notification-panel">
-        <h1>Notification</h1>
+            <div class="header notification-header" id="notification-header"> 
+        <div class="header-content">
+            <p class="notification-text" id="notification-name">Notification</p>
+            </div>
+        </div>
         <div class="notification-scroll-area">
             <div id="notification-list"></div>
         </div>
