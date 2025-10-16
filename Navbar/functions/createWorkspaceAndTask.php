@@ -119,7 +119,8 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     
     $startTime = $normalizeDateTime($startDate);
     $deadlineTime = $normalizeDateTime($deadline);
-    $endTime = null; // End time is null since end date is removed
+    // Schema requires EndTime NOT NULL; set it equal to StartTime if no separate end provided
+    $endTime = $startTime;
     
     if ($startDate && !$startTime) {
         return ['success' => false, 'message' => 'Invalid start date'];
@@ -138,13 +139,22 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
         $taskDescription = 'New task description';
     }
     
+    // Map UI status to DB enum values
+    $statusMap = [
+        'Pending' => 'Pending',
+        'In Progress' => 'InProgress',
+        'InProgress' => 'InProgress',
+        'Completed' => 'Completed'
+    ];
+    $statusForDb = $statusMap[$status] ?? 'Pending';
+
     // create the task with all the provided values
     $insertTask = "
         INSERT INTO task (WorkSpaceID, Title, Description, StartTime, EndTime, Deadline, Priority, Status) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ";
     $stmt = mysqli_prepare($conn, $insertTask);
-    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTime, $deadlineTime, $priority, $status);
+    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTime, $deadlineTime, $priority, $statusForDb);
     
     if (mysqli_stmt_execute($stmt)) {
         $taskID = mysqli_insert_id($conn);

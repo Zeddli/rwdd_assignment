@@ -6,6 +6,22 @@ if (function_exists('ini_set')) {
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Fatal error catcher to ensure JSON response on 500s
+if (!defined('NAVBAR_API_FATAL_HANDLER')) {
+    define('NAVBAR_API_FATAL_HANDLER', true);
+    register_shutdown_function(function () {
+        $lastError = error_get_last();
+        if ($lastError && in_array($lastError['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Server error occurred',
+                'error' => $lastError['message'] ?? 'Unknown fatal error'
+            ]);
+        }
+    });
+}
 /**
  * navbar api endpoint
  * receives ajax requests from the js
@@ -100,8 +116,14 @@ switch ($action) {
             break;
         }
         
-        $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $deadline, $priority, $status);
-        echo json_encode($result);
+        try {
+            $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $deadline, $priority, $status);
+            echo json_encode($result);
+        } catch (Throwable $t) {
+            error_log('create_task exception: ' . $t->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Server exception during task creation', 'error' => $t->getMessage()]);
+        }
         break;
         
     // change workspace name (only managers can do this)
