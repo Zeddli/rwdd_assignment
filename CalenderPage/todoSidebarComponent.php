@@ -16,22 +16,9 @@
 
     <!-- Task Input Section -->
     <div class="task-input-section">
-        <form class="task-input-form" id="taskForm">
-            <input 
-                type="text" 
-                class="task-input" 
-                id="taskTitle" 
-                placeholder="Add a task" 
-                required
-                maxlength="255"
-            />
-            <input 
-                type="date" 
-                class="task-input" 
-                id="taskDate"
-            />
-            <button type="submit" class="add-task-btn">Add Task</button>
-        </form>
+        <button class="add-task-btn" id="openTaskDetailBtn">
+            + Add New Task
+        </button>
     </div>
 
     <!-- Task List Container -->

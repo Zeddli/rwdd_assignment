@@ -8,25 +8,52 @@ console.log('TaskDetailWindow.js: Script loading...');
 let currentWorkspaceId = null;
 let currentTaskId = null;
 let isEditMode = false;
+let showWorkspaceSelection = false;
+let taskDetailWindowInitialized = false; // prevent double initialization
 
 /**
  * Show task detail window for creating a new task
+ * @param {number|object} workspaceId - Workspace ID or options object
+ * @param {object} options - Options for modal display
  */
-function showTaskDetailWindow(workspaceId) {
+function showTaskDetailWindow(workspaceId, options = {}) {
+    // Handle different parameter formats
+    if (typeof workspaceId === 'object') {
+        options = workspaceId;
+        workspaceId = options.workspaceId || null;
+    }
+    
+    console.log('showTaskDetailWindow called with:', { workspaceId, options, showWorkspaceSelection: options.showWorkspaceSelection });
+    
     currentWorkspaceId = workspaceId;
     currentTaskId = null;
     isEditMode = false;
+    showWorkspaceSelection = options.showWorkspaceSelection || false;
+    
+    console.log('showWorkspaceSelection set to:', showWorkspaceSelection);
     
     // Reset form
     resetTaskForm();
+    
+    // Show/hide workspace selection based on options
+    toggleWorkspaceSelection(showWorkspaceSelection);
+    
+    // If workspace selection is shown, load workspaces
+    if (showWorkspaceSelection) {
+        console.log('Loading workspaces...');
+        loadWorkspaces();
+    }
     
     // Show modal
     const modal = document.getElementById('taskDetailModal');
     if (modal) {
         modal.style.display = 'flex';
-        // Focus on task name input
+        // Focus on appropriate input
         const taskNameInput = document.getElementById('taskNameInput');
-        if (taskNameInput) {
+        const workspaceSelect = document.getElementById('workspaceSelect');
+        if (showWorkspaceSelection && workspaceSelect) {
+            workspaceSelect.focus();
+        } else if (taskNameInput) {
             taskNameInput.focus();
         }
     }
@@ -51,6 +78,97 @@ function showEditTaskWindow(taskId, workspaceId) {
 }
 
 /**
+ * Toggle workspace selection visibility
+ * @param {boolean} show - Whether to show workspace selection
+ */
+function toggleWorkspaceSelection(show) {
+    console.log('toggleWorkspaceSelection called with show:', show);
+    
+    const workspaceGroup = document.getElementById('workspaceSelectionGroup');
+    const workspaceSelect = document.getElementById('workspaceSelect');
+    
+    console.log('workspaceGroup found:', !!workspaceGroup);
+    console.log('workspaceSelect found:', !!workspaceSelect);
+    
+    if (workspaceGroup) {
+        workspaceGroup.style.display = show ? 'block' : 'none';
+        console.log('workspaceGroup display set to:', workspaceGroup.style.display);
+    }
+    
+    if (workspaceSelect) {
+        workspaceSelect.required = show;
+        console.log('workspaceSelect required set to:', show);
+    }
+}
+
+/**
+ * Load available workspaces for the dropdown
+ */
+async function loadWorkspaces() {
+    console.log('loadWorkspaces: Starting to load workspaces...');
+    try {
+        const response = await fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=get_workspaces'
+        });
+        
+        console.log('loadWorkspaces: Response status:', response.status);
+        const data = await response.json();
+        console.log('loadWorkspaces: Response data:', data);
+        
+        if (data.success && data.workspaces) {
+            console.log('loadWorkspaces: Workspaces received:', data.workspaces);
+            populateWorkspaceDropdown(data.workspaces);
+        } else {
+            console.error('Error loading workspaces:', data.message);
+            showTaskMessage('Error loading workspaces: ' + (data.message || 'Unknown error'), 'error');
+        }
+    } catch (error) {
+        console.error('Error fetching workspaces:', error);
+        showTaskMessage('Error loading workspaces: ' + error.message, 'error');
+    }
+}
+
+/**
+ * Populate workspace dropdown with available workspaces
+ * @param {Array} workspaces - Array of workspace objects
+ */
+function populateWorkspaceDropdown(workspaces) {
+    console.log('populateWorkspaceDropdown: Called with workspaces:', workspaces);
+    const workspaceSelect = document.getElementById('workspaceSelect');
+    
+    if (!workspaceSelect) {
+        console.error('populateWorkspaceDropdown: workspaceSelect element not found');
+        return;
+    }
+    
+    console.log('populateWorkspaceDropdown: Found workspace select element');
+    
+    // Clear existing options except the first one
+    workspaceSelect.innerHTML = '<option value="">Select Workspace</option>';
+    
+    // Add workspace options
+    workspaces.forEach(workspace => {
+        console.log('populateWorkspaceDropdown: Adding workspace:', workspace);
+        const option = document.createElement('option');
+        option.value = workspace.WorkSpaceID;
+        option.textContent = workspace.WorkspaceName; // Fixed: use WorkspaceName instead of Name
+        workspaceSelect.appendChild(option);
+    });
+    
+    console.log('populateWorkspaceDropdown: Added', workspaces.length, 'workspace options');
+    
+    // Set default selection if currentWorkspaceId is provided
+    if (currentWorkspaceId) {
+        workspaceSelect.value = currentWorkspaceId;
+        console.log('populateWorkspaceDropdown: Set default workspace to:', currentWorkspaceId);
+    }
+}
+
+/**
  * Reset the task form to default values
  */
 function resetTaskForm() {
@@ -63,6 +181,12 @@ function resetTaskForm() {
     const statusSelect = document.getElementById('statusSelect');
     if (statusSelect) {
         statusSelect.value = 'Pending';
+    }
+    
+    // Reset workspace selection
+    const workspaceSelect = document.getElementById('workspaceSelect');
+    if (workspaceSelect) {
+        workspaceSelect.value = '';
     }
     
     const messageDiv = document.getElementById('taskMessage');
@@ -100,6 +224,13 @@ async function handleTaskSubmit(event) {
     const priority = document.getElementById('prioritySelect').value;
     const status = document.getElementById('statusSelect').value;
     
+    // Get workspace ID - either from dropdown or current workspace
+    let workspaceId = currentWorkspaceId;
+    if (showWorkspaceSelection) {
+        const workspaceSelect = document.getElementById('workspaceSelect');
+        workspaceId = workspaceSelect ? workspaceSelect.value : null;
+    }
+    
     // Basic validation
     if (!taskName) {
         showTaskMessage('Task name is required', 'error');
@@ -122,7 +253,7 @@ async function handleTaskSubmit(event) {
         return;
     }
     
-    if (!currentWorkspaceId) {
+    if (!workspaceId) {
         showTaskMessage('No workspace selected', 'error');
         return;
     }
@@ -132,7 +263,7 @@ async function handleTaskSubmit(event) {
         
         const formData = new FormData();
         formData.append('action', isEditMode ? 'update_task' : 'create_task');
-        formData.append('workspace_id', currentWorkspaceId);
+        formData.append('workspace_id', workspaceId);
         formData.append('task_name', taskName);
         formData.append('task_description', description);
         formData.append('start_date', startDate);
@@ -162,6 +293,9 @@ async function handleTaskSubmit(event) {
                     refreshWorkspaces();
                 } else if (typeof window.refreshWorkspaces === 'function') {
                     window.refreshWorkspaces();
+                } else if (typeof window.refreshTasksAfterModal === 'function') {
+                    // For calendar page todo list
+                    window.refreshTasksAfterModal();
                 } else {
                     // Fallback: reload the page to show the new task
                     console.log('Refreshing page to show new task...');
@@ -222,39 +356,60 @@ function handleGrantAccessClick() {
  * Initialize task detail window functionality
  */
 function initializeTaskDetailWindow() {
+    // Avoid duplicate event bindings
+    if (taskDetailWindowInitialized) {
+        return;
+    }
     // Close modal button
     const closeBtn = document.getElementById('closeTaskDetailModal');
     if (closeBtn) {
-        closeBtn.addEventListener('click', hideTaskDetailWindow);
+        if (!closeBtn.dataset.listenerAdded) {
+            closeBtn.addEventListener('click', hideTaskDetailWindow);
+            closeBtn.dataset.listenerAdded = 'true';
+        }
     }
     
     // Cancel button
     const cancelBtn = document.getElementById('cancelTaskBtn');
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', hideTaskDetailWindow);
+        if (!cancelBtn.dataset.listenerAdded) {
+            cancelBtn.addEventListener('click', hideTaskDetailWindow);
+            cancelBtn.dataset.listenerAdded = 'true';
+        }
     }
     
     // Grant access button
     const grantAccessBtn = document.getElementById('grantAccessBtn');
     if (grantAccessBtn) {
-        grantAccessBtn.addEventListener('click', handleGrantAccessClick);
+        if (!grantAccessBtn.dataset.listenerAdded) {
+            grantAccessBtn.addEventListener('click', handleGrantAccessClick);
+            grantAccessBtn.dataset.listenerAdded = 'true';
+        }
     }
     
     // Form submission
     const form = document.getElementById('taskDetailForm');
     if (form) {
-        form.addEventListener('submit', handleTaskSubmit);
+        if (!form.dataset.listenerAdded) {
+            form.addEventListener('submit', handleTaskSubmit);
+            form.dataset.listenerAdded = 'true';
+        }
     }
     
     // Close modal when clicking outside
     const modal = document.getElementById('taskDetailModal');
     if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                hideTaskDetailWindow();
-            }
-        });
+        if (!modal.dataset.listenerAdded) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideTaskDetailWindow();
+                }
+            });
+            modal.dataset.listenerAdded = 'true';
+        }
     }
+
+    taskDetailWindowInitialized = true;
 }
 
 // Export functions for use in other files
@@ -263,13 +418,41 @@ window.showEditTaskWindow = showEditTaskWindow;
 window.hideTaskDetailWindow = hideTaskDetailWindow;
 window.initializeTaskDetailWindow = initializeTaskDetailWindow;
 
+// Debug function to manually show workspace selection
+window.debugShowWorkspaceSelection = function() {
+    console.log('Manually showing workspace selection...');
+    const workspaceGroup = document.getElementById('workspaceSelectionGroup');
+    const workspaceSelect = document.getElementById('workspaceSelect');
+    
+    console.log('workspaceGroup:', workspaceGroup);
+    console.log('workspaceSelect:', workspaceSelect);
+    
+    if (workspaceGroup) {
+        workspaceGroup.style.display = 'block';
+        console.log('Workspace group shown');
+    }
+    
+    if (workspaceSelect) {
+        workspaceSelect.required = true;
+        console.log('Workspace select made required');
+    }
+    
+    // Load workspaces
+    loadWorkspaces();
+};
+
 console.log('TaskDetailWindow.js: Functions exported to window object');
 console.log('showTaskDetailWindow available:', typeof window.showTaskDetailWindow === 'function');
 
-// Add these at the bottom instead:
-export { 
-    showTaskDetailWindow, 
-    showEditTaskWindow, 
-    hideTaskDetailWindow, 
-    initializeTaskDetailWindow 
-};
+export {
+    showTaskDetailWindow,
+    showEditTaskWindow,
+    hideTaskDetailWindow,
+    initializeTaskDetailWindow,
+    showTaskMessage,
+    handleTaskSubmit,
+    handleGrantAccessClick,
+    loadWorkspaces,
+    populateWorkspaceDropdown,
+    resetTaskForm,
+}

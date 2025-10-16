@@ -14,6 +14,15 @@
         
         <div class="task-detail-content">
             <form id="taskDetailForm">
+                <!-- Workspace Selection (shown only when opened from calendar) -->
+                <div class="form-group" id="workspaceSelectionGroup" style="display: none;">
+                    <label for="workspaceSelect">Workspace *</label>
+                    <select id="workspaceSelect" name="workspaceSelect" class="attribute-input">
+                        <option value="">Select Workspace</option>
+                        <!-- Workspace options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
                 <!-- Task Name Input -->
                 <div class="form-group">
                     <input type="text" id="taskNameInput" placeholder="Task Name" class="task-input" required>
@@ -205,6 +214,41 @@
     grid-template-columns: 1fr;
     gap: 15px;
     margin-bottom: 20px;
+}
+
+/* Workspace Selection Styling */
+#workspaceSelectionGroup {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+#workspaceSelectionGroup label {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+#workspaceSelect {
+    background-color: white;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+#workspaceSelect:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+#workspaceSelect option {
+    padding: 8px 12px;
 }
 
 .task-actions {

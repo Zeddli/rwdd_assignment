@@ -1,4 +1,27 @@
 <?php
+// Ensure PHP notices/warnings don't leak into JSON responses
+if (function_exists('ini_set')) {
+    @ini_set('display_errors', '0');
+}
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// Fatal error catcher to ensure JSON response on 500s
+if (!defined('NAVBAR_API_FATAL_HANDLER')) {
+    define('NAVBAR_API_FATAL_HANDLER', true);
+    register_shutdown_function(function () {
+        $lastError = error_get_last();
+        if ($lastError && in_array($lastError['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Server error occurred',
+                'error' => $lastError['message'] ?? 'Unknown fatal error'
+            ]);
+        }
+    });
+}
 /**
  * navbar api endpoint
  * receives ajax requests from the js
@@ -17,6 +40,12 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET');
 header('Access-Control-Allow-Headers: Content-Type');
+
+// Ensure database connection is available before proceeding
+if (!isset($conn) || !$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
+}
 
 // make sure user is logged in first (matching navbar.php session handling)
 if (!isset($_SESSION['userInfo']) || !isset($_SESSION['userInfo']['userID'])) {
@@ -87,8 +116,14 @@ switch ($action) {
             break;
         }
         
-        $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $deadline, $priority, $status);
-        echo json_encode($result);
+        try {
+            $result = createTask($userID, $workspaceID, $taskName, $taskDescription, $startDate, $deadline, $priority, $status);
+            echo json_encode($result);
+        } catch (Throwable $t) {
+            error_log('create_task exception: ' . $t->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Server exception during task creation', 'error' => $t->getMessage()]);
+        }
         break;
         
     // change workspace name (only managers can do this)
@@ -119,19 +154,6 @@ switch ($action) {
         echo json_encode($result);
         break;
         
-    // change goal name/description
-    case 'rename_goal':
-        $goalID = intval($_POST['goal_id'] ?? 0);
-        $newName = trim($_POST['new_name'] ?? '');
-        
-        if ($goalID <= 0 || empty($newName)) {
-            echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
-            break;
-        }
-        
-        $result = renameGoal($userID, $goalID, $newName);
-        echo json_encode($result);
-        break;
         
     // delete a single task
     case 'delete_task':

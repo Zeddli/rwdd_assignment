@@ -149,6 +149,83 @@ function getDayTasks($userID, $date) {
 }
 
 /**
+ * Get events between start and end dates (for FullCalendar)
+ * @param int $userID - User ID
+ * @param string $start - Start date (YYYY-MM-DD)
+ * @param string $end - End date (YYYY-MM-DD)
+ * @return array - Array with success flag and events list
+ */
+function getEventsInRange($userID, $start, $end) {
+    global $conn;
+    
+    if (!$conn) {
+        return ['success' => false, 'message' => 'Database connection failed'];
+    }
+    
+    // Ensure dates are in YYYY-MM-DD
+    $startDate = date('Y-m-d', strtotime($start));
+    $endDate = date('Y-m-d', strtotime($end));
+    
+    $query = "
+        SELECT 
+            t.TaskID,
+            t.Title,
+            t.Description,
+            t.StartTime,
+            t.EndTime,
+            t.Deadline,
+            t.Priority,
+            t.Status,
+            w.Name as WorkspaceName,
+            ws.UserRole
+        FROM task t
+        INNER JOIN taskaccess ta ON t.TaskID = ta.TaskID
+        INNER JOIN workspace w ON t.WorkSpaceID = w.WorkSpaceID
+        INNER JOIN workspacemember ws ON w.WorkSpaceID = ws.WorkSpaceID
+        WHERE ta.UserID = ? 
+        AND ws.UserID = ?
+        AND (
+            DATE(t.StartTime) BETWEEN ? AND ?
+            OR DATE(t.EndTime) BETWEEN ? AND ?
+            OR DATE(t.Deadline) BETWEEN ? AND ?
+            OR (DATE(t.StartTime) <= ? AND DATE(t.EndTime) >= ?)
+        )
+        ORDER BY t.StartTime ASC
+    ";
+    
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "iiisssssss", 
+        $userID, $userID, $startDate, $endDate, 
+        $startDate, $endDate, $startDate, $endDate,
+        $endDate, $startDate
+    );
+    
+    if (mysqli_stmt_execute($stmt)) {
+        $result = mysqli_stmt_get_result($stmt);
+        $events = [];
+        
+        while ($row = mysqli_fetch_assoc($result)) {
+            $events[] = [
+                'id' => $row['TaskID'],
+                'title' => $row['Title'],
+                'description' => $row['Description'],
+                'startTime' => $row['StartTime'],
+                'endTime' => $row['EndTime'],
+                'deadline' => $row['Deadline'],
+                'priority' => $row['Priority'],
+                'status' => $row['Status'],
+                'workspaceName' => $row['WorkspaceName'],
+                'userRole' => $row['UserRole']
+            ];
+        }
+        
+        return ['success' => true, 'events' => $events];
+    }
+    
+    return ['success' => false, 'message' => 'Failed to retrieve events'];
+}
+
+/**
  * Get calendar data for API endpoint
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -175,6 +252,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         case 'get_day_tasks':
             $date = $_POST['date'] ?? date('Y-m-d');
             $result = getDayTasks($userID, $date);
+            echo json_encode($result);
+            break;
+        
+        case 'get_events':
+            $start = $_POST['start'] ?? date('Y-m-01');
+            $end = $_POST['end'] ?? date('Y-m-t');
+            $result = getEventsInRange($userID, $start, $end);
             echo json_encode($result);
             break;
             

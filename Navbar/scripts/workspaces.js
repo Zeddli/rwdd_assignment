@@ -139,7 +139,7 @@ function addNewWorkspace() {
 
 // debugging
 if(window.isCreatingTask === undefined){
-    window.isCreatingTask = true;
+    window.isCreatingTask = false;
 }
     
 
@@ -200,6 +200,11 @@ function showTaskDetailWindowFallback(workspaceId) {
  */
 async function handleTaskFormSubmit(event) {
     event.preventDefault();
+    if (window.isCreatingTask) {
+        console.warn('Duplicate submit prevented');
+        return;
+    }
+    window.isCreatingTask = true;
     
     const taskName = document.getElementById('taskNameInput').value.trim();
     const description = document.getElementById('taskDescriptionInput').value.trim();
@@ -263,7 +268,6 @@ async function handleTaskFormSubmit(event) {
         const result = await response.json();
         
         if (result.success) {
-            alert('Task created successfully!');
             
             // Hide modal
             const modal = document.getElementById('taskDetailModal');
@@ -279,6 +283,8 @@ async function handleTaskFormSubmit(event) {
     } catch (error) {
         console.error('Error creating task:', error);
         alert('Error creating task. Please try again.');
+    } finally {
+        window.isCreatingTask = false;
     }
 }
 

@@ -101,28 +101,60 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // Prepare the task data with proper date handling
     $currentTime = date('Y-m-d H:i:s');
     
-    // Validate that deadline is after start date
-    if ($startDate && $deadline && $deadline <= $startDate) {
-        return ['success' => false, 'message' => 'Deadline must be after the start date'];
+    // Normalize HTML datetime-local values (e.g., 2025-10-16T12:34)
+    $normalizeDateTime = function ($value) {
+        $value = trim((string)$value);
+        if ($value === '') { return ''; }
+        // Replace 'T' with space
+        $value = str_replace('T', ' ', $value);
+        // If missing seconds, append :00
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $value)) {
+            $value .= ':00';
+        }
+        // Validate/format to MySQL datetime
+        $ts = strtotime($value);
+        if ($ts === false) { return ''; }
+        return date('Y-m-d H:i:s', $ts);
+    };
+    
+    $startTime = $normalizeDateTime($startDate);
+    $deadlineTime = $normalizeDateTime($deadline);
+    // Schema requires EndTime NOT NULL; set it equal to StartTime if no separate end provided
+    $endTime = $startTime;
+    
+    if ($startDate && !$startTime) {
+        return ['success' => false, 'message' => 'Invalid start date'];
+    }
+    if ($deadline && !$deadlineTime) {
+        return ['success' => false, 'message' => 'Invalid deadline'];
     }
     
-    // Handle date fields - convert to proper datetime format
-    $startTime = $startDate . ' 00:00:00';
-    $endTime = null; // End time is null since end date is removed
-    $deadlineTime = $deadline . ' 23:59:59';
+    // Validate that deadline is after start date using timestamps
+    if ($startTime && $deadlineTime && strtotime($deadlineTime) <= strtotime($startTime)) {
+        return ['success' => false, 'message' => 'Deadline must be after the start date'];
+    }
     
     // Set default description if empty
     if (empty($taskDescription)) {
         $taskDescription = 'New task description';
     }
     
+    // Map UI status to DB enum values
+    $statusMap = [
+        'Pending' => 'Pending',
+        'In Progress' => 'InProgress',
+        'InProgress' => 'InProgress',
+        'Completed' => 'Completed'
+    ];
+    $statusForDb = $statusMap[$status] ?? 'Pending';
+
     // create the task with all the provided values
     $insertTask = "
         INSERT INTO task (WorkSpaceID, Title, Description, StartTime, EndTime, Deadline, Priority, Status) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ";
     $stmt = mysqli_prepare($conn, $insertTask);
-    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTime, $deadlineTime, $priority, $status);
+    mysqli_stmt_bind_param($stmt, "isssssss", $workspaceID, $taskName, $taskDescription, $startTime, $endTime, $deadlineTime, $priority, $statusForDb);
     
     if (mysqli_stmt_execute($stmt)) {
         $taskID = mysqli_insert_id($conn);
