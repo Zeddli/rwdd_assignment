@@ -158,15 +158,13 @@ const notifications = <?= json_encode($notifications) ?>;
                             $interval->i
                         );
                     }
-                    // Format status for display
-                    $displayStatus = ucfirst($task['Status']) === 'In Progress' ? 'In Progress' : ucfirst($task['Status']);
                 ?>
                     <div class="reminder-card" 
                         data-deadline="<?= htmlspecialchars($task['Deadline']) ?>" 
                         data-taskid="<?= $task['TaskID'] ?>">
                         <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
                         Description: <?= htmlspecialchars($task['Description']) ?><br>
-                        Status: <?= htmlspecialchars($displayStatus) ?><br>
+                        Status: <?= htmlspecialchars($task['Status']) ?><br>
                         <span class="due-time">Calculating...</span>
                     </div>
                 <?php endforeach; ?>

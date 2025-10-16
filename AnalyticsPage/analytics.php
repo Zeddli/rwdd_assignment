@@ -231,12 +231,12 @@ if ($selectedWorkspaceID) {
         const goalPieData = {onTime: <?= $goalOnTime ?>, overdue: <?= $goalOverdue ?>};
         const taskBarData = {
             pending: <?= $taskStatusCounts['Pending'] ?>,
-            In Progress: <?= $taskStatusCounts['In Progress'] ?>,
+            inProgress: <?= $taskStatusCounts['In Progress'] ?>,
             completed: <?= $taskStatusCounts['Completed'] ?>
         };
         const goalBarData = {
             pending: <?= $goalStatusCounts['Pending'] ?>,
-            In Progress: <?= $goalStatusCounts['In Progress'] ?>,
+            inProgress: <?= $goalStatusCounts['In Progress'] ?>,
             completed: <?= $goalStatusCounts['Completed'] ?>
         };
 
@@ -335,13 +335,13 @@ if ($selectedWorkspaceID) {
             );
             drawBar(
                 document.getElementById('taskBar').getContext('2d'),
-                [taskBarData.pending, taskBarData.In Progress, taskBarData.completed],
+                [taskBarData.pending, taskBarData.inProgress, taskBarData.completed],
                 ["#f4b400","#2196f3","#4caf50"],
                 ["Pending","In Progress","Completed"]
             );
             drawBar(
                 document.getElementById('goalBar').getContext('2d'),
-                [goalBarData.pending, goalBarData.In Progress, goalBarData.completed],
+                [goalBarData.pending, goalBarData.inProgress, goalBarData.completed],
                 ["#f4b400","#2196f3","#4caf50"],
                 ["Pending","In Progress","Completed"]
             );
