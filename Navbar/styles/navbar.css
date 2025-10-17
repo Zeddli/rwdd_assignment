@@ -243,8 +243,11 @@
     color: #333;
     font-weight: 500;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     opacity: 1;
     transition: opacity 0.3s ease;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 
 .sidebar.closed .workspace-name {
@@ -437,8 +440,11 @@
     font-size: 11px; 
     color: #666;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     opacity: 1;
     transition: opacity 0.3s ease;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 
 .sidebar.closed .submenu-label {
@@ -465,9 +471,12 @@
     font-size: 11px; 
     color: #666;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     opacity: 1;
     transition: opacity 0.3s ease;
     font-weight: 500;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 
 .sidebar.closed .goal-name {
@@ -494,8 +503,11 @@
     font-size: 11px; 
     color: #666;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     opacity: 1;
     transition: opacity 0.3s ease;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 
 .sidebar.closed .task-name {
