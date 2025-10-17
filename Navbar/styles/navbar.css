@@ -347,6 +347,12 @@
     background: #f8f9fa !important; 
 }
 
+/* Special styling for dropdowns positioned above the toggle */
+.dropdown-menu.positioned-above {
+    transform: translateY(0);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .dropdown-item {
     display: block;
     width: 100%;
