@@ -23,7 +23,7 @@ if ($userID && isset($conn)) {
         FROM task t
         JOIN taskaccess ta ON t.TaskID = ta.TaskID
         WHERE ta.UserID = ?
-          AND t.Status IN ('pending', 'In Progress')
+          AND t.Status IN ('Pending', 'In Progress')
           AND DATE(t.Deadline) <= ?
         ORDER BY t.Deadline ASC
     ";
@@ -54,41 +54,71 @@ if ($userID && isset($conn)) {
     $stmt->execute();
     $notifResult = $stmt->get_result();
     while ($row = $notifResult->fetch_assoc()) {
-        $include = true;
-        if ($row['RelatedTable'] === 'task') {
-            // Only include if user has access to the task
-            $taskID = $row['RelatedID'];
-            $checkStmt = $conn->prepare("SELECT 1 FROM taskaccess WHERE UserID = ? AND TaskID = ?");
-            $checkStmt->bind_param("ii", $userID, $taskID);
-            $checkStmt->execute();
-            $checkRes = $checkStmt->get_result();
-            if ($checkRes->num_rows === 0) {
-                $include = false;
-            }
-            $checkStmt->close();
-        }
-        if ($include) {
-            $notifications[] = $row;
-        }
+        $notifications[] = $row;
     }
-    $stmt->close();
+    $stmt->close();    
 }
 
 // For goal notifications, add workspaceID to the array
 foreach ($notifications as &$notif) {
-    if ($notif['RelatedTable'] === 'goal') {
-        $goalID = $notif['RelatedID'];
+    $relatedTable = $notif['RelatedTable'];
+    $relatedID = $notif['RelatedID'];
+    $exists = true;
+    $workspaceID = null;
+
+    if ($relatedTable === 'goal') {
+        // Check if goal exists and get its WorkspaceID
         $stmt2 = $conn->prepare("SELECT WorkSpaceID FROM goal WHERE GoalID = ?");
-        $stmt2->bind_param("i", $goalID);
+        $stmt2->bind_param("i", $relatedID);
         $stmt2->execute();
         $res2 = $stmt2->get_result();
         $row2 = $res2->fetch_assoc();
-        $notif['WorkspaceID'] = $row2 ? $row2['WorkSpaceID'] : null;
         $stmt2->close();
+        
+        if ($row2) {
+            $workspaceID = $row2['WorkSpaceID'];
+        } else {
+            $exists = false;
+        }
+
+    } else if ($relatedTable === 'task') {
+        // Check if task exists and if user has access (though this check is now less critical for *display*, 
+        // it's useful for navigation info)
+        $stmt2 = $conn->prepare("SELECT 1 FROM taskaccess WHERE UserID = ? AND TaskID = ?");
+        $stmt2->bind_param("ii", $userID, $relatedID);
+        $stmt2->execute();
+        $res2 = $stmt2->get_result();
+        $stmt2->close();
+
+        if ($res2->num_rows === 0) {
+            // Check task existence only (if user created it, notification should still show)
+            $stmt3 = $conn->prepare("SELECT 1 FROM task WHERE TaskID = ?");
+            $stmt3->bind_param("i", $relatedID);
+            $stmt3->execute();
+            $res3 = $stmt3->get_result();
+            $stmt3->close();
+            if ($res3->num_rows === 0) {
+                 $exists = false;
+            }
+        }
+
+    } else if ($relatedTable === 'workspace') {
+        // Check if workspace exists
+        $stmt2 = $conn->prepare("SELECT 1 FROM workspace WHERE WorkSpaceID = ?");
+        $stmt2->bind_param("i", $relatedID);
+        $stmt2->execute();
+        $res2 = $stmt2->get_result();
+        $stmt2->close();
+
+        if ($res2->num_rows === 0) {
+            $exists = false;
+        }
+        $workspaceID = $relatedID; // WorkspaceID is the RelatedID for 'workspace' notifs
     }
-    if ($notif['RelatedTable'] === 'workspace') {
-        $notif['WorkspaceID'] = $notif['RelatedID'];
-    }
+
+    // Attach existence and WorkspaceID status to the notification object
+    $notif['Exists'] = $exists;
+    $notif['WorkspaceID'] = $workspaceID;
 }
 unset($notif); // break reference
 ?>
@@ -99,12 +129,12 @@ unset($notif); // break reference
   <input type="hidden" name="timezone" id="timezone">
 </form>
 <script>
-  document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  // Submit the form only if timezone not set in session
-  if (!document.cookie.includes('tzset=1')) {
+    document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Submit the form only if timezone not set in session
+    if (!document.cookie.includes('tzset=1')) {
     document.getElementById('tzform').submit();
     document.cookie = "tzset=1"; // prevent infinite reload
-  }
+    }
 </script>
 
 <!-- Pass PHP notifications array to JS -->
@@ -142,7 +172,7 @@ const notifications = <?= json_encode($notifications) ?>;
         <h2>Reminder</h2>
         <div id="reminder-list">
             <?php if (count($reminderTasks) === 0): ?>
-                <div class="no-reminder">No upcoming or overdue tasks (pending/in progress) due within a week</div>
+                <div class="no-reminder">No upcoming or overdue tasks (Pending/In rogress) due within a week</div>
             <?php else: ?>
                 <?php foreach ($reminderTasks as $task): 
                     $now = new DateTime('now');
