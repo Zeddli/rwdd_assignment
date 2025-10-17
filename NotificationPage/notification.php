@@ -215,26 +215,5 @@ const notifications = <?= json_encode($notifications) ?>;
     updateDueTimes();
     setInterval(updateDueTimes, 1000);
     </script>
-    <script>
-    document.querySelectorAll('.reminder-card').forEach(card => {
-        card.onclick = function() {
-            const taskid = this.getAttribute('onclick').match(/taskid=(\d+)/)?.[1] || this.getAttribute('data-taskid');
-            const trueTaskId = this.getAttribute('data-taskid');
-            fetch('../Navbar/navbar_api.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=set_task_session&task_id=' + trueTaskId
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '../TaskPage/Task.php';
-                } else {
-                    alert('Failed to open task');
-                }
-            });
-        };
-    });
-    </script>
 </body>
 </html>

@@ -4,7 +4,9 @@ var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 // Paging logic
 const perPage = 20;
-let currentPage = 1;
+if (typeof window.currentPage === 'undefined') {
+    window.currentPage = 1;
+}
 
 function renderNotifications() {
     const list = document.getElementById('notification-list');
@@ -12,15 +14,18 @@ function renderNotifications() {
     list.innerHTML = '';
     pagelist.innerHTML = '';
 
+    // Get the current page from the global window object
+    const current = window.currentPage;
+
     if (!notifications || notifications.length === 0) {
         list.innerHTML = '<div class="no-notification">No Notifications</div>';
-        renderPaginationControls(1, 1, pagelist);
+        renderPaginationControls(1, current, pagelist);
         return;
     }
 
     const ordered = [...notifications].sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
     const totalPage = Math.ceil(ordered.length / perPage);
-    const start = (currentPage-1)*perPage;
+    const start = (current-1)*perPage;
     const pageItems = ordered.slice(start, start+perPage);;
 
     pageItems.forEach(n => {
@@ -37,7 +42,7 @@ function renderNotifications() {
     });
 
     // Always show pagination controls even if only one page
-    renderPaginationControls(totalPage, currentPage, pagelist);
+    renderPaginationControls(totalPage, current, pagelist);
 }
 
 function renderPaginationControls(totalPage, currentPage, pagelist) {
