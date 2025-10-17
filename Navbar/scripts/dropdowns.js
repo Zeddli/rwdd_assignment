@@ -65,9 +65,42 @@ function toggleDropdown(dropdown) {
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const toggleRect = toggle.getBoundingClientRect();
         
-        // position it nicely below and to the left of the three-dot button
-        menu.style.left = (toggleRect.left - 160 + toggleRect.width) + 'px';
+        // Calculate available space below and above the toggle
+        const spaceBelow = window.innerHeight - toggleRect.bottom;
+        const spaceAbove = toggleRect.top;
+        
+        // Position horizontally (to the left of the three-dot button)
+        let leftPosition = toggleRect.left - 160 + toggleRect.width;
+        
+        // Ensure the dropdown doesn't go off the left edge of the screen
+        if (leftPosition < 10) {
+            leftPosition = 10;
+        }
+        
+        // Ensure the dropdown doesn't go off the right edge of the screen
+        const menuWidth = 160; // Approximate width
+        if (leftPosition + menuWidth > window.innerWidth - 10) {
+            leftPosition = window.innerWidth - menuWidth - 10;
+        }
+        
+        menu.style.left = leftPosition + 'px';
+        
+        // First position it below to measure its actual height
         menu.style.top = (toggleRect.bottom + 5) + 'px';
+        menu.classList.remove('positioned-above');
+        
+        // Force a reflow to get the actual height
+        menu.offsetHeight;
+        
+        // Get the actual menu height
+        const menuHeight = menu.offsetHeight;
+        
+        // Check if we need to position it above
+        if (spaceBelow < menuHeight && spaceAbove > menuHeight) {
+            // Show above the toggle button
+            menu.style.top = (toggleRect.top - menuHeight - 5) + 'px';
+            menu.classList.add('positioned-above');
+        }
     }
 }
 
@@ -215,6 +248,14 @@ async function setWorkspaceAndNavigate(workspaceID) {
         alert('Error: Could not access workspace');
     }
 }
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    // Only close if we're not clicking on a dropdown element
+    if (!e.target.closest('.dropdown')) {
+        closeAllDropdowns();
+    }
+});
 
 // Share these functions with other js files
 window.initializeDropdowns = initializeDropdowns;
