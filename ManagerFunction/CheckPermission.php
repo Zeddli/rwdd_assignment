@@ -2,7 +2,7 @@
     session_start();
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
-    include "/rwdd_assignment/Database/Database.php";
+    include "../Database/Database.php";
     header('Content-Type: application/json');
 
     if($_SERVER["REQUEST_METHOD"] === "POST") {

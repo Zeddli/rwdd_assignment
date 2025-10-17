@@ -2,7 +2,7 @@
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
     header('Content-Type: application/json');
-    include "/rwdd_assignment/Database/Database.php";
+    include "../Database/Database.php";
 
     session_start();
 
