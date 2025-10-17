@@ -210,6 +210,8 @@ $workspaces = getUserWorkspaces($userID);
     <script src="../Navbar/scripts/inviteMember.js?v=2"></script>             <!-- Invite member functionality -->
     <script src="../Navbar/scripts/workspaces.js?v=2"></script>                <!-- Workspace creation/management -->
     <script src="../Navbar/scripts/tasks.js?v=2"></script>                     <!-- Task operations -->
+    <script src="../Navbar/scripts/taskDetailWindow.js?v=2"></script>          <!-- Task detail modal functionality -->
+    <script src="../Navbar/scripts/grantAccessWindow.js?v=2"></script>         <!-- Grant access modal functionality -->
     <script src="../Navbar/scripts/sidebar.js?v=2"></script>                   <!-- Main sidebar functionality -->
     <script src="../Navbar/scripts/main.js?v=2"></script>                      <!-- Entry point that starts everything -->
 

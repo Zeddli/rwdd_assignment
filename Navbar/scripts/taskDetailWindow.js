@@ -334,23 +334,6 @@ function showTaskMessage(message, type) {
     }
 }
 
-/**
- * Handle grant access button click
- */
-function handleGrantAccessClick() {
-    if (!currentWorkspaceId) {
-        alert('No workspace selected');
-        return;
-    }
-    
-    // Hide task detail modal
-    hideTaskDetailWindow();
-    
-    // Show grant access modal
-    if (typeof showGrantAccessWindow === 'function') {
-        showGrantAccessWindow(currentWorkspaceId, currentTaskId);
-    }
-}
 
 /**
  * Initialize task detail window functionality
@@ -378,14 +361,6 @@ function initializeTaskDetailWindow() {
         }
     }
     
-    // Grant access button
-    const grantAccessBtn = document.getElementById('grantAccessBtn');
-    if (grantAccessBtn) {
-        if (!grantAccessBtn.dataset.listenerAdded) {
-            grantAccessBtn.addEventListener('click', handleGrantAccessClick);
-            grantAccessBtn.dataset.listenerAdded = 'true';
-        }
-    }
     
     // Form submission
     const form = document.getElementById('taskDetailForm');

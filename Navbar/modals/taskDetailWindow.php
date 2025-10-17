@@ -70,7 +70,6 @@
                 
                 <!-- Action Buttons -->
                 <div class="task-actions">
-                    <button type="button" id="grantAccessBtn" class="grant-access-btn">Grant access</button>
                     <div class="right-buttons">
                         <button type="button" id="cancelTaskBtn" class="cancel-btn">Cancel</button>
                         <button type="submit" id="saveTaskBtn" class="save-btn">Save</button>
@@ -253,25 +252,11 @@
 
 .task-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     gap: 12px;
 }
 
-.grant-access-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: 500;
-    background-color: #333;
-    color: white;
-}
-
-.grant-access-btn:hover {
-    background-color: #555;
-}
 
 .right-buttons {
     display: flex;
