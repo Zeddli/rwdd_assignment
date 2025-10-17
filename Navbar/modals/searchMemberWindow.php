@@ -20,7 +20,7 @@
             <div class="role-selection">
                 <label for="memberRole">Role:</label>
                 <select id="memberRole" class="role-select">
-                    <option value="Member">Member</option>
+                    <option value="Employee">Employee</option>
                     <option value="Manager">Manager</option>
                 </select>
             </div>
