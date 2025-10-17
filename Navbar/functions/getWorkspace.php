@@ -31,19 +31,7 @@ function getUserWorkspaces($userID) {
     
     $workspaces = [];
     while ($workspace = mysqli_fetch_assoc($workspaceResult)) {
-        // get the goal for this workspace
-        $goalQuery = "
-            SELECT g.GoalID, g.Description as GoalName, g.Progress 
-            FROM goal g 
-            WHERE g.WorkSpaceID = ? 
-            LIMIT 1
-        ";
-        
-        $goalStmt = mysqli_prepare($conn, $goalQuery);
-        mysqli_stmt_bind_param($goalStmt, "i", $workspace['WorkSpaceID']);
-        mysqli_stmt_execute($goalStmt);
-        $goalResult = mysqli_stmt_get_result($goalStmt);
-        $goal = mysqli_fetch_assoc($goalResult);
+        // Goals are managed through the dedicated goal page, not loaded here
         
         // for each workspace, get all tasks this user can see
         $taskQuery = "
@@ -65,8 +53,7 @@ function getUserWorkspaces($userID) {
             $tasks[] = $task;
         }
         
-        // add goal and tasks to workspace and add to our list
-        $workspace['goal'] = $goal;
+        // add tasks to workspace and add to our list
         $workspace['tasks'] = $tasks;
         $workspaces[] = $workspace;
     }

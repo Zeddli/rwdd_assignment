@@ -2,7 +2,6 @@
   <div class="modal-card">
     <div class="modal-title">Create goal</div>
     <form id="create-goal-form">
-      <input type="hidden" name="workspaceId" value="" />
       <div class="modal-row">
         <label>Type</label>
         <select class="select" name="type" required>
@@ -24,7 +23,7 @@
       </div>
       <div class="modal-row">
         <label>End</label>
-        <input class="input" type="datetime-local" name="endTime" required />
+        <input class="input" type="text" name="endTime" value="Auto when completed" disabled />
       </div>
       <div class="modal-row">
         <label>Deadline</label>

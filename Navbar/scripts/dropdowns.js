@@ -145,6 +145,19 @@ function handleDropdownAction(item, dropdown) {
                 alert('Goal details feature is coming soon!');
             }
             break;
+            
+        case 'view-goals':
+            // navigate to the goal page for this workspace
+            if (goalItem) {
+                const workspaceItem = goalItem.closest('.workspace-item');
+                const workspaceID = workspaceItem?.dataset.workspaceId;
+                if (workspaceID) {
+                    console.log('Navigating to goals page for workspace:', workspaceID);
+                    // Set workspace in session before navigating
+                    setWorkspaceAndNavigate(workspaceID);
+                }
+            }
+            break;
         case 'hide':
             // hide/show the tasks under a workspace
             handleHideUnhide(workspaceItem);
@@ -173,6 +186,34 @@ function handleDropdownAction(item, dropdown) {
     
     // Close the menu now that they've made their choice
     dropdown.classList.remove('active');
+}
+
+/**
+ * Set workspace in session and navigate to goal page
+ */
+async function setWorkspaceAndNavigate(workspaceID) {
+    try {
+        const formData = new FormData();
+        formData.append('action', 'set_workspace_session');
+        formData.append('workspace_id', workspaceID);
+        
+        const response = await fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        });
+        
+        if (response.ok) {
+            // Navigate to goal page
+            window.location.href = '../GoalPage/GoalPage.php';
+        } else {
+            console.error('Failed to set workspace session');
+            alert('Error: Could not access workspace');
+        }
+    } catch (error) {
+        console.error('Error setting workspace session:', error);
+        alert('Error: Could not access workspace');
+    }
 }
 
 // Share these functions with other js files

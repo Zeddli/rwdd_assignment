@@ -148,7 +148,7 @@ $workspaces = getUserWorkspaces($userID);
                             <!-- This shows the goal and all tasks under this workspace -->
                             <div class="workspace-submenu" data-visible="true">
                                 <!-- Goal item - clickable link to workspace-specific goal page -->
-                                <a href="../GoalPage/GoalPage.php?workspace_id=<?php echo $workspace['WorkSpaceID']; ?>" class="submenu-item goal-link">
+                                <a href="../GoalPage/GoalPage.php" class="submenu-item goal-link" data-workspace-id="<?php echo $workspace['WorkSpaceID']; ?>">
                                     <img src="../navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
                                     <span class="submenu-label">Goal</span>
                                 </a>

@@ -9,8 +9,18 @@ if (!$userID) {
     exit;
 }
 
-// Get selected workspace from GET (for switching)
-$selectedWorkspaceID = isset($_GET['workspace']) ? intval($_GET['workspace']) : null;
+// Get selected workspace from session (set when user clicks goal link)
+$selectedWorkspaceID = $_SESSION['selectedWorkspaceId'] ?? null;
+
+// If no workspace in session, try to use one the user belongs to
+if ($selectedWorkspaceID === null) {
+    $fallback = mysqli_query($conn, "SELECT WorkSpaceID FROM workspacemember WHERE UserID = " . intval($userID) . " LIMIT 1");
+    if ($fallback && mysqli_num_rows($fallback) > 0) {
+        $selectedWorkspaceID = intval(mysqli_fetch_assoc($fallback)['WorkSpaceID']);
+        // Store in session for future requests
+        $_SESSION['selectedWorkspaceId'] = $selectedWorkspaceID;
+    }
+}
 
 // Fetch all workspaces for this user
 global $conn;
@@ -43,15 +53,17 @@ if (!$conn) {
             <button id="create-goal-btn" class="create-goal-btn">Create goal</button>
         </header>
 
-        <section class="goal-section" data-type="Long">
-            <div class="goal-section-title">Long-term Goal</div>
-            <div id="long-goal-row" class="goal-row" aria-label="Long-term goals" role="list"></div>
-        </section>
+        <div class="goal-sections-container">
+            <section class="goal-section" data-type="Long">
+                <div class="goal-section-title">Long-term Goal</div>
+                <div id="long-goal-row" class="goal-row" aria-label="Long-term goals" role="list"></div>
+            </section>
 
-        <section class="goal-section" data-type="Short">
-            <div class="goal-section-title">Short-term Goal</div>
-            <div id="short-goal-row" class="goal-row" aria-label="Short-term goals" role="list"></div>
-        </section>
+            <section class="goal-section" data-type="Short">
+                <div class="goal-section-title">Short-term Goal</div>
+                <div id="short-goal-row" class="goal-row" aria-label="Short-term goals" role="list"></div>
+            </section>
+        </div>
       </main>
     </div>
 

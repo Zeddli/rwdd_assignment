@@ -24,7 +24,7 @@
       </div>
       <div class="modal-row">
         <label>End</label>
-        <input class="input" type="datetime-local" name="endTime" required />
+        <input class="input" type="text" name="endTime" disabled />
       </div>
       <div class="modal-row">
         <label>Deadline</label>

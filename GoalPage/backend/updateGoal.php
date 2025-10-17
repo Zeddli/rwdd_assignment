@@ -1,7 +1,22 @@
 <?php
 header('Content-Type: application/json');
 require_once __DIR__ . '/../../Database/Database.php';
-require_once __DIR__ . '/../../Head/Head.php';
+
+// Start session and check authentication
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION["userInfo"])) {
+    if (isset($_COOKIE["loginInfo"])) {
+        // if have cookie, set session
+        $info = json_decode($_COOKIE["loginInfo"], true);
+        $_SESSION["userInfo"] = $info;
+    } else {
+        // no cookie, return error
+        echo json_encode([ 'ok' => false, 'message' => 'Not logged in' ]);
+        exit;
+    }
+}
 
 $userID = $_SESSION['userInfo']['userID'] ?? null;
 if (!$userID) { echo json_encode([ 'ok' => false, 'message' => 'Unauthenticated' ]); exit; }
@@ -17,7 +32,7 @@ $type = $payload['type'] ?? null;
 $title = isset($payload['goalTitle']) ? trim($payload['goalTitle']) : null;
 $description = isset($payload['description']) ? trim($payload['description']) : null;
 $start = $payload['startTime'] ?? null;
-$end = $payload['endTime'] ?? null;
+$end = null; // cannot be set directly
 $deadline = $payload['deadline'] ?? null;
 $progress = $payload['progress'] ?? null;
 
@@ -39,7 +54,20 @@ add($fields, $params, $types, 'Type', $type);
 add($fields, $params, $types, 'GoalTitle', $title);
 add($fields, $params, $types, 'Description', $description);
 add($fields, $params, $types, 'StartTime', $start);
-add($fields, $params, $types, 'EndTime', $end);
+// Handle EndTime based on progress status
+if ($progress === 'Completed') {
+  // If marking as Completed and EndTime is null, set it to current time
+  $sqlEnd = "UPDATE goal SET EndTime = IFNULL(EndTime, NOW()) WHERE GoalID = ?";
+  $stmtEnd = mysqli_prepare($conn, $sqlEnd);
+  mysqli_stmt_bind_param($stmtEnd, 'i', $goalId);
+  mysqli_stmt_execute($stmtEnd);
+} elseif ($progress === 'Pending' || $progress === 'In Progress') {
+  // If changing from Completed to Pending/In Progress, clear EndTime
+  $sqlEnd = "UPDATE goal SET EndTime = NULL WHERE GoalID = ?";
+  $stmtEnd = mysqli_prepare($conn, $sqlEnd);
+  mysqli_stmt_bind_param($stmtEnd, 'i', $goalId);
+  mysqli_stmt_execute($stmtEnd);
+}
 add($fields, $params, $types, 'Deadline', $deadline);
 add($fields, $params, $types, 'Progress', $progress);
 

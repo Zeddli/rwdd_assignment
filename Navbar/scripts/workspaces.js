@@ -77,9 +77,9 @@ function addNewWorkspace() {
                         </div>
                     </div>
                     <div class="workspace-submenu" data-visible="true">
-                        <div class="goal-item" data-goal-id="${data.goalID}">
+                        <div class="goal-item" data-goal-id="0">
                             <img src="../navbar-icon/goal.svg" alt="Goal" class="submenu-icon" width="16" height="16">
-                            <span class="goal-name">${data.goalName}</span>
+                            <span class="goal-name">Goals</span>
                             <div class="dropdown">
                                 <button class="dropdown-toggle" aria-label="Goal options">
                                     <svg width="16" height="16" viewBox="0 0 16 16">
@@ -89,8 +89,7 @@ function addNewWorkspace() {
                                     </svg>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <button class="dropdown-item" data-action="rename">Rename</button>
-                                    <button class="dropdown-item" data-action="view-details">View Details</button>
+                                    <button class="dropdown-item" data-action="view-goals">View Goals</button>
                                 </div>
                             </div>
                         </div>

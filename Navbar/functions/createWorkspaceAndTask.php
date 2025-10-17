@@ -41,21 +41,7 @@ function createWorkspace($userID, $workspaceName) {
             throw new Exception('Failed to add user as manager');
         }
         
-        // create a default goal for this workspace
-        $currentTime = date('Y-m-d H:i:s');
-        $goalDescription = "Workspace Goal";
-        $insertGoal = "
-            INSERT INTO goal (WorkSpaceID, Description, Type, StartTime, EndTime, Deadline, Progress) 
-            VALUES (?, ?, 'Long', ?, ?, ?, 'Pending')
-        ";
-        $goalStmt = mysqli_prepare($conn, $insertGoal);
-        mysqli_stmt_bind_param($goalStmt, "issss", $workspaceID, $goalDescription, $currentTime, $currentTime, $currentTime);
-        
-        if (!mysqli_stmt_execute($goalStmt)) {
-            throw new Exception('Failed to create workspace goal');
-        }
-        
-        $goalID = mysqli_insert_id($conn);
+        // Goals will be created only through the dedicated goal page
         
         // commit the query
         mysqli_commit($conn);
@@ -63,9 +49,7 @@ function createWorkspace($userID, $workspaceName) {
         return [
             'success' => true, 
             'workspaceID' => $workspaceID,
-            'workspaceName' => $workspaceName,
-            'goalID' => $goalID,
-            'goalName' => $goalDescription
+            'workspaceName' => $workspaceName
         ];
         
     } catch (Exception $e) {

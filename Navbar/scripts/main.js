@@ -3,6 +3,47 @@
  * waits for the page to load, then kicks off the sidebar initialization
  */
 
+/**
+ * Initialize goal link functionality
+ * Handles clicking on goal links to set workspace in session before navigation
+ */
+function initializeGoalLinks() {
+    // Add click handler for goal links
+    document.addEventListener('click', async (e) => {
+        if (e.target.closest('.goal-link')) {
+            e.preventDefault();
+            const goalLink = e.target.closest('.goal-link');
+            const workspaceId = goalLink.dataset.workspaceId;
+            
+            if (workspaceId) {
+                // Set workspace in session before navigating
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'set_workspace_session');
+                    formData.append('workspace_id', workspaceId);
+                    
+                    const response = await fetch('../Navbar/navbar_api.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
+                    
+                    if (response.ok) {
+                        // Navigate to goal page
+                        window.location.href = '../GoalPage/GoalPage.php';
+                    } else {
+                        console.error('Failed to set workspace session');
+                        alert('Error: Could not access workspace');
+                    }
+                } catch (error) {
+                    console.error('Error setting workspace session:', error);
+                    alert('Error: Could not access workspace');
+                }
+            }
+        }
+    });
+}
+
 
 /**
  * initialize sidebar when DOM is loaded
@@ -27,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof initializeGrantAccessWindow === 'function') {
         initializeGrantAccessWindow();
     }
+    
+    // initialize goal link functionality
+    initializeGoalLinks();
     
     console.log('All modules loaded and sidebar initialized');
 });

@@ -1,7 +1,22 @@
 <?php
 header('Content-Type: application/json');
 require_once __DIR__ . '/../../Database/Database.php';
-require_once __DIR__ . '/../../Head/Head.php';
+
+// Start session and check authentication
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION["userInfo"])) {
+    if (isset($_COOKIE["loginInfo"])) {
+        // if have cookie, set session
+        $info = json_decode($_COOKIE["loginInfo"], true);
+        $_SESSION["userInfo"] = $info;
+    } else {
+        // no cookie, return error
+        echo json_encode([ 'ok' => false, 'message' => 'Not logged in' ]);
+        exit;
+    }
+}
 
 $userID = $_SESSION['userInfo']['userID'] ?? null;
 if (!$userID) { echo json_encode([ 'ok' => false, 'message' => 'Unauthenticated' ]); exit; }
