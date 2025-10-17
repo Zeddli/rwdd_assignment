@@ -89,15 +89,25 @@
 
         // const targetDate = new Date("2025-10-10T00:00:00").getTime(); 
 
-        function updateCountdown(targetDate, stat) {
+        function updateCountdown(targetDate, stat, startTime, endTime = null) {
             const countdownValue = document.getElementById("countdown");
-            const timer = setInterval(() => updateCountdown(deadline, stat), 1000);   
+            const timer = setInterval(() => updateCountdown(deadline, stat, startTime, endTime), 1000);   
 
             if(stat === "pending"){
                 countdownValue.innerHTML = "The task is pending";
                 return;
             } else if (stat === "completed"){
-                countdownValue.innerHTML = "The task is completed";
+                const timeUsed = endTime - startTime;
+                if (timeUsed < 0) {
+                    countdownValue.innerHTML = "Completed (Time used: 0 days 0h 0min)";
+                    clearInterval(timer);
+                    return;
+                }
+                const dayUsed = Math.floor(timeUsed / (1000 * 60 * 60 * 24));
+                const hourUsed = Math.floor((timeUsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minUsed = Math.floor((timeUsed % (1000 * 60 * 60)) / (1000 * 60));
+
+                countdownValue.innerHTML = `Completed (Time used: ${dayUsed} days ${hourUsed}h ${minUsed}min)`;
                 clearInterval(timer);
                 return;
             } else {
@@ -171,9 +181,17 @@
 
                 deadline = new Date(data.task["Deadline"].replace(" ", "T"));
                 deadline = deadline.getTime();
+                startTime = new Date(data.task["StartTime"].replace(" ", "T"));
+                startTime = startTime.getTime();
+                endTime = null;
+                if(data.task["EndTime"] && data.task["EndTime"] !== "0000-00-00 00:00:00"){
+                    endTime = new Date(data.task["EndTime"].replace(" ", "T"));
+                    endTime = endTime.getTime();
+                }
                 stat = data.task["Status"].toLowerCase();
+
                 // Update every 1 second
-                updateCountdown(deadline, stat); // run once immediately 
+                updateCountdown(deadline, stat,startTime, endTime); // run once immediately 
                 // const timer = setInterval(() => updateCountdown(deadline, stat), 1000);               
                 
             

@@ -426,8 +426,8 @@ export {
     initializeTaskDetailWindow,
     showTaskMessage,
     handleTaskSubmit,
-    handleGrantAccessClick,
+    // handleGrantAccessClick,
     loadWorkspaces,
     populateWorkspaceDropdown,
     resetTaskForm,
-}
+};
