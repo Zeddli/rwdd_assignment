@@ -28,7 +28,7 @@ global $conn;
 if (!$conn) { echo json_encode([ 'ok' => false, 'message' => 'DB connection failed' ]); exit; }
 
 // Get workspace from session (set when user selects a workspace)
-$workspaceId = $_SESSION['selectedWorkspaceId'] ?? null;
+$workspaceId = $_SESSION['workspaceID'] ?? null;
 
 // If no workspace in session, try to use one the user belongs to
 if ($workspaceId === null) {
@@ -36,7 +36,7 @@ if ($workspaceId === null) {
     if ($fallback && mysqli_num_rows($fallback) > 0) {
         $workspaceId = intval(mysqli_fetch_assoc($fallback)['WorkSpaceID']);
         // Store in session for future requests
-        $_SESSION['selectedWorkspaceId'] = $workspaceId;
+        $_SESSION['workspaceID'] = $workspaceId;
     }
 }
 

@@ -149,6 +149,7 @@
     const form = modal.querySelector("form");
     if (!form) return;
     form.reset();
+    // No need to set workspaceId - it's handled by session
   }
 
   function openEdit(goal) {
