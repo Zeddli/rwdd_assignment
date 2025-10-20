@@ -151,6 +151,38 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
         mysqli_stmt_bind_param($accessStmt, "ii", $userID, $taskID);
         mysqli_stmt_execute($accessStmt);
         
+        // Create notification for task creation
+        try {
+            // Get workspace name
+            $workspaceQuery = mysqli_prepare($conn, "SELECT Name FROM workspace WHERE WorkSpaceID = ?");
+            mysqli_stmt_bind_param($workspaceQuery, 'i', $workspaceID);
+            mysqli_stmt_execute($workspaceQuery);
+            $workspaceResult = mysqli_stmt_get_result($workspaceQuery);
+            $workspaceName = mysqli_fetch_assoc($workspaceResult)['Name'] ?? 'Unknown Workspace';
+            
+            // Prepare notification data
+            $relatedID = $workspaceID;
+            $relatedTable = "task";
+            $title = "Task created";
+            $desc = "You have created a task '$taskName' in workspace " . $workspaceName;
+            
+            // Insert notification
+            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+            mysqli_stmt_execute($insertNoti);
+            
+            // Insert receiver
+            $receiver = $userID;
+            $notiID = mysqli_insert_id($conn);
+            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+            mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $receiver);
+            mysqli_stmt_execute($insertReceiver);
+            
+        } catch (Exception $e) {
+            // Notification creation failed, but task was created successfully
+            error_log("Failed to create notification for task: " . $e->getMessage());
+        }
+        
         return [
             'success' => true, 
             'taskID' => $taskID,

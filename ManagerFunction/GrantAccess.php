@@ -9,7 +9,7 @@
         // will be in taskID or workspace ID
         $taskID = filter_input(INPUT_POST, 'taskID', FILTER_SANITIZE_NUMBER_INT);
         $workspaceID = filter_input(INPUT_POST, 'workspaceID', FILTER_SANITIZE_NUMBER_INT);
-        $userRole = "Manager";
+        $userRole = filter_input(INPUT_POST, 'userRole', FILTER_SANITIZE_STRING) ?? "Manager";
         
         if(empty($workspaceID)){
             // get workspace id use taskID then update workspace member where workspaceid and userid same
@@ -58,8 +58,13 @@
             // insert notification
             $relatedID = $workspaceID;
             $relatedTable = "workspace";
-            $title = "Granted Manager Access";
-            $desc = "You have been granted manager access in a workspace: ".$workspacename;
+            if ($userRole === "Manager") {
+                $title = "Granted Manager Access";
+                $desc = "You have been granted manager access in a workspace: ".$workspacename;
+            } else {
+                $title = "Granted Employee Access";
+                $desc = "You have been granted employee access in a workspace: ".$workspacename;
+            }
             $insertNoti = $conn->prepare("INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
             $insertNoti->bind_param("isss", $relatedID, $relatedTable, $title, $desc);
             $insertNoti->execute();
