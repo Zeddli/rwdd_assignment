@@ -82,6 +82,40 @@ if (!$ok) {
     $error = mysqli_error($conn);
     echo json_encode([ 'ok' => false, 'message' => 'Database error: ' . $error ]);
 } else {
-    echo json_encode([ 'ok' => true, 'id' => mysqli_insert_id($conn) ]);
+    $goalId = mysqli_insert_id($conn);
+    
+    // Create notification for goal creation
+    try {
+        // Get workspace name
+        $workspaceQuery = mysqli_prepare($conn, "SELECT Name FROM workspace WHERE WorkSpaceID = ?");
+        mysqli_stmt_bind_param($workspaceQuery, 'i', $workspaceId);
+        mysqli_stmt_execute($workspaceQuery);
+        $workspaceResult = mysqli_stmt_get_result($workspaceQuery);
+        $workspaceName = mysqli_fetch_assoc($workspaceResult)['Name'] ?? 'Unknown Workspace';
+        
+        // Prepare notification data
+        $relatedID = $workspaceId;
+        $relatedTable = "goal";
+        $title = "Goal created";
+        $desc = "You have created a " . strtolower($type) . " term goal in workspace " . $workspaceName;
+        
+        // Insert notification
+        $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+        mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+        mysqli_stmt_execute($insertNoti);
+        
+        // Insert receiver
+        $receiver = $userID;
+        $notiID = mysqli_insert_id($conn);
+        $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+        mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $receiver);
+        mysqli_stmt_execute($insertReceiver);
+        
+    } catch (Exception $e) {
+        // Notification creation failed, but goal was created successfully
+        error_log("Failed to create notification for goal: " . $e->getMessage());
+    }
+    
+    echo json_encode([ 'ok' => true, 'id' => $goalId ]);
 }
 
