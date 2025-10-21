@@ -32,7 +32,7 @@ function renderNotifications() {
         const card = document.createElement('div');
         
         // Add a class if the related entity no longer exists
-        const isDeleted = n.Exists === false;
+        const isDeleted = n.Exists === false || n.Exists === null;
         card.className = 'notification-card' + (isDeleted ? ' deleted-entity' : '');
 
         let dateHtml = `<div class="notification-date">${n.CreatedAt}</div>`;

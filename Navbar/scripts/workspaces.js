@@ -125,6 +125,7 @@ function addNewWorkspace() {
             }
             
             console.log(`New workspace added with ID: ${data.workspaceID}`);
+            window.location.reload();
         } else {
             console.error('Failed to create workspace:', data.message);
             alert('Failed to create workspace: ' + data.message);

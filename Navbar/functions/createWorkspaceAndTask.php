@@ -161,7 +161,7 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
             $workspaceName = mysqli_fetch_assoc($workspaceResult)['Name'] ?? 'Unknown Workspace';
             
             // Prepare notification data
-            $relatedID = $workspaceID;
+            $relatedID = $taskID;
             $relatedTable = "task";
             $title = "Task created";
             $desc = "You have created a task '$taskName' in workspace " . $workspaceName;
