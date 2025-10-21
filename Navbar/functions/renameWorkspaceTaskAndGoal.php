@@ -15,8 +15,8 @@ function renameWorkspace($userID, $workspaceID, $newName) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // check if this user is actually a manager of this workspace
-    $checkManager = "SELECT 1 FROM workspacemember WHERE WorkSpaceID = ? AND UserID = ? AND UserRole = 'Manager'";
+    // check if this user is actually a manager of this workspace AND get original name
+    $checkManager = "SELECT w.Name as OriginalName FROM workspace w INNER JOIN workspacemember wm ON w.WorkSpaceID = wm.WorkSpaceID WHERE w.WorkSpaceID = ? AND wm.UserID = ? AND wm.UserRole = 'Manager'";
     $stmt = mysqli_prepare($conn, $checkManager);
     mysqli_stmt_bind_param($stmt, "ii", $workspaceID, $userID);
     mysqli_stmt_execute($stmt);
@@ -26,12 +26,17 @@ function renameWorkspace($userID, $workspaceID, $newName) {
         return ['success' => false, 'message' => 'Only managers can rename workspace'];
     }
     
+    $workspaceData = mysqli_fetch_assoc($result);
+    $originalName = $workspaceData['OriginalName'];
+    mysqli_stmt_close($stmt);
+    
     // update the workspace name
     $updateWorkspace = "UPDATE workspace SET Name = ? WHERE WorkSpaceID = ?";
     $stmt = mysqli_prepare($conn, $updateWorkspace);
     mysqli_stmt_bind_param($stmt, "si", $newName, $workspaceID);
     
     if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_close($stmt);
         // Create notification for workspace rename
         try {
             // Prepare notification data
@@ -50,15 +55,18 @@ function renameWorkspace($userID, $workspaceID, $newName) {
             $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
             mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
             mysqli_stmt_execute($insertNoti);
+            $notiID = mysqli_insert_id($conn);
+            mysqli_stmt_close($insertNoti);
             
             // Insert receivers for all workspace members
-            $notiID = mysqli_insert_id($conn);
             $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
             
             while ($member = mysqli_fetch_assoc($membersResult)) {
                 mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
                 mysqli_stmt_execute($insertReceiver);
             }
+            mysqli_stmt_close($insertReceiver);
+            mysqli_stmt_close($membersQuery);
             
         } catch (Exception $e) {
             // Notification creation failed, but rename was successful
@@ -82,8 +90,8 @@ function renameTask($userID, $taskID, $newName) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // make sure user has access to this task
-    $checkAccess = "SELECT 1 FROM taskaccess WHERE TaskID = ? AND UserID = ?";
+    // make sure user has access to this task AND get original name
+    $checkAccess = "SELECT t.Title as OriginalName FROM task t INNER JOIN taskaccess ta ON t.TaskID = ta.TaskID WHERE t.TaskID = ? AND ta.UserID = ?";
     $stmt = mysqli_prepare($conn, $checkAccess);
     mysqli_stmt_bind_param($stmt, "ii", $taskID, $userID);
     mysqli_stmt_execute($stmt);
@@ -93,12 +101,17 @@ function renameTask($userID, $taskID, $newName) {
         return ['success' => false, 'message' => 'No access to task'];
     }
     
+    $taskData = mysqli_fetch_assoc($result);
+    $originalName = $taskData['OriginalName'];
+    mysqli_stmt_close($stmt);
+    
     // update the task title
     $updateTask = "UPDATE task SET Title = ? WHERE TaskID = ?";
     $stmt = mysqli_prepare($conn, $updateTask);
     mysqli_stmt_bind_param($stmt, "si", $newName, $taskID);
     
     if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_close($stmt);
         // Create notification for task rename
         try {
             // Get workspace ID and workspace name
@@ -126,15 +139,19 @@ function renameTask($userID, $taskID, $newName) {
             $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
             mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
             mysqli_stmt_execute($insertNoti);
+            $notiID = mysqli_insert_id($conn);
+            mysqli_stmt_close($insertNoti);
             
             // Insert receivers for all task members
-            $notiID = mysqli_insert_id($conn);
             $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
             
             while ($member = mysqli_fetch_assoc($membersResult)) {
                 mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
                 mysqli_stmt_execute($insertReceiver);
             }
+            mysqli_stmt_close($insertReceiver);
+            mysqli_stmt_close($membersQuery);
+            mysqli_stmt_close($workspaceQuery);
             
         } catch (Exception $e) {
             // Notification creation failed, but rename was successful

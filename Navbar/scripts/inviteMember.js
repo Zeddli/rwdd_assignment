@@ -149,6 +149,7 @@ async function sendInviteRequest() {
             // Clear form after successful invite
             setTimeout(() => {
                 hideInviteModal();
+                window.location.reload();
             }, 1500);
         } else {
             showMessage(result.error || 'Failed to invite member', 'error');

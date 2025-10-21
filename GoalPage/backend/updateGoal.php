@@ -38,14 +38,35 @@ $progress = $payload['progress'] ?? null;
 
 if (!$goalId) { echo json_encode([ 'ok' => false, 'message' => 'Missing goalId' ]); exit; }
 
-// Check access by joining goal->workspace->workspacemember
-$sqlCheck = "SELECT g.WorkSpaceID FROM goal g JOIN workspacemember wm ON wm.WorkSpaceID = g.WorkSpaceID AND wm.UserID = ? WHERE g.GoalID = ? LIMIT 1";
-$stmtC = mysqli_prepare($conn, $sqlCheck);
+// Check access by joining goal->workspace->workspacemember AND retrieve goal details
+$dataQuery = "
+    SELECT 
+        g.WorkSpaceID, 
+        g.GoalTitle,
+        w.Name AS WorkSpaceName
+    FROM goal g 
+    JOIN workspace w ON g.WorkSpaceID = w.WorkSpaceID
+    JOIN workspacemember wm ON wm.WorkSpaceID = g.WorkSpaceID AND wm.UserID = ? 
+    WHERE g.GoalID = ? 
+    LIMIT 1
+";
+$stmtC = mysqli_prepare($conn, $dataQuery);
 mysqli_stmt_bind_param($stmtC, 'ii', $userID, $goalId);
 mysqli_stmt_execute($stmtC);
 $resC = mysqli_stmt_get_result($stmtC);
-if (!$resC || mysqli_num_rows($resC) === 0) { echo json_encode([ 'ok' => false, 'message' => 'No access' ]); exit; }
 
+if (!$resC || mysqli_num_rows($resC) === 0) { 
+    echo json_encode([ 'ok' => false, 'message' => 'Goal not found or no access' ]); 
+    exit; 
+}
+
+$goalData = mysqli_fetch_assoc($resC);
+$workspaceId = $goalData['WorkSpaceID'];
+$GoalTitle = $goalData['GoalTitle'];
+$workspaceName = $goalData['WorkSpaceName'];
+mysqli_stmt_close($stmtC);
+
+// Build Update Query
 $fields = [];
 $params = [];
 $types = '';
@@ -54,19 +75,22 @@ add($fields, $params, $types, 'Type', $type);
 add($fields, $params, $types, 'GoalTitle', $title);
 add($fields, $params, $types, 'Description', $description);
 add($fields, $params, $types, 'StartTime', $start);
+
 // Handle EndTime based on progress status
 if ($progress === 'Completed') {
-  // If marking as Completed and EndTime is null, set it to current time
-  $sqlEnd = "UPDATE goal SET EndTime = IFNULL(EndTime, NOW()) WHERE GoalID = ?";
-  $stmtEnd = mysqli_prepare($conn, $sqlEnd);
-  mysqli_stmt_bind_param($stmtEnd, 'i', $goalId);
-  mysqli_stmt_execute($stmtEnd);
+    // If marking as Completed and EndTime is null, set it to current time
+    $sqlEnd = "UPDATE goal SET EndTime = IFNULL(EndTime, NOW()) WHERE GoalID = ?";
+    $stmtEnd = mysqli_prepare($conn, $sqlEnd);
+    mysqli_stmt_bind_param($stmtEnd, 'i', $goalId);
+    mysqli_stmt_execute($stmtEnd);
+    mysqli_stmt_close($stmtEnd);
 } elseif ($progress === 'Pending' || $progress === 'In Progress') {
-  // If changing from Completed to Pending/In Progress, clear EndTime
-  $sqlEnd = "UPDATE goal SET EndTime = NULL WHERE GoalID = ?";
-  $stmtEnd = mysqli_prepare($conn, $sqlEnd);
-  mysqli_stmt_bind_param($stmtEnd, 'i', $goalId);
-  mysqli_stmt_execute($stmtEnd);
+    // If changing from Completed to Pending/In Progress, clear EndTime
+    $sqlEnd = "UPDATE goal SET EndTime = NULL WHERE GoalID = ?";
+    $stmtEnd = mysqli_prepare($conn, $sqlEnd);
+    mysqli_stmt_bind_param($stmtEnd, 'i', $goalId);
+    mysqli_stmt_execute($stmtEnd);
+    mysqli_stmt_close($stmtEnd);
 }
 add($fields, $params, $types, 'Deadline', $deadline);
 add($fields, $params, $types, 'Progress', $progress);
@@ -79,6 +103,44 @@ $params[] = $goalId;
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, $types, ...$params);
 $ok = mysqli_stmt_execute($stmt);
+
+// Create Notification if Update was successful
+if ($ok) {
+    try {
+        // Prepare notification content
+        $notificationTitle = "Goal updated";
+        $notificationDescription = "The goal: '" . ($title ?? $GoalTitle) . "' has been updated in workspace '$workspaceName'.";
+
+        // Insert notification
+        $relatedID = $goalId;
+        $relatedTable = "goal";
+        
+        $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+        mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $notificationTitle, $notificationDescription);
+        mysqli_stmt_execute($insertNoti);
+        $notiID = mysqli_insert_id($conn);
+        mysqli_stmt_close($insertNoti);
+        
+        // Get all workspace members
+        $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM workspacemember WHERE WorkSpaceID = ?");
+        mysqli_stmt_bind_param($membersQuery, 'i', $workspaceId);
+        mysqli_stmt_execute($membersQuery);
+        $membersResult = mysqli_stmt_get_result($membersQuery);
+        mysqli_stmt_close($membersQuery);
+        
+        // Insert receiver for every member
+        $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+        while ($member = mysqli_fetch_assoc($membersResult)) {
+            $receiver = $member['UserID'];
+            mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $receiver);
+            mysqli_stmt_execute($insertReceiver);
+        }
+        mysqli_stmt_close($insertReceiver);
+
+    } catch (Exception $e) {
+        error_log("Failed to create notification for goal update: " . $e->getMessage());
+    }
+}
 
 echo json_encode([ 'ok' => (bool)$ok ]);
 
