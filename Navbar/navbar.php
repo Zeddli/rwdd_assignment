@@ -32,6 +32,18 @@ $workspaces = getUserWorkspaces($userID);
     <link rel="stylesheet" href="../Navbar/styles/navbar.css">
 </head>
 <body>
+    <!-- Hamburger Menu Button (Mobile Only) -->
+    <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle navigation menu">
+        <div class="hamburger-icon">
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+        </div>
+    </button>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
     <!-- Main Navigation Sidebar Container -->
     <nav class="sidebar" id="sidebar">
         <!-- Top Section: Logo and Toggle Button -->

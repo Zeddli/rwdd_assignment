@@ -10,7 +10,9 @@ if (!window.SidebarState){
         editingElement: null,            // What are we currently renaming? 
         workspaceCounter: 1,             // Old counter for new workspaces 
         taskCounter: 1,                  // Old counter for new tasks 
-        allowProgrammaticEdit: false     // Security thing - only let renaming happen fro
+        allowProgrammaticEdit: false,    // Security thing - only let renaming happen fro
+        isMobile: false,                 // Are we on mobile view?
+        isMobileOpen: false              // Is mobile sidebar open?
     };
     window.SidebarState = SidebarState;
 }

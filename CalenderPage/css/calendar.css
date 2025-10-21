@@ -361,19 +361,19 @@
     padding: 20px;
 }
 
-.task-item {
+.calendar-task-item {
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     padding: 15px;
     margin-bottom: 10px;
 }
 
-.task-item h4 {
+.calendar-task-item h4 {
     margin: 0 0 8px 0;
     color: #333;
 }
 
-.task-item p {
+.calendar-task-item p {
     margin: 0 0 10px 0;
     color: #666;
     font-size: 14px;

@@ -19,6 +19,9 @@ function initializeSidebar() {
     // init other modules that depend on the basic setup
     initializeDropdowns();           // set up dropdown menus
     
+    // initialize mobile responsive behavior
+    initializeMobileResponsive();
+    
     // mark as initialized
     window.sidebarInitialized = true;
     console.log('Sidebar initialized successfully');
@@ -80,6 +83,9 @@ function bindEventListeners() {
     // handle keyboard shortcuts (like Escape key to cancel editing)
     document.addEventListener('keydown', handleKeyDown);
     
+    // handle navigation link clicks to close mobile sidebar
+    document.addEventListener('click', handleNavigationClick);
+    
     // mark that we've set up the listeners
     DOM.workspacesContainer.dataset.listenersBound = 'true';
     console.log('Event listeners bound successfully');
@@ -131,11 +137,250 @@ function handleKeyDown(event) {
         }
         // also close any open dropdown menus
         closeAllDropdowns();
+        
+        // close mobile sidebar on escape
+        if (SidebarState.isMobile && SidebarState.isMobileOpen) {
+            closeMobileSidebar();
+        }
     }
+}
+
+/**
+ * Handle navigation link clicks to close mobile sidebar
+ */
+function handleNavigationClick(event) {
+    // Check if we're on mobile and sidebar is open
+    if (!SidebarState.isMobile || !SidebarState.isMobileOpen) {
+        return;
+    }
+    
+    // Check if the clicked element is a navigation link
+    const navLink = event.target.closest('a[href]');
+    if (navLink) {
+        // Close mobile sidebar when navigation link is clicked
+        closeMobileSidebar();
+    }
+}
+
+/**
+ * Handle clicks on the mobile close button (X) in the sidebar header
+ */
+function handleMobileCloseClick(event) {
+    // Check if we're on mobile and sidebar is open
+    if (!SidebarState.isMobile || !SidebarState.isMobileOpen) {
+        return;
+    }
+    
+    // Check if the click is on the close button area (left side of header)
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    
+    // If click is within the left 50px (close button area), close the sidebar
+    if (clickX <= 50) {
+        closeMobileSidebar();
+    }
+}
+
+/**
+ * Initialize mobile responsive behavior
+ * Sets up hamburger menu and mobile-specific interactions
+ */
+function initializeMobileResponsive() {
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Set up mobile state
+        SidebarState.isMobile = true;
+        SidebarState.isMobileOpen = false;
+        
+        // Add mobile classes
+        DOM.sidebar.classList.add('mobile-closed');
+        
+        // Set up hamburger menu click handler
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        
+        if (hamburgerMenu) {
+            hamburgerMenu.addEventListener('click', toggleMobileSidebar);
+        }
+        
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', closeMobileSidebar);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', handleWindowResize);
+        
+        console.log('Mobile responsive behavior initialized');
+    }
+}
+
+/**
+ * Toggle mobile sidebar open/closed
+ */
+function toggleMobileSidebar() {
+    if (!SidebarState.isMobile) return;
+    
+    SidebarState.isMobileOpen = !SidebarState.isMobileOpen;
+    
+    const sidebar = DOM.sidebar;
+    const overlay = document.getElementById('mobileOverlay');
+    const hamburger = document.getElementById('hamburgerMenu');
+    
+    if (SidebarState.isMobileOpen) {
+        // Open mobile sidebar
+        sidebar.classList.add('mobile-open');
+        sidebar.classList.remove('mobile-closed');
+        overlay.classList.add('active');
+        hamburger.classList.add('active');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Add click handler for the close button (X) in the sidebar header
+        setTimeout(() => {
+            const sidebarHeader = sidebar.querySelector('.sidebar-header');
+            if (sidebarHeader && !sidebarHeader.dataset.closeHandlerAdded) {
+                sidebarHeader.addEventListener('click', handleMobileCloseClick);
+                sidebarHeader.dataset.closeHandlerAdded = 'true';
+            }
+        }, 100);
+        
+        console.log('Mobile sidebar opened');
+    } else {
+        // Close mobile sidebar
+        closeMobileSidebar();
+    }
+}
+
+/**
+ * Close mobile sidebar
+ */
+function closeMobileSidebar() {
+    if (!SidebarState.isMobile) return;
+    
+    SidebarState.isMobileOpen = false;
+    
+    const sidebar = DOM.sidebar;
+    const overlay = document.getElementById('mobileOverlay');
+    const hamburger = document.getElementById('hamburgerMenu');
+    
+    sidebar.classList.remove('mobile-open');
+    sidebar.classList.add('mobile-closed');
+    overlay.classList.remove('active');
+    hamburger.classList.remove('active');
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+    
+    // Close any open dropdowns
+    closeAllDropdowns();
+    
+    // Clean up close button handler
+    const sidebarHeader = sidebar.querySelector('.sidebar-header');
+    if (sidebarHeader && sidebarHeader.dataset.closeHandlerAdded) {
+        sidebarHeader.removeEventListener('click', handleMobileCloseClick);
+        sidebarHeader.dataset.closeHandlerAdded = 'false';
+    }
+    
+    console.log('Mobile sidebar closed');
+}
+
+/**
+ * Handle window resize events
+ */
+function handleWindowResize() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile && !SidebarState.isMobile) {
+        // Switched to mobile
+        SidebarState.isMobile = true;
+        SidebarState.isMobileOpen = false;
+        DOM.sidebar.classList.add('mobile-closed');
+        DOM.sidebar.classList.remove('closed');
+        
+        // Set up mobile event listeners if not already set
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        
+        if (hamburgerMenu && !hamburgerMenu.dataset.mobileListener) {
+            hamburgerMenu.addEventListener('click', toggleMobileSidebar);
+            hamburgerMenu.dataset.mobileListener = 'true';
+        }
+        
+        if (mobileOverlay && !mobileOverlay.dataset.mobileListener) {
+            mobileOverlay.addEventListener('click', closeMobileSidebar);
+            mobileOverlay.dataset.mobileListener = 'true';
+        }
+        
+        console.log('Switched to mobile view');
+        
+    } else if (!isMobile && SidebarState.isMobile) {
+        // Switched to desktop
+        SidebarState.isMobile = false;
+        SidebarState.isMobileOpen = false;
+        
+        // Remove mobile classes
+        DOM.sidebar.classList.remove('mobile-open', 'mobile-closed');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Close overlay
+        const overlay = document.getElementById('mobileOverlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+        }
+        
+        // Reset hamburger
+        const hamburger = document.getElementById('hamburgerMenu');
+        if (hamburger) {
+            hamburger.classList.remove('active');
+        }
+        
+        console.log('Switched to desktop view');
+    }
+}
+
+/**
+ * Enhanced toggle sidebar function that handles both desktop and mobile
+ */
+function toggleSidebar(event) {
+    // Make sure this is only for the left navbar toggle
+    if (event && event.target && event.target.id === 'todoSidebarToggle') {
+        return; // Don't handle to-do sidebar toggle
+    }
+    
+    // Handle mobile vs desktop differently
+    if (SidebarState.isMobile) {
+        toggleMobileSidebar();
+        return;
+    }
+    
+    // Desktop behavior (original logic)
+    // flip the state - if open, make it closed; if closed, make it open
+    SidebarState.isOpen = !SidebarState.isOpen;
+    
+    if (SidebarState.isOpen) {
+        // remove the "closed" CSS class to show full sidebar
+        DOM.sidebar.classList.remove('closed');
+        console.log('Left sidebar opened');
+    } else {
+        // add the "closed" CSS class to show icon-only sidebar
+        DOM.sidebar.classList.add('closed');
+        console.log('Left sidebar closed');
+    }
+    
+    // close any open dropdown menus when toggling 
+    closeAllDropdowns();
 }
 
 // export these functions so other js files can use them
 window.initializeSidebar = initializeSidebar;
 window.toggleSidebar = toggleSidebar;
+window.toggleMobileSidebar = toggleMobileSidebar;
+window.closeMobileSidebar = closeMobileSidebar;
+window.handleMobileCloseClick = handleMobileCloseClick;
 window.handleOutsideClick = handleOutsideClick;
 window.handleKeyDown = handleKeyDown;
