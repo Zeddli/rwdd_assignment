@@ -150,6 +150,23 @@ body:has(.sidebar.closed) .main-content {
     background: #e3f2fd;
 }
 
+/* Notification Card for Deleted Entities */
+.notification-card.deleted-entity {
+    background: #ffe0e0;
+    border: 2px dashed #f44336;
+    opacity: 0.7;
+}
+
+.notification-card.deleted-entity:hover {
+    box-shadow: none;
+    background: #ffc0c0;
+}
+
+.notification-date.deleted-text {
+    color: #f44336;
+    font-weight: bold;
+}
+
 .notification-title { font-weight: bold; margin-bottom: 4px; }
 .notification-desc { margin-bottom: 6px; color: #222; }
 .notification-date {

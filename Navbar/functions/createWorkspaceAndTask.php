@@ -126,8 +126,7 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     // Map UI status to DB enum values
     $statusMap = [
         'Pending' => 'Pending',
-        'In Progress' => 'InProgress',
-        'InProgress' => 'InProgress',
+        'In Progress' => 'In Progress',
         'Completed' => 'Completed'
     ];
     $statusForDb = $statusMap[$status] ?? 'Pending';
@@ -150,6 +149,51 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
         $accessStmt = mysqli_prepare($conn, $insertAccess);
         mysqli_stmt_bind_param($accessStmt, "ii", $userID, $taskID);
         mysqli_stmt_execute($accessStmt);
+        mysqli_stmt_close($accessStmt);
+        
+        // Create notification for task creation
+        try {
+            // Get workspace name
+            $workspaceQuery = mysqli_prepare($conn, "SELECT Name FROM workspace WHERE WorkSpaceID = ?");
+            mysqli_stmt_bind_param($workspaceQuery, 'i', $workspaceID);
+            mysqli_stmt_execute($workspaceQuery);
+            $workspaceResult = mysqli_stmt_get_result($workspaceQuery);
+            $workspaceName = mysqli_fetch_assoc($workspaceResult)['Name'] ?? 'Unknown Workspace';
+            mysqli_stmt_close($workspaceQuery);
+            
+            // Prepare notification data
+            $relatedID = $taskID;
+            $relatedTable = "task";
+            $title = "Task created";
+            $desc = "A new task '$taskName' has been created in workspace '$workspaceName'.";
+            
+            // Insert notification
+            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+            mysqli_stmt_execute($insertNoti);
+            $notiId = mysqli_insert_id($conn);
+            mysqli_stmt_close($insertNoti);
+
+            // Get all users with access to the task to notify them
+            $accessQuery = mysqli_prepare($conn, "SELECT UserID FROM taskaccess WHERE TaskID = ?");
+            mysqli_stmt_bind_param($accessQuery, 'i', $taskID);
+            mysqli_stmt_execute($accessQuery);
+            $accessResult = mysqli_stmt_get_result($accessQuery);
+            
+            // Insert receiver
+            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+            while ($accessRow = mysqli_fetch_assoc($accessResult)) {
+                $receiverID = $accessRow['UserID'];
+                mysqli_stmt_bind_param($insertReceiver, "ii", $notiId, $receiverID);
+                mysqli_stmt_execute($insertReceiver);
+            }
+            mysqli_stmt_close($insertReceiver);
+            mysqli_stmt_close($accessQuery);
+            
+        } catch (Exception $e) {
+            // Notification creation failed, but task was created successfully
+            error_log("Failed to create notification for task: " . $e->getMessage());
+        }
         
         return [
             'success' => true, 

@@ -10,7 +10,7 @@ if (!$userID) {
 }
 
 // Get selected workspace from session (set when user clicks goal link)
-$selectedWorkspaceID = $_SESSION['selectedWorkspaceId'] ?? null;
+$selectedWorkspaceID = $_SESSION['workspaceID'] ?? null;
 
 // If no workspace in session, try to use one the user belongs to
 if ($selectedWorkspaceID === null) {
@@ -18,7 +18,7 @@ if ($selectedWorkspaceID === null) {
     if ($fallback && mysqli_num_rows($fallback) > 0) {
         $selectedWorkspaceID = intval(mysqli_fetch_assoc($fallback)['WorkSpaceID']);
         // Store in session for future requests
-        $_SESSION['selectedWorkspaceId'] = $selectedWorkspaceID;
+        $_SESSION['workspaceID'] = $selectedWorkspaceID;
     }
 }
 

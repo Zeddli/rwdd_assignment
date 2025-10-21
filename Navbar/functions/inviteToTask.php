@@ -69,6 +69,40 @@ function inviteToTask($managerUserID, $taskID, $invitedUserID, $workspaceID) {
     mysqli_stmt_bind_param($stmt, "ii", $invitedUserID, $taskID);
     
     if (mysqli_stmt_execute($stmt)) {
+        // Create notification for task invitation
+        try {
+            // Get workspace name and task name
+            $workspaceQuery = mysqli_prepare($conn, "SELECT w.Name as WorkspaceName, t.Title as TaskName FROM workspace w JOIN task t ON w.WorkSpaceID = t.WorkSpaceID WHERE w.WorkSpaceID = ? AND t.TaskID = ?");
+            mysqli_stmt_bind_param($workspaceQuery, 'ii', $workspaceID, $taskID);
+            mysqli_stmt_execute($workspaceQuery);
+            $workspaceResult = mysqli_stmt_get_result($workspaceQuery);
+            $workspaceData = mysqli_fetch_assoc($workspaceResult);
+            $workspaceName = $workspaceData['WorkspaceName'] ?? 'Unknown Workspace';
+            $taskName = $workspaceData['TaskName'] ?? 'Unknown Task';
+            
+            // Prepare notification data
+            $relatedID = $taskID;
+            $relatedTable = "task";
+            $title = "Granted Employee Access";
+            $desc = "You have been granted employee access in a workspace: " . $workspaceName;
+            
+            // Insert notification
+            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+            mysqli_stmt_execute($insertNoti);
+            
+            // Insert receiver
+            $receiver = $invitedUserID;
+            $notiID = mysqli_insert_id($conn);
+            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+            mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $receiver);
+            mysqli_stmt_execute($insertReceiver);
+            
+        } catch (Exception $e) {
+            // Notification creation failed, but invitation was successful
+            error_log("Failed to create notification for task invitation: " . $e->getMessage());
+        }
+        
         return [
             'success' => true,
             'message' => 'Task access granted successfully',

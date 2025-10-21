@@ -79,6 +79,48 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
     
     mysqli_stmt_close($stmt);
     
+    // Create notification for task deletion before deleting
+    try {
+        // Get workspace ID and workspace name
+        $workspaceQuery = mysqli_prepare($conn, "SELECT t.WorkSpaceID, w.Name as WorkspaceName FROM task t JOIN workspace w ON t.WorkSpaceID = w.WorkSpaceID WHERE t.TaskID = ?");
+        mysqli_stmt_bind_param($workspaceQuery, 'i', $taskID);
+        mysqli_stmt_execute($workspaceQuery);
+        $workspaceResult = mysqli_stmt_get_result($workspaceQuery);
+        $workspaceData = mysqli_fetch_assoc($workspaceResult);
+        $workspaceID = $workspaceData['WorkSpaceID'];
+        $workspaceName = $workspaceData['WorkspaceName'] ?? 'Unknown Workspace';
+        
+        // Prepare notification data
+        $relatedID = $taskID;
+        $relatedTable = "task";
+        $title = "Task deleted";
+        $desc = "The task: ". $taskname . " has been deleted from workspace '$workspaceName'.";
+        
+        // Get all task members to notify them
+        $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM taskaccess WHERE TaskID = ?");
+        mysqli_stmt_bind_param($membersQuery, 'i', $taskID);
+        mysqli_stmt_execute($membersQuery);
+        $membersResult = mysqli_stmt_get_result($membersQuery);
+        
+        // Insert notification
+        $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+        mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+        mysqli_stmt_execute($insertNoti);
+        
+        // Insert receivers for all task members
+        $notiID = mysqli_insert_id($conn);
+        $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+        
+        while ($member = mysqli_fetch_assoc($membersResult)) {
+            mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
+            mysqli_stmt_execute($insertReceiver);
+        }
+        
+    } catch (Exception $e) {
+        // Notification creation failed, but deletion will continue
+        error_log("Failed to create notification for task deletion: " . $e->getMessage());
+    }
+    
     // Delete related records in correct order
     $deleteQueries = [
         "DELETE FROM comment WHERE TaskID = ?",
@@ -126,7 +168,42 @@ function deleteWorkspaceFromDB($conn, $userID, $workspaceID) {
         return ['success' => false, 'message' => 'Workspace not found or no permission'];
     }
     
+    $workspaceData = mysqli_fetch_assoc($result);
+    $workspaceName = $workspaceData['Name'] ?? 'Unknown Workspace';
     mysqli_stmt_close($stmt);
+    
+    // Create notification for workspace deletion before deleting
+    try {
+        // Prepare notification data
+        $relatedID = $workspaceID;
+        $relatedTable = "workspace";
+        $title = "Workspace deleted";
+        $desc = "The workspace: ". $workspaceName . " has been deleted.";
+        
+        // Get all workspace members to notify them
+        $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM workspacemember WHERE WorkSpaceID = ?");
+        mysqli_stmt_bind_param($membersQuery, 'i', $workspaceID);
+        mysqli_stmt_execute($membersQuery);
+        $membersResult = mysqli_stmt_get_result($membersQuery);
+        
+        // Insert notification
+        $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+        mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+        mysqli_stmt_execute($insertNoti);
+        
+        // Insert receivers for all workspace members
+        $notiID = mysqli_insert_id($conn);
+        $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+        
+        while ($member = mysqli_fetch_assoc($membersResult)) {
+            mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
+            mysqli_stmt_execute($insertReceiver);
+        }
+        
+    } catch (Exception $e) {
+        // Notification creation failed, but deletion will continue
+        error_log("Failed to create notification for workspace deletion: " . $e->getMessage());
+    }
     
     // Get all task IDs in this workspace for cleanup
     $stmt = mysqli_prepare($conn, "SELECT TaskID FROM task WHERE WorkSpaceID = ?");

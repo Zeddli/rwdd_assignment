@@ -12,6 +12,7 @@ require_once '../Navbar/functions/renameWorkspaceTaskAndGoal.php';
 require_once '../Navbar/functions/deleteWorkspaceAndTask.php';
 require_once '../Navbar/functions/getWorkspaceMembers.php';
 require_once '../Navbar/functions/inviteToTask.php';
+require_once '../Navbar/functions/inviteToWorkspace.php';
 // require_once 'functions/inviteMember.php';
 
 

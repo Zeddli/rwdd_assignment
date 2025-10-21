@@ -113,21 +113,43 @@ function saveRename(element, newValue, originalValue) {
         },
         body: `action=${action}&${idParam}=${id}&new_name=${encodeURIComponent(newValue)}`
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Check content type. If not JSON (e.g., empty or plain text), assume success and skip JSON parsing.
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.warn(`Server responded with non-JSON content for rename. Assuming success.`);
+            return { success: true, isManualSuccess: true }; // Return a mock success object
+        }
+        
+        return response.json();
+    })
     .then(data => {
+        // Handle successful rename (either real JSON success or manual success)
         if (data.success) {
             element.textContent = newValue;
+            console.log('Rename successful (API confirmed or assumed).');
         } else {
+            // Handle JSON response failure
             console.error('Failed to rename:', data.message);
             alert('Failed to rename: ' + data.message);
             element.textContent = originalValue;
         }
     })
     .catch(error => {
+        // This block runs if HTTP status was bad OR if JSON parsing failed and it wasn't the expected non-JSON success.
         console.error('Error renaming:', error);
         alert('Error renaming. Please try again.');
         element.textContent = originalValue;
     });
+
+    // Refresh page to reflect changes
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
 }
 
 /**

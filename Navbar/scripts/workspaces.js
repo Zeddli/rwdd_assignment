@@ -125,6 +125,7 @@ function addNewWorkspace() {
             }
             
             console.log(`New workspace added with ID: ${data.workspaceID}`);
+            window.location.reload();
         } else {
             console.error('Failed to create workspace:', data.message);
             alert('Failed to create workspace: ' + data.message);
@@ -275,7 +276,9 @@ async function handleTaskFormSubmit(event) {
             }
             
             // Refresh page to show new task
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             alert('Failed to create task: ' + (result.message || 'Unknown error'));
         }
