@@ -9,7 +9,7 @@
         // will be in taskID or workspace ID
         $taskID = filter_input(INPUT_POST, 'taskID', FILTER_SANITIZE_NUMBER_INT);
         $workspaceID = filter_input(INPUT_POST, 'workspaceID', FILTER_SANITIZE_NUMBER_INT);
-        $userRole = filter_input(INPUT_POST, 'userRole', FILTER_SANITIZE_STRING) ?? "Manager";
+        $userRole = "Manager";
         
         if(empty($workspaceID)){
             // get workspace id use taskID then update workspace member where workspaceid and userid same

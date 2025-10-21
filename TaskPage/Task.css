@@ -120,6 +120,7 @@ p{
     border-radius: 8px;
     border: 2px solid grey;
     width: 50%;
+    overflow-x: auto;
 }
 /* .description-section .time{
     display: flex;

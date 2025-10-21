@@ -14,7 +14,8 @@
             $result = $stmt->get_result();
             if($result->num_rows === 1){
                 $userDetails = $result->fetch_assoc();
-                if($userDetails["PictureName"] === null || file_exists("../UserProfilePictures/".$userDetails["PictureName"]) === false) {
+                $filepath = __DIR__ . "/../Assets/ProfilePic/" . $userDetails["PictureName"];
+                if($userDetails["PictureName"] === null || !file_exists($filepath)){ 
                     $userDetails["PictureName"] = "anonymous.jpg";
                 }
                 echo json_encode(["success"=>true, "user"=>$userDetails]);

@@ -419,3 +419,16 @@ window.debugShowWorkspaceSelection = function() {
 console.log('TaskDetailWindow.js: Functions exported to window object');
 console.log('showTaskDetailWindow available:', typeof window.showTaskDetailWindow === 'function');
 
+export {
+    showTaskDetailWindow,
+    showEditTaskWindow,
+    hideTaskDetailWindow,
+    initializeTaskDetailWindow,
+    showTaskMessage,
+    handleTaskSubmit,
+    // handleGrantAccessClick,
+    loadWorkspaces,
+    populateWorkspaceDropdown,
+    resetTaskForm,
+};
+

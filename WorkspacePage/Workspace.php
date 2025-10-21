@@ -327,6 +327,7 @@
         initializeTaskDetailWindow();
     });
 
+    console.log("rendering menu for workspace");
     const workspaceMenu = createThreeDotMenu([
         {
             label: "Rename", 
@@ -364,6 +365,7 @@
 
     document.getElementById("workspace-menu").appendChild(workspaceMenu);
 
+
     // Make functions available globally 
     window.showTaskDetailWindow = showTaskDetailWindow;
     window.showEditTaskWindow = showEditTaskWindow;
@@ -372,6 +374,7 @@
 
 
     <!-- navbar -->
+    <script src="../Navbar/scripts/TaskDetailWindow.js"></script>
     <script src="../Navbar/scripts/core.js"></script>                      <!-- Global state and DOM cache -->
     <script src="../Navbar/scripts/delete.js"></script>                    <!-- Delete functionality -->
     <script src="../Navbar/scripts/dropdowns.js"></script>                 <!-- Dropdown menu functionality -->
