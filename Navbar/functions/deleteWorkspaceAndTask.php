@@ -91,7 +91,7 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
         $workspaceName = $workspaceData['WorkspaceName'] ?? 'Unknown Workspace';
         
         // Prepare notification data
-        $relatedID = $workspaceID;
+        $relatedID = $taskID;
         $relatedTable = "task";
         $title = "Task deleted";
         $desc = "The task: ". $taskname . " has been deleted.";

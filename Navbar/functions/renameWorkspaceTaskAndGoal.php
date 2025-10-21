@@ -111,7 +111,7 @@ function renameTask($userID, $taskID, $newName) {
             $workspaceName = $workspaceData['WorkspaceName'] ?? 'Unknown Workspace';
             
             // Prepare notification data
-            $relatedID = $workspaceID;
+            $relatedID = $taskID;
             $relatedTable = "task";
             $title = "Task renamed";
             $desc = "The task: ". $originalName . " has been renamed to: " . $newName . " in workspace: " . $workspaceName;

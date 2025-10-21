@@ -81,7 +81,7 @@ function inviteToTask($managerUserID, $taskID, $invitedUserID, $workspaceID) {
             $taskName = $workspaceData['TaskName'] ?? 'Unknown Task';
             
             // Prepare notification data
-            $relatedID = $workspaceID;
+            $relatedID = $taskID;
             $relatedTable = "task";
             $title = "Granted Employee Access";
             $desc = "You have been granted employee access in a workspace: " . $workspaceName;
