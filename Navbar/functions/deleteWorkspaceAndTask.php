@@ -94,7 +94,7 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
         $relatedID = $taskID;
         $relatedTable = "task";
         $title = "Task deleted";
-        $desc = "The task: ". $taskname . " has been deleted.";
+        $desc = "The task: ". $taskname . " has been deleted from workspace '$workspaceName'.";
         
         // Get all task members to notify them
         $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM taskaccess WHERE TaskID = ?");

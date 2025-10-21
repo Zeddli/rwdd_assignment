@@ -276,7 +276,9 @@ async function handleTaskFormSubmit(event) {
             }
             
             // Refresh page to show new task
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             alert('Failed to create task: ' + (result.message || 'Unknown error'));
         }
