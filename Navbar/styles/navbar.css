@@ -1010,13 +1010,15 @@
         font-weight: 800;
         flex: 1;
         text-align: center;
+        margin-left: 50px; /* Add left margin to avoid close button */
+        margin-right: 50px; /* Add right margin for symmetry */
     }
     
     /* Mobile close button - positioned on the left */
     .sidebar.mobile-open .sidebar-header::before {
         content: '×';
         position: absolute;
-        left: 20px;
+        left: 15px;
         top: 50%;
         transform: translateY(-50%);
         font-size: 24px;

@@ -175,8 +175,8 @@ function handleMobileCloseClick(event) {
     const rect = event.currentTarget.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     
-    // If click is within the left 50px (close button area), close the sidebar
-    if (clickX <= 50) {
+    // If click is within the left 60px (close button area), close the sidebar
+    if (clickX <= 60) {
         closeMobileSidebar();
     }
 }
