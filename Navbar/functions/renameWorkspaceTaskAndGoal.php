@@ -11,6 +11,9 @@
 function renameWorkspace($userID, $workspaceID, $newName) {
     global $conn;
     
+    // Debug logging to track function calls
+    error_log("WORKSPACE RENAME FUNCTION CALLED - WorkspaceID: $workspaceID, NewName: '$newName', Time: " . date('Y-m-d H:i:s'));
+    
     if (!$conn) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
@@ -26,12 +29,10 @@ function renameWorkspace($userID, $workspaceID, $newName) {
         return ['success' => false, 'message' => 'Only managers can rename workspace'];
     }
 
-    // Get original name before renaming
-    $originalQuery = mysqli_prepare($conn, "SELECT Name FROM workspace WHERE WorkSpaceID = ?");
-    mysqli_stmt_bind_param($originalQuery, "i", $workspaceID);
-    mysqli_stmt_execute($originalQuery);
-    $originalResult = mysqli_stmt_get_result($originalQuery);
-    $originalName = mysqli_fetch_assoc($originalResult)['Name'] ?? '(unknown name)';
+    // Get original name from the result
+    $workspaceData = mysqli_fetch_assoc($result);
+    $originalName = $workspaceData['OriginalName'] ?? '(unknown name)';
+    mysqli_stmt_close($stmt);
     
     // Update the workspace name
     $updateWorkspace = "UPDATE workspace SET Name = ? WHERE WorkSpaceID = ?";
@@ -54,21 +55,36 @@ function renameWorkspace($userID, $workspaceID, $newName) {
             mysqli_stmt_execute($membersQuery);
             $membersResult = mysqli_stmt_get_result($membersQuery);
             
-            // Insert notification
-            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
-            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
-            mysqli_stmt_execute($insertNoti);
-            $notiID = mysqli_insert_id($conn);
-            mysqli_stmt_close($insertNoti);
+            // Check if notification already exists to prevent duplicates
+            $checkNoti = mysqli_prepare($conn, "SELECT NotificationID FROM notification WHERE RelatedID = ? AND RelatedTable = ? AND Title = ? AND Description = ? AND CreatedAt > DATE_SUB(NOW(), INTERVAL 5 SECOND)");
+            mysqli_stmt_bind_param($checkNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+            mysqli_stmt_execute($checkNoti);
+            $checkResult = mysqli_stmt_get_result($checkNoti);
             
-            // Insert receivers for all workspace members
-            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
-            
-            while ($member = mysqli_fetch_assoc($membersResult)) {
-                mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
-                mysqli_stmt_execute($insertReceiver);
+            if (mysqli_num_rows($checkResult) == 0) {
+                // No duplicate found, insert notification
+                $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+                mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+                mysqli_stmt_execute($insertNoti);
+                $notiID = mysqli_insert_id($conn);
+                mysqli_stmt_close($insertNoti);
+                
+                // Debug logging for successful insertion
+                error_log("NOTIFICATION INSERTED - WorkspaceID: $workspaceID, NotificationID: $notiID");
+                
+                // Insert receivers for all workspace members
+                $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                
+                while ($member = mysqli_fetch_assoc($membersResult)) {
+                    mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
+                    mysqli_stmt_execute($insertReceiver);
+                }
+                mysqli_stmt_close($insertReceiver);
+            } else {
+                // Duplicate found, skip insertion
+                error_log("DUPLICATE NOTIFICATION PREVENTED - WorkspaceID: $workspaceID");
             }
-            mysqli_stmt_close($insertReceiver);
+            mysqli_stmt_close($checkNoti);
             mysqli_stmt_close($membersQuery);
             
         } catch (Exception $e) {
@@ -89,6 +105,12 @@ function renameWorkspace($userID, $workspaceID, $newName) {
 function renameTask($userID, $taskID, $newName) {
     global $conn;
     
+    // Generate unique call ID for tracking
+    $callId = uniqid('task_rename_', true);
+    
+    // Debug logging to track function calls
+    error_log("RENAME FUNCTION CALLED [$callId] - TaskID: $taskID, NewName: '$newName', Time: " . date('Y-m-d H:i:s'));
+    
     if (!$conn) {
         return ['success' => false, 'message' => 'Database connection failed'];
     }
@@ -104,13 +126,27 @@ function renameTask($userID, $taskID, $newName) {
         return ['success' => false, 'message' => 'No access to task'];
     }
 
-    // Get original name
-    $originalQuery = mysqli_prepare($conn, "SELECT Title FROM task WHERE TaskID = ?");
-    mysqli_stmt_bind_param($originalQuery, "i", $taskID);
-    mysqli_stmt_execute($originalQuery);
-    $originalResult = mysqli_stmt_get_result($originalQuery);
-    $originalName = mysqli_fetch_assoc($originalResult)['Title'] ?? '(unknown title)';
+    // Get original name from the result
+    $taskData = mysqli_fetch_assoc($result);
+    $originalName = $taskData['OriginalName'] ?? '(unknown title)';
+    mysqli_stmt_close($stmt);
+    
+    // Debug logging
+    error_log("RENAME DEBUG [$callId] - TaskID: $taskID, OriginalName: '$originalName', NewName: '$newName'");
 
+    // Add database-level lock to prevent concurrent renames of the same task
+    $lockQuery = "SELECT GET_LOCK(CONCAT('task_rename_', ?), 5) as lock_result";
+    $lockStmt = mysqli_prepare($conn, $lockQuery);
+    mysqli_stmt_bind_param($lockStmt, 'i', $taskID);
+    mysqli_stmt_execute($lockStmt);
+    $lockResult = mysqli_stmt_get_result($lockStmt);
+    $lockData = mysqli_fetch_assoc($lockResult);
+    mysqli_stmt_close($lockStmt);
+    
+    if (!$lockData || $lockData['lock_result'] != 1) {
+        error_log("COULD NOT ACQUIRE LOCK [$callId] - TaskID: $taskID");
+        return ['success' => false, 'message' => 'Task is being renamed by another process'];
+    }
     
     // update the task title
     $updateTask = "UPDATE task SET Title = ? WHERE TaskID = ?";
@@ -140,27 +176,46 @@ function renameTask($userID, $taskID, $newName) {
             $title = "Task renamed";
             $desc = "The task '{$originalName}' has been renamed to '{$newName}' in workspace '{$workspaceName}'.";
             
+            // Debug logging for notification
+            error_log("NOTIFICATION DEBUG [$callId] - TaskID: $taskID, OriginalName: '$originalName', NewName: '$newName', Description: '$desc'");
+            
             // Get all task members to notify them
             $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM taskaccess WHERE TaskID = ?");
             mysqli_stmt_bind_param($membersQuery, 'i', $taskID);
             mysqli_stmt_execute($membersQuery);
             $membersResult = mysqli_stmt_get_result($membersQuery);
             
-            // Insert notification
-            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
-            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
-            mysqli_stmt_execute($insertNoti);
-            $notiID = mysqli_insert_id($conn);
-            mysqli_stmt_close($insertNoti);
+            // Check if notification already exists to prevent duplicates
+            // Check for any task rename notification for this task in the last 10 seconds
+            $checkNoti = mysqli_prepare($conn, "SELECT NotificationID FROM notification WHERE RelatedID = ? AND RelatedTable = ? AND Title = ? AND CreatedAt > DATE_SUB(NOW(), INTERVAL 10 SECOND)");
+            mysqli_stmt_bind_param($checkNoti, "iss", $relatedID, $relatedTable, $title);
+            mysqli_stmt_execute($checkNoti);
+            $checkResult = mysqli_stmt_get_result($checkNoti);
             
-            // Insert receivers for all task members
-            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
-            
-            while ($member = mysqli_fetch_assoc($membersResult)) {
-                mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
-                mysqli_stmt_execute($insertReceiver);
+            if (mysqli_num_rows($checkResult) == 0) {
+                // No duplicate found, insert notification
+                $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+                mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+                mysqli_stmt_execute($insertNoti);
+                $notiID = mysqli_insert_id($conn);
+                mysqli_stmt_close($insertNoti);
+                
+                // Debug logging for successful insertion
+                error_log("NOTIFICATION INSERTED [$callId] - TaskID: $taskID, NotificationID: $notiID");
+                
+                // Insert receivers for all task members
+                $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+                
+                while ($member = mysqli_fetch_assoc($membersResult)) {
+                    mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
+                    mysqli_stmt_execute($insertReceiver);
+                }
+                mysqli_stmt_close($insertReceiver);
+            } else {
+                // Duplicate found, skip insertion
+                error_log("DUPLICATE NOTIFICATION PREVENTED [$callId] - TaskID: $taskID");
             }
-            mysqli_stmt_close($insertReceiver);
+            mysqli_stmt_close($checkNoti);
             mysqli_stmt_close($membersQuery);
             mysqli_stmt_close($workspaceQuery);
             
@@ -169,79 +224,26 @@ function renameTask($userID, $taskID, $newName) {
             error_log("Failed to create notification for task rename: " . $e->getMessage());
         }
         
+        // Release the database lock
+        $unlockQuery = "SELECT RELEASE_LOCK(CONCAT('task_rename_', ?))";
+        $unlockStmt = mysqli_prepare($conn, $unlockQuery);
+        mysqli_stmt_bind_param($unlockStmt, 'i', $taskID);
+        mysqli_stmt_execute($unlockStmt);
+        mysqli_stmt_close($unlockStmt);
+        
         return ['success' => true];
     }
+    
+    // Release the database lock even if rename failed
+    $unlockQuery = "SELECT RELEASE_LOCK(CONCAT('task_rename_', ?))";
+    $unlockStmt = mysqli_prepare($conn, $unlockQuery);
+    mysqli_stmt_bind_param($unlockStmt, 'i', $taskID);
+    mysqli_stmt_execute($unlockStmt);
+    mysqli_stmt_close($unlockStmt);
     
     return ['success' => false, 'message' => 'Failed to rename task'];
 }
 
-/**
- * rename goal
- * only workspace managers can rename goals
- */
-function renameGoal($userID, $goalID, $newName) {
-    global $conn;
-    
-    if (!$conn) {
-        return ['success' => false, 'message' => 'Database connection failed'];
-    }
-    
-    // check if user is manager of the workspace that owns this goal
-    $checkManager = "
-        SELECT 1 FROM goal g 
-        INNER JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID 
-        WHERE g.GoalID = ? AND wm.UserID = ? AND wm.UserRole = 'Manager'
-    ";
-    $stmt = mysqli_prepare($conn, $checkManager);
-    mysqli_stmt_bind_param($stmt, "ii", $goalID, $userID);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $data = mysqli_fetch_assoc($result);
-    
-    if (!$data) {
-        return ['success' => false, 'message' => 'Only managers can rename goals'];
-    }
 
-    $workspaceID = $data['WorkSpaceID'];
-    $originalName = $data['OriginalName'] ?? '(unknown goal)';
-    
-    // update goal description
-    $updateGoal = "UPDATE goal SET Description = ? WHERE GoalID = ?";
-    $stmt = mysqli_prepare($conn, $updateGoal);
-    mysqli_stmt_bind_param($stmt, "si", $newName, $goalID);
-    
-    if (mysqli_stmt_execute($stmt)) {
-        // Create notification for goal rename
-        try {
-            $relatedID = $goalID;
-            $relatedTable = "goal";
-            $title = "Goal renamed";
-            $desc = "The goal '{$originalName}' has been renamed to '{$newName}'.";
-
-            // Notify all workspace members
-            $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM workspacemember WHERE WorkSpaceID = ?");
-            mysqli_stmt_bind_param($membersQuery, 'i', $workspaceID);
-            mysqli_stmt_execute($membersQuery);
-            $membersResult = mysqli_stmt_get_result($membersQuery);
-
-            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
-            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
-            mysqli_stmt_execute($insertNoti);
-            $notiID = mysqli_insert_id($conn);
-
-            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
-            while ($member = mysqli_fetch_assoc($membersResult)) {
-                mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
-                mysqli_stmt_execute($insertReceiver);
-            }
-        } catch (Exception $e) {
-            error_log("Failed to create notification for goal rename: " . $e->getMessage());
-        }
-
-        return ['success' => true, 'message' => 'Goal renamed successfully'];
-    }
-    
-    return ['success' => false, 'message' => 'Failed to rename goal'];
-}
 ?>
 

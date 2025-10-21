@@ -204,7 +204,7 @@ const notifications = <?= json_encode($notifications) ?>;
 </div>
     
     <!-- JS modules for sidebar -->
-   <script src="../Navbar/scripts/navbar.js"></script>
+        <script src="../Navbar/scripts/core.js"></script>
     <script src="../Navbar/scripts/dropdowns.js"></script>
     <script src="../Navbar/scripts/editing.js"></script>
     <script src="../Navbar/scripts/workspaces.js"></script>
