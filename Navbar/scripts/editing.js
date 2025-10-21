@@ -11,6 +11,7 @@ function startRename(element) {
     if (!element) return;
     
     const currentText = element.textContent.trim();
+    let isProcessing = false; // Flag to prevent duplicate calls
     
     // Create input field
     const input = document.createElement('input');
@@ -37,10 +38,16 @@ function startRename(element) {
     input.focus();
     input.select();
     
-    // Handle input events
-    input.addEventListener('blur', () => finishRename(element, input.value, currentText));
+    // Handle input events with duplicate prevention
+    input.addEventListener('blur', () => {
+        if (!isProcessing) {
+            isProcessing = true;
+            finishRename(element, input.value, currentText);
+        }
+    });
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !isProcessing) {
+            isProcessing = true;
             finishRename(element, input.value, currentText);
         } else if (e.key === 'Escape') {
             cancelRename(element, currentText);
