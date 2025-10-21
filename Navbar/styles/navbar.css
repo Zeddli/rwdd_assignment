@@ -993,6 +993,7 @@
     .main-content {
         margin-left: 0;
         width: 100%;
+        padding-top: 80px; /* Add this line - accounts for hamburger menu height */
     }
     
     /* Mobile-specific sidebar header */

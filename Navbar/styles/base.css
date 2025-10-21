@@ -38,8 +38,7 @@ body {
     }
     
     .main-content {
-        margin-left: 0;
-        padding: 20px;
+        padding-top: 80px !important; /* Force all pages to have top padding */
     }
 }
 
