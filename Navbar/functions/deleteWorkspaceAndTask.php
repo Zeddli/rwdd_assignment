@@ -58,7 +58,7 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
     
     // Check if user has permission to delete task
     $checkSQL = "
-        SELECT t.TaskID, t.Title 
+        SELECT t.TaskID, t.Title, t.WorkSpaceID, w.Name as WorkspaceName
         FROM task t
         JOIN workspace w ON t.WorkSpaceID = w.WorkSpaceID
         LEFT JOIN workspacemember wm ON w.WorkSpaceID = wm.WorkSpaceID AND wm.UserID = ?
@@ -77,24 +77,19 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
         return ['success' => false, 'message' => 'Task not found or no permission'];
     }
     
+    $taskData = mysqli_fetch_assoc($result);
+    $taskTitle = $taskData['Title'] ?? 'Unknown Task';
+    $workspaceID = $taskData['WorkSpaceID'];
+    $workspaceName = $taskData['WorkspaceName'] ?? 'Unknown Workspace';
     mysqli_stmt_close($stmt);
     
     // Create notification for task deletion before deleting
     try {
-        // Get workspace ID and workspace name
-        $workspaceQuery = mysqli_prepare($conn, "SELECT t.WorkSpaceID, w.Name as WorkspaceName FROM task t JOIN workspace w ON t.WorkSpaceID = w.WorkSpaceID WHERE t.TaskID = ?");
-        mysqli_stmt_bind_param($workspaceQuery, 'i', $taskID);
-        mysqli_stmt_execute($workspaceQuery);
-        $workspaceResult = mysqli_stmt_get_result($workspaceQuery);
-        $workspaceData = mysqli_fetch_assoc($workspaceResult);
-        $workspaceID = $workspaceData['WorkSpaceID'];
-        $workspaceName = $workspaceData['WorkspaceName'] ?? 'Unknown Workspace';
-        
         // Prepare notification data
         $relatedID = $taskID;
         $relatedTable = "task";
         $title = "Task deleted";
-        $desc = "The task: ". $taskname . " has been deleted from workspace '$workspaceName'.";
+        $desc = "The task: ". $taskTitle . " has been deleted from workspace '$workspaceName'.";
         
         // Get all task members to notify them
         $membersQuery = mysqli_prepare($conn, "SELECT UserID FROM taskaccess WHERE TaskID = ?");
@@ -106,34 +101,47 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
         $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
         mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
         mysqli_stmt_execute($insertNoti);
+        $notiID = mysqli_insert_id($conn);
+        mysqli_stmt_close($insertNoti);
         
         // Insert receivers for all task members
-        $notiID = mysqli_insert_id($conn);
         $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
         
         while ($member = mysqli_fetch_assoc($membersResult)) {
             mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $member['UserID']);
             mysqli_stmt_execute($insertReceiver);
         }
+        mysqli_stmt_close($insertReceiver);
+        mysqli_stmt_close($membersQuery);
         
     } catch (Exception $e) {
         // Notification creation failed, but deletion will continue
         error_log("Failed to create notification for task deletion: " . $e->getMessage());
     }
     
-    // Delete related records in correct order
+    // Delete related records in correct order (respecting foreign key constraints)
     $deleteQueries = [
         "DELETE FROM comment WHERE TaskID = ?",
         "DELETE FROM fileshared WHERE TaskID = ?", 
         "DELETE FROM taskaccess WHERE TaskID = ?",
+        "DELETE FROM receiver WHERE NotificationID IN (SELECT NotificationID FROM notification WHERE RelatedTable = 'task' AND RelatedID = ?)",
         "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID = ?",
         "DELETE FROM task WHERE TaskID = ?"
     ];
     
     foreach ($deleteQueries as $query) {
         $stmt = mysqli_prepare($conn, $query);
+        if (!$stmt) {
+            error_log("Failed to prepare delete query: " . $query . " - " . mysqli_error($conn));
+            return ['success' => false, 'message' => 'Database error during deletion'];
+        }
+        
         mysqli_stmt_bind_param($stmt, "i", $taskID);
-        mysqli_stmt_execute($stmt);
+        if (!mysqli_stmt_execute($stmt)) {
+            error_log("Failed to execute delete query: " . $query . " - " . mysqli_stmt_error($stmt));
+            mysqli_stmt_close($stmt);
+            return ['success' => false, 'message' => 'Database error during deletion'];
+        }
         mysqli_stmt_close($stmt);
     }
     
@@ -217,34 +225,56 @@ function deleteWorkspaceFromDB($conn, $userID, $workspaceID) {
     }
     mysqli_stmt_close($stmt);
     
-    // Delete task-related records first
+    // Delete task-related records first (if any tasks exist)
     if (!empty($taskIDs)) {
-        $taskIDList = implode(',', $taskIDs);
         $taskDeleteQueries = [
-            "DELETE FROM comment WHERE TaskID IN ($taskIDList)",
-            "DELETE FROM fileshared WHERE TaskID IN ($taskIDList)",
-            "DELETE FROM taskaccess WHERE TaskID IN ($taskIDList)",
-            "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID IN ($taskIDList)"
+            "DELETE FROM comment WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
+            "DELETE FROM fileshared WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
+            "DELETE FROM taskaccess WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
+            "DELETE FROM receiver WHERE NotificationID IN (SELECT NotificationID FROM notification WHERE RelatedTable = 'task' AND RelatedID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . "))",
+            "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
+            "DELETE FROM task WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")"
         ];
         
         foreach ($taskDeleteQueries as $query) {
-            mysqli_query($conn, $query);
+            $stmt = mysqli_prepare($conn, $query);
+            if (!$stmt) {
+                error_log("Failed to prepare task delete query: " . $query . " - " . mysqli_error($conn));
+                return ['success' => false, 'message' => 'Database error during task cleanup'];
+            }
+            
+            mysqli_stmt_bind_param($stmt, str_repeat('i', count($taskIDs)), ...$taskIDs);
+            if (!mysqli_stmt_execute($stmt)) {
+                error_log("Failed to execute task delete query: " . $query . " - " . mysqli_stmt_error($stmt));
+                mysqli_stmt_close($stmt);
+                return ['success' => false, 'message' => 'Database error during task cleanup'];
+            }
+            mysqli_stmt_close($stmt);
         }
     }
     
     // Delete workspace-related records
     $workspaceDeleteQueries = [
-        "DELETE FROM task WHERE WorkSpaceID = ?",
         "DELETE FROM goal WHERE WorkSpaceID = ?",
-        "DELETE FROM workspacemember WHERE WorkSpaceID = ?",
+        "DELETE FROM receiver WHERE NotificationID IN (SELECT NotificationID FROM notification WHERE RelatedTable = 'workspace' AND RelatedID = ?)",
         "DELETE FROM notification WHERE RelatedTable = 'workspace' AND RelatedID = ?",
+        "DELETE FROM workspacemember WHERE WorkSpaceID = ?",
         "DELETE FROM workspace WHERE WorkSpaceID = ?"
     ];
     
     foreach ($workspaceDeleteQueries as $query) {
         $stmt = mysqli_prepare($conn, $query);
+        if (!$stmt) {
+            error_log("Failed to prepare workspace delete query: " . $query . " - " . mysqli_error($conn));
+            return ['success' => false, 'message' => 'Database error during workspace deletion'];
+        }
+        
         mysqli_stmt_bind_param($stmt, "i", $workspaceID);
-        mysqli_stmt_execute($stmt);
+        if (!mysqli_stmt_execute($stmt)) {
+            error_log("Failed to execute workspace delete query: " . $query . " - " . mysqli_stmt_error($stmt));
+            mysqli_stmt_close($stmt);
+            return ['success' => false, 'message' => 'Database error during workspace deletion'];
+        }
         mysqli_stmt_close($stmt);
     }
     

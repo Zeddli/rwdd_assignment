@@ -159,6 +159,9 @@ switch ($action) {
     case 'delete_task':
         $taskID = intval($_POST['task_id'] ?? 0);
         
+        // Debug logging
+        error_log("DELETE TASK API CALLED - TaskID: $taskID, UserID: $userID, Time: " . date('Y-m-d H:i:s'));
+        
         if ($taskID <= 0) {
             echo json_encode(['success' => false, 'message' => 'Invalid task ID']);
             break;
@@ -172,20 +175,26 @@ switch ($action) {
             
             if ($result['success']) {
                 mysqli_commit($conn);
+                error_log("DELETE TASK SUCCESS - TaskID: $taskID");
             } else {
                 mysqli_rollback($conn);
+                error_log("DELETE TASK FAILED - TaskID: $taskID, Message: " . $result['message']);
             }
             
             echo json_encode($result);
         } catch (Exception $e) {
             mysqli_rollback($conn);
-            echo json_encode(['success' => false, 'message' => 'Database error occurred']);
+            error_log("DELETE TASK EXCEPTION - TaskID: $taskID, Error: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Database error occurred: ' . $e->getMessage()]);
         }
         break;
         
     // delete entire workspace (only managers can do this - careful!)
     case 'delete_workspace':
         $workspaceID = intval($_POST['workspace_id'] ?? 0);
+        
+        // Debug logging
+        error_log("DELETE WORKSPACE API CALLED - WorkspaceID: $workspaceID, UserID: $userID, Time: " . date('Y-m-d H:i:s'));
         
         if ($workspaceID <= 0) {
             echo json_encode(['success' => false, 'message' => 'Invalid workspace ID']);
@@ -200,14 +209,17 @@ switch ($action) {
             
             if ($result['success']) {
                 mysqli_commit($conn);
+                error_log("DELETE WORKSPACE SUCCESS - WorkspaceID: $workspaceID");
             } else {
                 mysqli_rollback($conn);
+                error_log("DELETE WORKSPACE FAILED - WorkspaceID: $workspaceID, Message: " . $result['message']);
             }
             
             echo json_encode($result);
         } catch (Exception $e) {
             mysqli_rollback($conn);
-            echo json_encode(['success' => false, 'message' => 'Database error occurred']);
+            error_log("DELETE WORKSPACE EXCEPTION - WorkspaceID: $workspaceID, Error: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Database error occurred: ' . $e->getMessage()]);
         }
         break;
         
