@@ -252,8 +252,52 @@
     font-weight: normal;
 }
 
-/* Responsive design */
+/* Tablet Responsive Design (768px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .calendar-page .main-content {
+        margin-left: 50px; /* Collapsed navbar */
+        width: calc(100% - 50px);
+        padding: 20px;
+    }
+    
+    .calendar-page #calendar {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .calendar-page .fc-header-toolbar {
+        flex-wrap: wrap;
+        gap: 0.8em;
+    }
+    
+    .calendar-page .fc-toolbar-title {
+        font-size: 1.6em;
+    }
+    
+    .calendar-page .fc-button {
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+    
+    .calendar-page .fc-daygrid-day-number {
+        padding: 6px;
+        font-size: 13px;
+    }
+    
+    .calendar-page .fc-event {
+        font-size: 11px;
+        padding: 2px 5px;
+    }
+}
+
+/* Phone Responsive Design (max-width: 768px) */
 @media (max-width: 768px) {
+    .calendar-page .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+    
     .calendar-page #calendar {
         padding: 10px;
         margin-top: 10px;
@@ -271,7 +315,7 @@
     }
     
     .calendar-page .fc-toolbar-title {
-        font-size: 1.5em;
+        font-size: 1.4em;
         text-align: center;
     }
     

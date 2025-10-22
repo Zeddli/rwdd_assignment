@@ -1,6 +1,9 @@
 <!-- To-Do List Sidebar Component -->
 <!-- This component can be included in any page that needs the to-do sidebar -->
 
+<!-- Mobile Overlay for Todo Sidebar -->
+<div class="todo-mobile-overlay" id="todoMobileOverlay"></div>
+
 <!-- Toggle Button for To-Do Sidebar -->
 <button class="todo-sidebar-toggle" id="todoSidebarToggle" title="Toggle To-Do List">
     ✓
@@ -17,7 +20,7 @@
     <!-- Task Input Section -->
     <div class="task-input-section">
         <button class="add-task-btn" id="openTaskDetailBtn">
-            + Add New Task
+            Add New Task
         </button>
     </div>
 

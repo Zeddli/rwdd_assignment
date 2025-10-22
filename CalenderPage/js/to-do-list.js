@@ -11,6 +11,7 @@ const mainContent = document.getElementById('mainContent');
 const openTaskDetailBtn = document.getElementById('openTaskDetailBtn');
 const taskList = document.getElementById('taskList');
 const emptyState = document.getElementById('emptyState');
+const todoMobileOverlay = document.getElementById('todoMobileOverlay');
 
 // API endpoints
 const API_BASE = 'php/';
@@ -22,13 +23,29 @@ const API_ENDPOINTS = {
 };
 
 /**
+ * Check if we're on mobile view
+ */
+function isMobileView() {
+    return window.innerWidth <= 768;
+}
+
+/**
  * Toggle to-do sidebar open/close
  */
 function toggleTodoSidebar() {
     if (todoSidebar && sidebarToggle && mainContent) {
         todoSidebar.classList.toggle('open');
         sidebarToggle.classList.toggle('active');
-        mainContent.classList.toggle('sidebar-open');
+        
+        // Handle mobile overlay
+        if (isMobileView() && todoMobileOverlay) {
+            todoMobileOverlay.classList.toggle('active');
+            // Prevent body scroll when sidebar is open on mobile
+            document.body.style.overflow = todoSidebar.classList.contains('open') ? 'hidden' : '';
+        } else {
+            // Desktop/tablet behavior
+            mainContent.classList.toggle('sidebar-open');
+        }
     }
 }
 
@@ -39,7 +56,16 @@ function closeTodoSidebarHandler() {
     if (todoSidebar && sidebarToggle && mainContent) {
         todoSidebar.classList.remove('open');
         sidebarToggle.classList.remove('active');
-        mainContent.classList.remove('sidebar-open');
+        
+        // Handle mobile overlay
+        if (isMobileView() && todoMobileOverlay) {
+            todoMobileOverlay.classList.remove('active');
+            // Restore body scroll
+            document.body.style.overflow = '';
+        } else {
+            // Desktop/tablet behavior
+            mainContent.classList.remove('sidebar-open');
+        }
     }
 }
 
@@ -96,6 +122,10 @@ function createTaskElement(task) {
     li.className = `task-item ${task.status === 'completed' ? 'completed' : ''}`;
     li.dataset.taskId = task.id;
     
+    // Ensure task title is properly handled
+    const taskTitle = task.title && task.title.trim() ? task.title.trim() : 'Untitled Task';
+    const taskDate = task.task_date ? formatDate(task.task_date) : '';
+    
     // Create task HTML structure
     li.innerHTML = `
         <input 
@@ -105,8 +135,8 @@ function createTaskElement(task) {
             onchange="toggleTaskStatus(${task.id}, this.checked)"
         />
         <div class="task-content">
-            <div class="task-title">${escapeHtml(task.title)}</div>
-            ${task.task_date ? `<div class="task-date">${formatDate(task.task_date)}</div>` : ''}
+            <div class="task-title">${escapeHtml(taskTitle)}</div>
+            ${taskDate ? `<div class="task-date">${taskDate}</div>` : ''}
         </div>
         <div class="task-actions">
             <button class="task-btn" onclick="deleteTask(${task.id})" title="Delete task">
@@ -494,6 +524,20 @@ if (closeSidebar) {
 if (openTaskDetailBtn) {
     openTaskDetailBtn.addEventListener('click', openTaskDetailWindow);
 }
+
+// Mobile overlay click to close sidebar
+if (todoMobileOverlay) {
+    todoMobileOverlay.addEventListener('click', closeTodoSidebarHandler);
+}
+
+// Handle window resize to adjust sidebar behavior
+window.addEventListener('resize', () => {
+    // If resizing from mobile to desktop, close mobile overlay
+    if (!isMobileView() && todoMobileOverlay) {
+        todoMobileOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
 
 // Initialize: Load tasks on page load
 document.addEventListener('DOMContentLoaded', () => {
