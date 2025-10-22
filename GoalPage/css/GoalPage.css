@@ -186,3 +186,348 @@ body {
   border: 1px solid #bbb;
   border-radius: 8px;
 }
+
+/* Goal Type Tabs - Hidden on desktop and tablet */
+.goal-tabs {
+  display: none;
+}
+
+/* ========================================
+   TABLET RESPONSIVE DESIGN (769px - 1024px)
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .goal-page {
+    padding: 20px;
+    height: 100vh;
+  }
+  
+  .goal-header {
+    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .goal-header h1 {
+    font-size: 32px;
+    margin: 0;
+  }
+  
+  .create-goal-btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    align-self: flex-end;
+  }
+  
+  .goal-section-title {
+    font-size: 24px;
+    margin: 20px 0 12px 0;
+  }
+  
+  .goal-section {
+    margin-bottom: 24px;
+  }
+  
+  .goal-card {
+    width: 260px;
+    min-height: 150px;
+    padding: 14px;
+  }
+  
+  .goal-card-title {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  
+  .goal-card-status {
+    font-size: 14px;
+    margin: 6px 0;
+  }
+  
+  .goal-card-daterange {
+    font-size: 13px;
+  }
+  
+  .goal-card-btn {
+    padding: 5px 8px;
+    font-size: 14px;
+  }
+  
+  .modal-card {
+    width: 480px;
+    max-width: 90vw;
+  }
+  
+  .modal-row {
+    grid-template-columns: 120px 1fr;
+    gap: 8px;
+  }
+  
+  .modal-title {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   PHONE RESPONSIVE DESIGN (max-width: 768px)
+   ======================================== */
+@media (max-width: 768px) {
+  .goal-page {
+    padding: 16px;
+    height: 100vh;
+    padding-top: 80px; /* Account for hamburger menu */
+  }
+  
+  .goal-header {
+    margin-bottom: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .goal-header h1 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 700;
+  }
+  
+  .create-goal-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    align-self: flex-end;
+    border-radius: 8px;
+  }
+  
+  /* Goal Type Tabs */
+  .goal-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+  }
+  
+  .goal-tab {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .goal-tab.active {
+    background: #fff;
+    color: #111;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .goal-tab:hover:not(.active) {
+    color: #333;
+    background: rgba(255,255,255,0.5);
+  }
+  
+  .goal-sections-container {
+    padding-bottom: 20px;
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .goal-section-title {
+    display: none; /* Hide section titles on mobile, use tabs instead */
+  }
+  
+  .goal-section {
+    margin-bottom: 0;
+    display: none; /* Hide by default, show active one */
+  }
+  
+  .goal-section.active {
+    display: block;
+  }
+  
+  .goal-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    overflow: visible;
+  }
+  
+  .goal-card {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 0;
+  }
+  
+  .goal-card-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  
+  .goal-card-status {
+    font-size: 14px;
+    margin: 8px 0;
+  }
+  
+  .goal-card-daterange {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .goal-card-actions {
+    margin-top: 12px;
+    gap: 8px;
+  }
+  
+  .goal-card-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  
+  .empty-state {
+    font-size: 14px;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 20px 0;
+  }
+  
+  /* Mobile Modal Adjustments */
+  .modal-backdrop {
+    padding: 16px;
+  }
+  
+  .modal-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  
+  .modal-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  
+  .modal-row label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .input,
+  .select {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 6px;
+  }
+  
+  .modal-actions {
+    margin-top: 20px;
+    gap: 8px;
+    flex-direction: column;
+  }
+  
+  .modal-actions .goal-card-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  /* Mobile Scrollbar Styling */
+  .goal-row::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .goal-row::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  .goal-row::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  
+  .goal-row::-webkit-scrollbar-thumb:hover {
+    background: #999;
+  }
+}
+
+/* ========================================
+   SMALL PHONE RESPONSIVE DESIGN (max-width: 480px)
+   ======================================== */
+@media (max-width: 480px) {
+  .goal-page {
+    padding: 12px;
+    padding-top: 80px;
+  }
+  
+  .goal-header h1 {
+    font-size: 24px;
+  }
+  
+  .create-goal-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  
+  .goal-section-title {
+    font-size: 18px;
+    margin: 14px 0 8px 0;
+  }
+  
+  .goal-card {
+    width: 220px;
+    min-height: 130px;
+    padding: 10px;
+  }
+  
+  .goal-card-title {
+    font-size: 15px;
+  }
+  
+  .goal-card-status {
+    font-size: 12px;
+  }
+  
+  .goal-card-daterange {
+    font-size: 11px;
+  }
+  
+  .goal-card-btn {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+  
+  .modal-card {
+    padding: 16px;
+  }
+  
+  .modal-title {
+    font-size: 16px;
+  }
+  
+  .input,
+  .select {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}

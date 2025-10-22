@@ -53,6 +53,12 @@ if (!$conn) {
             <button id="create-goal-btn" class="create-goal-btn">Create goal</button>
         </header>
 
+        <!-- Goal Type Tabs (Mobile) -->
+        <div class="goal-tabs" id="goalTabs">
+            <button class="goal-tab active" data-type="Long">Long-term Goal</button>
+            <button class="goal-tab" data-type="Short">Short-term Goal</button>
+        </div>
+
         <div class="goal-sections-container">
             <section class="goal-section" data-type="Long">
                 <div class="goal-section-title">Long-term Goal</div>

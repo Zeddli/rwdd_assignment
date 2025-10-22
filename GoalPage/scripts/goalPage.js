@@ -27,11 +27,15 @@
     createBtn: document.getElementById("create-goal-btn"),
     createModal: document.getElementById("create-goal-modal"),
     editModal: document.getElementById("edit-goal-modal"),
+    goalTabs: document.getElementById("goalTabs"),
+    longSection: document.querySelector('.goal-section[data-type="Long"]'),
+    shortSection: document.querySelector('.goal-section[data-type="Short"]'),
   };
 
   const state = {
     workspaceId: null, // Will be set from session via backend
     goals: [],
+    activeTab: 'Long', // Track active tab for mobile
   };
 
   function formatDateRange(start, end) {
@@ -95,6 +99,35 @@
     } else {
       els.shortRow.replaceChildren(...short.map(createCard));
     }
+    
+    // Update mobile tab visibility
+    updateMobileTabVisibility();
+  }
+
+  function updateMobileTabVisibility() {
+    if (!els.longSection || !els.shortSection) return;
+    
+    // Show/hide sections based on active tab
+    if (state.activeTab === 'Long') {
+      els.longSection.classList.add('active');
+      els.shortSection.classList.remove('active');
+    } else {
+      els.longSection.classList.remove('active');
+      els.shortSection.classList.add('active');
+    }
+  }
+
+  function switchTab(tabType) {
+    state.activeTab = tabType;
+    
+    // Update tab buttons
+    const tabs = els.goalTabs?.querySelectorAll('.goal-tab');
+    tabs?.forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.type === tabType);
+    });
+    
+    // Update section visibility
+    updateMobileTabVisibility();
   }
 
   function escapeHtml(str) {
@@ -126,6 +159,14 @@
   // Create modal wiring
   els.createBtn?.addEventListener("click", () => {
     openModal(els.createModal);
+  });
+
+  // Tab switching for mobile
+  els.goalTabs?.addEventListener("click", (e) => {
+    const tab = e.target.closest('.goal-tab');
+    if (tab && tab.dataset.type) {
+      switchTab(tab.dataset.type);
+    }
   });
 
   document.addEventListener("click", async (e) => {
