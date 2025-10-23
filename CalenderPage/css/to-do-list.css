@@ -127,7 +127,7 @@
     border-color: #1a73e8;
 }
 
-.add-task-btn {
+.calendar-add-task-btn {
     width: 100%;
     padding: 12px 24px;
     background: #1a73e8;
@@ -146,18 +146,18 @@
     overflow: hidden;
 }
 
-.add-task-btn::before {
+.calendar-add-task-btn::before {
     content: "+";
     font-size: 16px;
     font-weight: bold;
     line-height: 1;
 }
 
-.add-task-btn:hover {
+.calendar-add-task-btn:hover {
     background: #1557b0;
 }
 
-.add-task-btn::after {
+.calendar-add-task-btn::after {
     display: none;
 }
 
@@ -409,7 +409,7 @@
         width: 100%;
     }
     
-    .add-task-btn {
+    .calendar-add-task-btn {
         width: 100%;
         min-width: 200px;
         padding: 20px 24px;
@@ -435,18 +435,18 @@
         flex: 1;
     }
     
-    .add-task-btn:hover {
+    .calendar-add-task-btn:hover {
         background: #1557b0;
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(26, 115, 232, 0.4);
     }
     
-    .add-task-btn:active {
+    .calendar-add-task-btn:active {
         transform: translateY(0);
         box-shadow: 0 3px 6px rgba(26, 115, 232, 0.3);
     }
     
-    .add-task-btn::before {
+    .calendar-add-task-btn::before {
         content: "+";
         font-size: 22px;
         font-weight: bold;
@@ -457,39 +457,39 @@
     }
     
     /* Remove any potential overlay issues */
-    .add-task-btn::after {
+    .calendar-add-task-btn::after {
         display: none;
     }
     
     /* Ensure no background overlays or artifacts */
-    .add-task-btn * {
+    .calendar-add-task-btn * {
         background: transparent !important;
         box-shadow: none !important;
     }
     
-    .add-task-btn:focus {
+    .calendar-add-task-btn:focus {
         outline: none;
         box-shadow: 0 3px 6px rgba(26, 115, 232, 0.3), 0 0 0 4px rgba(26, 115, 232, 0.2);
     }
     
     /* Remove any potential white overlays or artifacts */
-    .add-task-btn:before,
-    .add-task-btn:after {
+    .calendar-add-task-btn:before,
+    .calendar-add-task-btn:after {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }
     
     /* Ensure clean button appearance */
-    .add-task-btn {
+    .calendar-add-task-btn {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
     }
     
     /* Ensure button text is visible and clean */
-    .add-task-btn span,
-    .add-task-btn text {
+    .calendar-add-task-btn span,
+    .calendar-add-task-btn text {
         background: transparent !important;
         color: inherit !important;
         display: inline !important;
@@ -498,7 +498,7 @@
     }
     
     /* Ensure full text visibility */
-    .add-task-btn {
+    .calendar-add-task-btn {
         text-overflow: clip !important;
         overflow: visible !important;
         word-wrap: normal !important;
@@ -508,7 +508,7 @@
     }
     
     /* Force button to expand to fit content */
-    .add-task-btn::before {
+    .calendar-add-task-btn::before {
         flex-shrink: 0;
     }
     

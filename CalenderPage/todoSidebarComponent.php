@@ -19,7 +19,7 @@
 
     <!-- Task Input Section -->
     <div class="task-input-section">
-        <button class="add-task-btn" id="openTaskDetailBtn">
+        <button class="calendar-add-task-btn" id="openTaskDetailBtn">
             Add New Task
         </button>
     </div>
