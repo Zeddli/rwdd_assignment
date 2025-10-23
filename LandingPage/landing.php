@@ -9,6 +9,8 @@
 
 <!DOCTYPE html>
 <html lang="en">
+    <link rel="icon" href="/rwdd_assignment/Assets/logo.png">
+    <title>ProTask</title>
     <link rel="stylesheet" href="landing.css">
 <head>
 </head>

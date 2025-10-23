@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="wong.css">
+  <title>Wong Kam Fatt | Personal Website</title>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <img src="img/wong.png" alt="Profile Photo">
+    <h1>Wong Kam Fatt</h1>
+    <p>Hi! I’m a university student passionate about technology, data analytics, and innovation. Welcome to my personal website!</p>
+  </header>
+
+  <!-- Education Section -->
+  <section class="education">
+    <h2>Educational Background</h2>
+    <ul>
+      <li>
+        <strong>Diploma in Information and Communication Technoclogy (Data Informatics)</strong>
+        University of Asia Pacific University (2024 - Present)
+      </li>
+      <li>
+        <strong>High School Certificate</strong>
+        SMJK Yu Hua (2019-2024)
+      </li>
+    </ul>
+  </section>
+
+  <!-- Hobbies Section -->
+  <section class="hobbies">
+    <h2>Hobbies & Interests</h2>
+
+    <!-- Moved the hobbies below the title -->
+    <div class="hobbies-container">
+        <div class="hobby">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Gaming">
+            <h3>Gaming</h3>
+            <p>I love playing strategy and e-sports games that challenge my mind and teamwork skills.</p>
+        </div>
+        <div class="hobby">
+            <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Coding">
+            <h3>Coding</h3>
+            <p>Building web applications and exploring data analytics help me turn ideas into reality.</p>
+        </div>
+        <div class="hobby">
+            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063828.png" alt="Travel">
+            <h3>Travel</h3>
+            <p>Exploring new places and cultures gives me fresh inspiration and creativity.</p>
+        </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact">
+    <h2>Contact Me</h2>
+    <form id="contactForm">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Connect with me:</p>
+    <div class="socials">
+      <a href="https://github.com/lahalaha" target="_blank">GitHub</a>  
+    </div>
+    <p>© 2025 Wong Kam Fatt. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Simple form validation feedback
+    document.getElementById("contactForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (name && email && message) {
+        alert("Thank you, " + name + "! Your message has been received.");
+        this.reset();
+      } else {
+        alert("Please fill out all fields before submitting.");
+      }
+    });
+  </script>
+
+</body>
+</html>
