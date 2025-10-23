@@ -55,8 +55,8 @@ if (!isset($_SESSION['userInfo']['userID'])) {
 
 
     <!-- Modal Scripts (load first) -->
-    <script src="../Navbar/scripts/taskDetailWindow.js"></script>
-    <script src="../Navbar/scripts/grantAccessWindow.js"></script>
+    <!-- <script type="module" src="../Navbar/scripts/taskDetailWindow.js"></script> -->
+    <script type="module" src="../Navbar/scripts/grantAccessWindow.js"></script>
     
     <!-- FullCalendar JavaScript -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>

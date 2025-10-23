@@ -543,11 +543,11 @@ window.addEventListener('resize', () => {
 document.addEventListener('DOMContentLoaded', () => {
     loadTasks();
     
-    // Set up form submission for fallback mode
-    const form = document.getElementById('taskDetailForm');
-    if (form) {
-        form.addEventListener('submit', handleFallbackTaskSubmit);
-    }
+        // // Set up form submission for fallback mode
+        // const form = document.getElementById('taskDetailForm');
+        // if (form) {
+        //     form.addEventListener('submit', handleFallbackTaskSubmit);
+        // }
 });
 
 /**
