@@ -205,11 +205,13 @@
                 </div>
                 
                 <div class="team-member">
-                    <div class="team-avatar">
-                        <img src="assets/yuxuan.png" alt="Chong Yu Xuan" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h4>Chong Yu Xuan</h4>
-                    <p class="role">Software Engineer</p>
+                    <a href="../Portfolio/chong.html" target="_blank">
+                        <div class="team-avatar">
+                            <img src="assets/yuxuan.png" alt="Chong Yu Xuan" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h4>Chong Yu Xuan</h4>
+                        <p class="role">Software Engineer</p>
+                    </a>
                 </div>
             </div>
         </div>
