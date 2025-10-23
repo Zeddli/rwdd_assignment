@@ -52,8 +52,7 @@
                 <div class="hero-image">
                     <div style="background: rgba(255,255,255,0.1); padding: 40px; border-radius: 15px; backdrop-filter: blur(10px);">
                         <i class="fas fa-tasks" style="font-size: 4rem; margin-bottom: 20px;"></i>
-                        <h3>Dashboard Preview</h3>
-                        <p>Experience the power of ProTask's intuitive interface</p>
+                        <img src="assets/Preview.png" alt="Dashboard Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
                     </div>
                 </div>
             </div>
@@ -153,7 +152,7 @@
     </section>
 
     <!-- Product Demo Section -->
-    <section id="product-demo" class="product-demo">
+    <section id="demo" class="product-demo">
         <div class="container">
             <h2 class="section-title">See ProTask in Action</h2>
             <p class="section-subtitle">Experience the power of our platform with these key features</p>
@@ -188,19 +187,25 @@
             
             <div class="team-grid">
                 <div class="team-member">
-                    <div class="team-avatar">JS</div>
+                    <div class="team-avatar">
+                        <img src="assets/zhijian.png" alt="Sam Zhi Jian" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    </div>
                     <h4>Sam Zhi Jian</h4>
                     <p class="role">Software Engineer</p>
                 </div>
                 
                 <div class="team-member">
-                    <div class="team-avatar">MJ</div>
+                    <div class="team-avatar">
+                        <img src="assets/kamfatt.png" alt="Wong Kam Fatt" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    </div>
                     <h4>Wong Kam Fatt</h4>
                     <p class="role">Software Engineer</p>
                 </div>
                 
                 <div class="team-member">
-                    <div class="team-avatar">DW</div>
+                    <div class="team-avatar">
+                        <img src="assets/yuxuan.png" alt="Chong Yu Xuan" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    </div>
                     <h4>Chong Yu Xuan</h4>
                     <p class="role">Software Engineer</p>
                 </div>
