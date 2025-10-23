@@ -16,7 +16,7 @@ let taskDetailWindowInitialized = false; // prevent double initialization
  * @param {number|object} workspaceId - Workspace ID or options object
  * @param {object} options - Options for modal display
  */
-export function showTaskDetailWindow(workspaceId, options = {}) {
+function showTaskDetailWindow(workspaceId, options = {}) {
     // Handle different parameter formats
     if (typeof workspaceId === 'object') {
         options = workspaceId;
@@ -62,7 +62,7 @@ export function showTaskDetailWindow(workspaceId, options = {}) {
 /**
  * Show task detail window for editing an existing task
  */
-export function showEditTaskWindow(taskId, workspaceId) {
+function showEditTaskWindow(taskId, workspaceId) {
     currentTaskId = taskId;
     currentWorkspaceId = workspaceId;
     isEditMode = true;
@@ -81,7 +81,7 @@ export function showEditTaskWindow(taskId, workspaceId) {
  * Toggle workspace selection visibility
  * @param {boolean} show - Whether to show workspace selection
  */
-export function toggleWorkspaceSelection(show) {
+function toggleWorkspaceSelection(show) {
     console.log('toggleWorkspaceSelection called with show:', show);
     
     const workspaceGroup = document.getElementById('workspaceSelectionGroup');
@@ -104,7 +104,7 @@ export function toggleWorkspaceSelection(show) {
 /**
  * Load available workspaces for the dropdown
  */
-export async function loadWorkspaces() {
+async function loadWorkspaces() {
     console.log('loadWorkspaces: Starting to load workspaces...');
     try {
         const response = await fetch('../Navbar/navbar_api.php', {
@@ -136,7 +136,7 @@ export async function loadWorkspaces() {
  * Populate workspace dropdown with available workspaces
  * @param {Array} workspaces - Array of workspace objects
  */
-export function populateWorkspaceDropdown(workspaces) {
+function populateWorkspaceDropdown(workspaces) {
     console.log('populateWorkspaceDropdown: Called with workspaces:', workspaces);
     const workspaceSelect = document.getElementById('workspaceSelect');
     
@@ -171,7 +171,7 @@ export function populateWorkspaceDropdown(workspaces) {
 /**
  * Reset the task form to default values
  */
-export function resetTaskForm() {
+function resetTaskForm() {
     const form = document.getElementById('taskDetailForm');
     if (form) {
         form.reset();
@@ -199,7 +199,7 @@ export function resetTaskForm() {
 /**
  * Load task data for editing
  */
-export async function loadTaskData(taskId) {
+async function loadTaskData(taskId) {
     try {
         // This would typically fetch task data from the server
         // For now, we'll show a placeholder
@@ -214,7 +214,7 @@ export async function loadTaskData(taskId) {
 /**
  * Handle form submission
  */
-export async function handleTaskSubmit(event) {
+async function handleTaskSubmit(event) {
     event.preventDefault();
     
     const taskName = document.getElementById('taskNameInput').value.trim();
@@ -314,7 +314,7 @@ export async function handleTaskSubmit(event) {
 /**
  * Hide the task detail window
  */
-export function hideTaskDetailWindow() {
+function hideTaskDetailWindow() {
     const modal = document.getElementById('taskDetailModal');
     if (modal) {
         modal.style.display = 'none';
@@ -325,7 +325,7 @@ export function hideTaskDetailWindow() {
 /**
  * Show message to user
  */
-export function showTaskMessage(message, type) {
+function showTaskMessage(message, type) {
     const messageDiv = document.getElementById('taskMessage');
     if (messageDiv) {
         messageDiv.textContent = message;
@@ -338,7 +338,7 @@ export function showTaskMessage(message, type) {
 /**
  * Initialize task detail window functionality
  */
-export function initializeTaskDetailWindow() {
+function initializeTaskDetailWindow() {
     // Avoid duplicate event bindings
     if (taskDetailWindowInitialized) {
         return;
