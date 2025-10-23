@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="chong.css">
+  <title>Chong Yu Xuan | Personal Website</title>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <img src="img/chong.png" alt="Profile Photo">
+    <h1>Chong Yu Xuan</h1>
+    <p>Hi! I'm an aspiring software engineer working at ProTask and I’m constantly exploring new technologies, 
+    improving my coding skills, and collaborating with others to create meaningful digital experiences.</p>
+  </header>
+
+  <!-- Education Section -->
+  <section class="education">
+    <h2>Educational Background</h2>
+    <ul>
+      <li>
+        <strong>Diploma in Information and Communication Technoclogy (Data Informatics)</strong>
+        University of Asia Pacific University (2024 - Present)
+      </li>
+      <li>
+        <strong>High School Certificate</strong>
+        Collinz International School (2019-2024)
+      </li>
+    </ul>
+  </section>
+
+  <!-- Hobbies Section -->
+  <section class="hobbies">
+    <h2>Hobbies & Interests</h2>
+
+    <div class="hobbies-container">
+        <div class="hobby">
+            <img src="https://cdn-icons-png.flaticon.com/512/9280/9280598.png" alt="Music">
+            <h3>Music</h3>
+            <p>I love listening to music. It helps me stay focused, relaxed, and creative while working on new projects.</p>
+        </div>
+        <div class="hobby">
+            <img src="https://cdn-icons-png.flaticon.com/512/5260/5260498.png" alt="Video Games">
+            <h3>Video Games</h3>
+            <p>I love to play video games with my friends. It’s not just fun, but also helps me develop teamwork, problem-solving, and creative thinking, which I bring into my work as a developer.</p>
+        </div>
+        <div class="hobby">
+            <img src="https://cdn-icons-png.flaticon.com/512/2964/2964535.png" alt="Running">
+            <h3>Running</h3>
+            <p>I love running. It helps me clear my mind, stay disciplined, and maintain focus, qualities that also reflect in my approach to coding and problem-solving.</p>
+        </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact">
+    <h2>Contact Me</h2>
+    <form id="contactForm">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Connect with me:</p>
+    <div class="socials">
+      <a href="https://github.com/TALESBlanket" target="_blank">GitHub</a>  
+    </div>
+    <p>© 2025 Chong Yu Xuan. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Simple form validation feedback
+    document.getElementById("contactForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (name && email && message) {
+        alert("Thank you, " + name + "! Your message has been received.");
+        this.reset();
+      } else {
+        alert("Please fill out all fields before submitting.");
+      }
+    });
+  </script>
+
+</body>
+</html>
