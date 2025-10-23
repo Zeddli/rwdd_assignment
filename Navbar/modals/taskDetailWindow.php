@@ -51,7 +51,7 @@
                     <div class="form-group">
                         <label for="prioritySelect">Priority:</label>
                         <select id="prioritySelect" class="attribute-input">
-                            <option value="">Select Priority</option>
+                            
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
