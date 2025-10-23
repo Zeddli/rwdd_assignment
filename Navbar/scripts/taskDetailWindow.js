@@ -286,20 +286,29 @@ async function handleTaskSubmit(event) {
             showTaskMessage(isEditMode ? 'Task updated successfully!' : 'Task created successfully!', 'success');
             
             // Close modal after successful save
+            // Close modal after successful save
             setTimeout(() => {
                 hideTaskDetailWindow();
-                // Refresh workspace list if needed
-                if (typeof refreshWorkspaces === 'function') {
-                    refreshWorkspaces();
-                } else if (typeof window.refreshWorkspaces === 'function') {
-                    window.refreshWorkspaces();
-                } else if (typeof window.refreshTasksAfterModal === 'function') {
-                    // For calendar page todo list
+                // Always try to refresh tasks first
+                if (typeof window.refreshTasksAfterModal === 'function') {
+                    console.log('Calling refreshTasksAfterModal...');
                     window.refreshTasksAfterModal();
                 } else {
-                    // Fallback: reload the page to show the new task
-                    console.log('Refreshing page to show new task...');
-                    window.location.reload();
+                    console.log('refreshTasksAfterModal not available, trying alternative refresh...');
+                    // Try to call loadTasks directly if available
+                    if (typeof window.loadTasks === 'function') {
+                        window.loadTasks();
+                    } else {
+                        // Last resort: reload page
+                        console.log('No refresh function found, reloading page...');
+                        window.location.reload();
+                    }
+                }
+                
+                // Also refresh navbar workspaces
+                if (typeof window.refreshWorkspacesAfterModal === 'function') {
+                    console.log('Calling refreshWorkspacesAfterModal...');
+                    window.refreshWorkspacesAfterModal();
                 }
             }, 1500);
         } else {

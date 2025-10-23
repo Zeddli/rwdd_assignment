@@ -735,6 +735,38 @@ function handleGrantAccess(taskItem) {
     }
 }
 
+/**
+ * Refresh workspace list after task creation/update
+ * This function can be called from taskDetailWindow after task operations
+ */
+async function refreshWorkspacesAfterModal() {
+    try {
+        const response = await fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=get_workspaces'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                // Reload the page to refresh the navbar content
+                // This is the minimal change approach
+                window.location.reload();
+            }
+        }
+    } catch (error) {
+        console.error('Error refreshing workspaces:', error);
+        // Fallback: reload page
+        window.location.reload();
+    }
+}
+
+// Export function globally so taskDetailWindow can call it
+window.refreshWorkspacesAfterModal = refreshWorkspacesAfterModal;
+
 // export these functions so other js files can use them
 // makes them available globally via the window object
 window.addNewWorkspace = addNewWorkspace;
