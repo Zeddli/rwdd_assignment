@@ -195,11 +195,13 @@
                 </div>
                 
                 <div class="team-member">
-                    <div class="team-avatar">
-                        <img src="assets/kamfatt.png" alt="Wong Kam Fatt" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h4>Wong Kam Fatt</h4>
-                    <p class="role">Software Engineer</p>
+                    <a href="../Portfolio/wong.html" target="_blank">
+                        <div class="team-avatar">
+                            <img src="assets/kamfatt.png" alt="Wong Kam Fatt" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h4>Wong Kam Fatt</h4>
+                        <p class="role">Software Engineer</p>
+                    </a>
                 </div>
                 
                 <div class="team-member">
