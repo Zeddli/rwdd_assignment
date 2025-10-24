@@ -49,7 +49,7 @@ $workspaces = getUserWorkspaces($userID);
         <!-- Top Section: Logo and Toggle Button -->
         <div class="sidebar-header">
             <!-- Simple logo text - could be replaced with actual logo image -->
-            <div class="logo">logo</div>
+            <div class="logo"><img src="../Navbar/logo/logo.png" alt="Logo" class="logo-icon" width="18" height="18"></div>
             <!-- Button to collapse/expand the sidebar -->
             <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
                 <!-- Two different icons that switch based on sidebar state -->
