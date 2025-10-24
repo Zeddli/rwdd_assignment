@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+header {
+    background-color: #0078d7;
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+header img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid white;
+    margin-bottom: 1rem;
+}
+header h1 {
+    font-size: 2rem;
+}
+header p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+section {
+    padding: 2rem 10%;
+}
+h2 {
+    color: #0078d7;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #0078d7;
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 0.3rem;
+}
+.education ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+.education li {
+    margin-bottom: 1rem;
+}
+.education strong {
+    display: block;
+    font-size: 1.1rem;
+}
+.hobbies {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: start;
+
+}
+.hobbies h2 {
+    width: auto;
+}
+.hobbies .hobbies-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+.hobby {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 250px;
+    text-align: center;
+    padding: 1rem;
+    transition: transform 0.3s;
+}
+.hobby:hover {
+    transform: scale(1.05);
+}
+.hobby img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+}
+form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: auto;
+}
+form input, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+form button {
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+form button:hover {
+    background-color: #005fa3;
+}
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #0078d7;
+    color: white;
+    margin-top: 2rem;
+}
+.socials a {
+    margin: 0 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+.socials a:hover {
+    color: #ffdd57;
+}
+@media(max-width: 768px) {
+    .hobbies {
+        flex-direction: column;
+        align-items: center;
+    }
+}
