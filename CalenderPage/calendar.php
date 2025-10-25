@@ -10,10 +10,6 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    // $_SESSION["workspaceID"] = 1; //CHANGEEEEEEEEEEEEE!!!!!!!!!!!!
-    if(!isset($_SESSION["workspaceID"])){
-        header("Location: ../HomePage/Home.php");
-    }
 ?>
 
 <!DOCTYPE html>
