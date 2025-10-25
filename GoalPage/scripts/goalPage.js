@@ -36,6 +36,7 @@
     workspaceId: null, // Will be set from session via backend
     goals: [],
     activeTab: 'Long', // Track active tab for mobile
+    userRole: 'Employee', // Default role, will be updated from backend
   };
 
   function formatDateRange(start, end) {
@@ -68,17 +69,21 @@
         g.EndTime && g.Progress === "Completed"
           ? formatDateRange(g.StartTime, g.EndTime)
           : `${formatDateRange(g.StartTime, g.StartTime).split(" → ")[0]} → —`;
+      const openButton = state.userRole === 'Manager' 
+        ? `<button class="goal-card-btn" data-action="open-edit" data-id="${g.GoalID}">Open</button>`
+        : '';
+      
+      const actionsHtml = state.userRole === 'Manager' 
+        ? `<div class="goal-card-actions">${openButton}</div>`
+        : '';
+      
       div.innerHTML = `
         <div class="goal-card-title">🎯 <span>${escapeHtml(
           g.GoalTitle || "Untitled"
         )}</span></div>
         <div class="goal-card-status">Status: ${escapeHtml(g.Progress)}</div>
         <div class="goal-card-daterange">Date range:<br>${endDisplay}</div>
-        <div class="goal-card-actions">
-          <button class="goal-card-btn" data-action="open-edit" data-id="${
-            g.GoalID
-          }">Open</button>
-        </div>
+        ${actionsHtml}
       `;
       return div;
     };
@@ -148,11 +153,13 @@
     console.log('Loading goals...');
     const res = await api.getGoals().catch((error) => {
       console.error('Error loading goals:', error);
-      return { ok: false, data: [] };
+      return { ok: false, data: [], userRole: 'Employee' };
     });
     console.log('Goals response:', res);
     state.goals = res?.data || [];
+    state.userRole = res?.userRole || 'Employee';
     console.log('Goals loaded:', state.goals);
+    console.log('User role:', state.userRole);
     render();
   }
 

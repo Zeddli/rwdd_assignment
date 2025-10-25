@@ -45,8 +45,8 @@ if ($workspaceId === null) {
     exit;
 }
 
-// Ensure user has access to workspace
-$check = mysqli_prepare($conn, "SELECT 1 FROM workspacemember WHERE UserID = ? AND WorkSpaceID = ? LIMIT 1");
+// Ensure user has access to workspace and get their role
+$check = mysqli_prepare($conn, "SELECT UserRole FROM workspacemember WHERE UserID = ? AND WorkSpaceID = ? LIMIT 1");
 mysqli_stmt_bind_param($check, 'ii', $userID, $workspaceId);
 mysqli_stmt_execute($check);
 $has = mysqli_stmt_get_result($check);
@@ -54,6 +54,8 @@ if (!$has || mysqli_num_rows($has) === 0) {
     echo json_encode([ 'ok' => false, 'message' => 'No access to workspace' ]);
     exit;
 }
+
+$userRole = mysqli_fetch_assoc($has)['UserRole'];
 
 $sql = "SELECT GoalID, WorkSpaceID, GoalTitle, Description, Type, StartTime, EndTime, Deadline, Progress FROM goal WHERE WorkSpaceID = ? ORDER BY GoalID DESC";
 $stmt = mysqli_prepare($conn, $sql);
@@ -63,5 +65,5 @@ $res = mysqli_stmt_get_result($stmt);
 $rows = [];
 while ($row = mysqli_fetch_assoc($res)) { $rows[] = $row; }
 
-echo json_encode([ 'ok' => true, 'data' => $rows ]);
+echo json_encode([ 'ok' => true, 'data' => $rows, 'userRole' => $userRole ]);
 

@@ -43,7 +43,8 @@ $dataQuery = "
     SELECT 
         g.WorkSpaceID, 
         g.GoalTitle,
-        w.Name AS WorkSpaceName
+        w.Name AS WorkSpaceName,
+        wm.UserRole
     FROM goal g 
     JOIN workspace w ON g.WorkSpaceID = w.WorkSpaceID
     JOIN workspacemember wm ON wm.WorkSpaceID = g.WorkSpaceID AND wm.UserID = ? 
@@ -64,6 +65,14 @@ $goalData = mysqli_fetch_assoc($resC);
 $workspaceId = $goalData['WorkSpaceID'];
 $GoalTitle = $goalData['GoalTitle'];
 $workspaceName = $goalData['WorkSpaceName'];
+$userRole = $goalData['UserRole'];
+
+// Check if user is a manager
+if ($userRole !== 'Manager') {
+    echo json_encode([ 'ok' => false, 'message' => 'Only managers can edit goals' ]);
+    exit;
+}
+
 mysqli_stmt_close($stmtC);
 
 // Build Update Query
