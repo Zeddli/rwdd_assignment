@@ -1,4 +1,3 @@
-<!-- Calendar main view with To-Do Sidebar -->
 <?php
 // session_start();
 // // Check if user is logged in
@@ -7,7 +6,7 @@
 //     exit();
 // }
     include "../Head/Head.php";
-
+ 
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }

@@ -161,6 +161,48 @@
     openModal(els.createModal);
   });
 
+  // Add real-time validation for deadline inputs
+  function addDeadlineValidation() {
+    const createForm = document.getElementById("create-goal-form");
+    const editForm = document.getElementById("edit-goal-form");
+    
+    function validateDeadline(form) {
+      const startInput = form.querySelector('[name="startTime"]');
+      const deadlineInput = form.querySelector('[name="deadline"]');
+      
+      if (startInput && deadlineInput && startInput.value && deadlineInput.value) {
+        const startTime = new Date(startInput.value);
+        const deadline = new Date(deadlineInput.value);
+        
+        if (deadline <= startTime) {
+          deadlineInput.setCustomValidity('Deadline must be after the start time');
+          deadlineInput.style.borderColor = '#b00020';
+        } else {
+          deadlineInput.setCustomValidity('');
+          deadlineInput.style.borderColor = '#bbb';
+        }
+      }
+    }
+    
+    // Add validation to create form
+    if (createForm) {
+      const startInput = createForm.querySelector('[name="startTime"]');
+      const deadlineInput = createForm.querySelector('[name="deadline"]');
+      
+      startInput?.addEventListener('change', () => validateDeadline(createForm));
+      deadlineInput?.addEventListener('change', () => validateDeadline(createForm));
+    }
+    
+    // Add validation to edit form
+    if (editForm) {
+      const startInput = editForm.querySelector('[name="startTime"]');
+      const deadlineInput = editForm.querySelector('[name="deadline"]');
+      
+      startInput?.addEventListener('change', () => validateDeadline(editForm));
+      deadlineInput?.addEventListener('change', () => validateDeadline(editForm));
+    }
+  }
+
   // Tab switching for mobile
   els.goalTabs?.addEventListener("click", (e) => {
     const tab = e.target.closest('.goal-tab');
@@ -222,6 +264,16 @@
       e.preventDefault();
       const fd = new FormData(e.target);
       const payload = Object.fromEntries(fd.entries());
+      
+      // Client-side validation
+      const startTime = payload.startTime;
+      const deadline = payload.deadline;
+      
+      if (startTime && deadline && new Date(deadline) <= new Date(startTime)) {
+        alert('Deadline must be after the start time');
+        return;
+      }
+      
       const res = await api.createGoal(payload).catch(() => ({ ok: false }));
       if (res?.ok) {
         els.createModal.classList.remove("show");
@@ -238,6 +290,16 @@
       e.preventDefault();
       const fd = new FormData(e.target);
       const payload = Object.fromEntries(fd.entries());
+      
+      // Client-side validation
+      const startTime = payload.startTime;
+      const deadline = payload.deadline;
+      
+      if (startTime && deadline && new Date(deadline) <= new Date(startTime)) {
+        alert('Deadline must be after the start time');
+        return;
+      }
+      
       const res = await api.updateGoal(payload).catch(() => ({ ok: false }));
       if (res?.ok) {
         els.editModal.classList.remove("show");
@@ -268,6 +330,7 @@
   // Initial load
   const ready = () => {
     load();
+    addDeadlineValidation();
   };
   if (
     document.readyState === "complete" ||
