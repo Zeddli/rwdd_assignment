@@ -21,7 +21,7 @@
         $column = $table == "taskaccess" ? "TaskID":"WorkSpaceID";
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
 
-        $stmt = $conn->prepare("SELECT WorkSpaceID, user.UserID, UserRole, Username, Email, PictureName FROM $table
+        $stmt = $conn->prepare("SELECT * FROM $table
                                        JOIN user ON $table.UserID = user.UserID
                                        WHERE $column = ?");
         $stmt->bind_param("i", $id);
@@ -34,6 +34,9 @@
                 $filepath = __DIR__ . "/../Assets/ProfilePic/" . $row["PictureName"];
                 if($row["PictureName"] === null || !file_exists($filepath)){ 
                     $row["PictureName"] = "anonymous.jpg";
+                }
+                if($row["HasedPassword"]){
+                    $row["HasedPassword"] = "";
                 }
                 
                 
