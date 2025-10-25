@@ -126,7 +126,7 @@ function createTaskElement(task) {
     const taskTitle = task.title && task.title.trim() ? task.title.trim() : 'Untitled Task';
     const taskDate = task.task_date ? formatDate(task.task_date) : '';
     
-    // Create task HTML structure
+    // Create task HTML structure - always show delete button
     li.innerHTML = `
         <input 
             type="checkbox" 
@@ -139,7 +139,7 @@ function createTaskElement(task) {
             ${taskDate ? `<div class="task-date">${taskDate}</div>` : ''}
         </div>
         <div class="task-actions">
-            <button class="task-btn" onclick="deleteTask(${task.id})" title="Delete task">
+            <button class="task-btn" onclick="deleteTask(${task.id}, '${task.userRole}')" title="Delete task">
                 🗑️
             </button>
         </div>
@@ -449,8 +449,15 @@ async function toggleTaskStatus(taskId, isCompleted) {
 /**
  * Delete a task
  * @param {number} taskId - Task ID
+ * @param {string} userRole - User's role in the workspace
  */
-async function deleteTask(taskId) {
+async function deleteTask(taskId, userRole) {
+    // Check if user has permission to delete tasks
+    if (userRole !== 'Manager') {
+        alert('Only managers can delete tasks. You do not have permission to delete this task.');
+        return;
+    }
+    
     if (!confirm('Are you sure you want to delete this task?')) {
         return;
     }

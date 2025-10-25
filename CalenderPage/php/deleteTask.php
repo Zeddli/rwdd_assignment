@@ -35,10 +35,16 @@ $user_id = $_SESSION['userInfo']['userID'];
 $task_id = intval($input['id']);
 
 try {
-    // Verify user has access to the task
-    $check_query = "SELECT TaskID FROM taskaccess WHERE TaskID = ? AND UserID = ?";
+    // Verify user has access to the task AND is a manager in the workspace
+    $check_query = "
+        SELECT t.TaskID, wm.UserRole 
+        FROM task t
+        JOIN workspacemember wm ON t.WorkSpaceID = wm.WorkSpaceID
+        JOIN taskaccess ta ON t.TaskID = ta.TaskID
+        WHERE t.TaskID = ? AND wm.UserID = ? AND ta.UserID = ?
+    ";
     $check_stmt = mysqli_prepare($conn, $check_query);
-    mysqli_stmt_bind_param($check_stmt, "ii", $task_id, $user_id);
+    mysqli_stmt_bind_param($check_stmt, "iii", $task_id, $user_id, $user_id);
     mysqli_stmt_execute($check_stmt);
     $check_result = mysqli_stmt_get_result($check_stmt);
     
@@ -51,6 +57,21 @@ try {
         mysqli_close($conn);
         exit();
     }
+    
+    $task_data = mysqli_fetch_assoc($check_result);
+    $user_role = $task_data['UserRole'];
+    
+    // Check if user is a manager
+    if ($user_role !== 'Manager') {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Only managers can delete tasks'
+        ]);
+        mysqli_stmt_close($check_stmt);
+        mysqli_close($conn);
+        exit();
+    }
+    
     mysqli_stmt_close($check_stmt);
     
     // Delete from taskaccess first (foreign key constraint)

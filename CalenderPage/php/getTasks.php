@@ -22,12 +22,13 @@ if (!isset($_SESSION['userInfo']['userID'])) {
 $user_id = $_SESSION['userInfo']['userID'];
 
 try {
-    // Fetch tasks that user has access to via taskaccess table
+    // Fetch tasks that user has access to via taskaccess table, including user role
     $query = "SELECT t.TaskID as id, t.Title as title, t.Deadline as task_date, 
-                     t.Status as status, t.Description as description
+                     t.Status as status, t.Description as description, wm.UserRole
               FROM task t
               INNER JOIN taskaccess ta ON t.TaskID = ta.TaskID
-              WHERE ta.UserID = ?
+              INNER JOIN workspacemember wm ON t.WorkSpaceID = wm.WorkSpaceID
+              WHERE ta.UserID = ? AND wm.UserID = ?
               ORDER BY 
                 CASE 
                     WHEN t.Status = 'Pending' THEN 0 
@@ -42,7 +43,7 @@ try {
         throw new Exception('Query preparation failed');
     }
     
-    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_bind_param($stmt, "ii", $user_id, $user_id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     
@@ -59,7 +60,8 @@ try {
             'title' => $row['title'],
             'task_date' => $row['task_date'] ? date('Y-m-d', strtotime($row['task_date'])) : null,
             'status' => $status,
-            'description' => $row['description']
+            'description' => $row['description'],
+            'userRole' => $row['UserRole']
         ];
     }
     
