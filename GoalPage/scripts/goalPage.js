@@ -156,7 +156,7 @@
     render();
   }
 
-  // Create modal wiring
+  // Create modal wiring (only if create button exists - managers only)
   els.createBtn?.addEventListener("click", () => {
     openModal(els.createModal);
   });

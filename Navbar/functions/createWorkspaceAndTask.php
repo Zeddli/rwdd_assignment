@@ -71,8 +71,8 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
         return ['success' => false, 'message' => 'Database connection failed'];
     }
     
-    // make sure user actually has access to this workspace
-    $checkAccess = "SELECT 1 FROM workspacemember WHERE WorkSpaceID = ? AND UserID = ?";
+    // make sure user actually has access to this workspace AND is a manager
+    $checkAccess = "SELECT UserRole FROM workspacemember WHERE WorkSpaceID = ? AND UserID = ?";
     $stmt = mysqli_prepare($conn, $checkAccess);
     mysqli_stmt_bind_param($stmt, "ii", $workspaceID, $userID);
     mysqli_stmt_execute($stmt);
@@ -80,6 +80,11 @@ function createTask($userID, $workspaceID, $taskName, $taskDescription = '', $st
     
     if (mysqli_num_rows($result) == 0) {
         return ['success' => false, 'message' => 'No access to workspace'];
+    }
+    
+    $userRole = mysqli_fetch_assoc($result)['UserRole'];
+    if ($userRole !== 'Manager') {
+        return ['success' => false, 'message' => 'Only managers can create tasks'];
     }
     
     // Prepare the task data with proper date handling

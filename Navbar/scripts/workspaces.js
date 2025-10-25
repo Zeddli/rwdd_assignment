@@ -52,12 +52,7 @@ function addNewWorkspace() {
                         <img src="../navbar-icon/workspace.svg" alt="Workspace" class="workspace-icon" width="18" height="18">
                         <span class="workspace-name">${data.workspaceName}</span>
                         <div class="workspace-actions">
-                            <button class="add-task-btn" aria-label="Add new task">
-                                <svg width="16" height="16" viewBox="0 0 16 16">
-                                    <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2"/>
-                                    <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                            </button>
+                            <!-- Add task button is only shown for managers in navbar.php -->
                             <div class="dropdown">
                                 <button class="dropdown-toggle" aria-label="Workspace options">
                                     <svg width="16" height="16" viewBox="0 0 16 16">

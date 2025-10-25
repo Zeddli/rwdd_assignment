@@ -72,12 +72,21 @@ if ($start && $deadline && strtotime($deadline) <= strtotime($start)) {
     exit;
 }
 
-// Access check
-$check = mysqli_prepare($conn, "SELECT 1 FROM workspacemember WHERE UserID = ? AND WorkSpaceID = ? LIMIT 1");
+// Access check - ensure user is a manager in the workspace
+$check = mysqli_prepare($conn, "SELECT UserRole FROM workspacemember WHERE UserID = ? AND WorkSpaceID = ? LIMIT 1");
 mysqli_stmt_bind_param($check, 'ii', $userID, $workspaceId);
 mysqli_stmt_execute($check);
 $has = mysqli_stmt_get_result($check);
-if (!$has || mysqli_num_rows($has) === 0) { echo json_encode([ 'ok' => false, 'message' => 'No access to workspace' ]); exit; }
+if (!$has || mysqli_num_rows($has) === 0) { 
+    echo json_encode([ 'ok' => false, 'message' => 'No access to workspace' ]); 
+    exit; 
+}
+
+$userRole = mysqli_fetch_assoc($has)['UserRole'];
+if ($userRole !== 'Manager') {
+    echo json_encode([ 'ok' => false, 'message' => 'Only managers can create goals' ]);
+    exit;
+}
 
 $sql = "INSERT INTO goal (WorkSpaceID, GoalTitle, Description, Type, StartTime, EndTime, Deadline, Progress) VALUES (?, ?, ?, ?, ?, NULL, ?, ?)";
 $stmt = mysqli_prepare($conn, $sql);

@@ -128,13 +128,15 @@ $workspaces = getUserWorkspaces($userID);
                                 <span class="workspace-name"><?php echo htmlspecialchars($workspace['WorkspaceName']); ?></span>
                                 <!-- Action buttons for this workspace -->
                                 <div class="workspace-actions">
-                                    <!-- Plus button to add new task to this workspace -->
+                                    <!-- Plus button to add new task to this workspace (Manager only) -->
+                                    <?php if ($workspace['UserRole'] === 'Manager'): ?>
                                     <button class="add-task-btn" aria-label="Add new task">
                                         <svg width="16" height="16" viewBox="0 0 16 16">
                                             <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2"/>
                                             <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2"/>
                                         </svg>
                                     </button>
+                                    <?php endif; ?>
                                     <!-- Three dots menu for workspace options -->
                                     <div class="dropdown">
                                         <button class="dropdown-toggle" aria-label="Workspace options">
@@ -146,10 +148,12 @@ $workspaces = getUserWorkspaces($userID);
                                         </button>
                                         <!-- Dropdown menu with workspace actions -->
                                         <div class="dropdown-menu">
+                                            <?php if ($workspace['UserRole'] === 'Manager'): ?>
                                             <button class="dropdown-item" data-action="invite">Invite member</button>
                                             <button class="dropdown-item" data-action="add-task">Add task</button>
                                             <button class="dropdown-item" data-action="rename">Rename</button>
                                             <button class="dropdown-item" data-action="delete">Delete</button>
+                                            <?php endif; ?>
                                             <button class="dropdown-item" data-action="hide">Hide</button>
                                         </div>
                                     </div>

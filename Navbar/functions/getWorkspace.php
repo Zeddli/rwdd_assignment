@@ -15,9 +15,9 @@ function getUserWorkspaces($userID) {
         return [];
     }
     
-    // find all workspaces where this user is a member
+    // find all workspaces where this user is a member, including their role
     $workspaceQuery = "
-        SELECT w.WorkSpaceID, w.Name as WorkspaceName 
+        SELECT w.WorkSpaceID, w.Name as WorkspaceName, wm.UserRole 
         FROM workspace w 
         INNER JOIN workspacemember wm ON w.WorkSpaceID = wm.WorkSpaceID 
         WHERE wm.UserID = ? 

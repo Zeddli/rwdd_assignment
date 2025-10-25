@@ -22,6 +22,15 @@ if ($selectedWorkspaceID === null) {
     }
 }
 
+// Get user's role in the selected workspace
+$userRole = 'Employee'; // Default role
+if ($selectedWorkspaceID) {
+    $roleQuery = mysqli_query($conn, "SELECT UserRole FROM workspacemember WHERE WorkSpaceID = " . intval($selectedWorkspaceID) . " AND UserID = " . intval($userID));
+    if ($roleQuery && mysqli_num_rows($roleQuery) > 0) {
+        $userRole = mysqli_fetch_assoc($roleQuery)['UserRole'];
+    }
+}
+
 // Fetch all workspaces for this user
 global $conn;
 
@@ -50,7 +59,9 @@ if (!$conn) {
       <main class="goal-page">
         <header class="goal-header">
             <h1>Goals</h1>
+            <?php if ($userRole === 'Manager'): ?>
             <button id="create-goal-btn" class="create-goal-btn">Create goal</button>
+            <?php endif; ?>
         </header>
 
         <!-- Goal Type Tabs (Mobile) -->
