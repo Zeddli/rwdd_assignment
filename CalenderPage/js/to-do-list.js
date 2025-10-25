@@ -475,6 +475,10 @@ async function deleteTask(taskId, userRole) {
         
         if (data.success) {
             await loadTasks();
+            // Auto refresh the page to update the UI
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             alert('Error deleting task: ' + data.message);
         }

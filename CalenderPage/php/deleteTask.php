@@ -74,28 +74,54 @@ try {
     
     mysqli_stmt_close($check_stmt);
     
-    // Delete from taskaccess first (foreign key constraint)
-    $delete_access = "DELETE FROM taskaccess WHERE TaskID = ?";
-    $access_stmt = mysqli_prepare($conn, $delete_access);
-    mysqli_stmt_bind_param($access_stmt, "i", $task_id);
-    mysqli_stmt_execute($access_stmt);
-    mysqli_stmt_close($access_stmt);
+    // Start transaction to ensure all deletions succeed or fail together
+    mysqli_begin_transaction($conn);
     
-    // Delete from task table
-    $delete_task = "DELETE FROM task WHERE TaskID = ?";
-    $task_stmt = mysqli_prepare($conn, $delete_task);
-    mysqli_stmt_bind_param($task_stmt, "i", $task_id);
+    try {
+        // Delete from fileshared table first (foreign key constraint)
+        $delete_files = "DELETE FROM fileshared WHERE TaskID = ?";
+        $files_stmt = mysqli_prepare($conn, $delete_files);
+        mysqli_stmt_bind_param($files_stmt, "i", $task_id);
+        mysqli_stmt_execute($files_stmt);
+        mysqli_stmt_close($files_stmt);
+        
+        // Delete from comment table (foreign key constraint)
+        $delete_comments = "DELETE FROM comment WHERE TaskID = ?";
+        $comments_stmt = mysqli_prepare($conn, $delete_comments);
+        mysqli_stmt_bind_param($comments_stmt, "i", $task_id);
+        mysqli_stmt_execute($comments_stmt);
+        mysqli_stmt_close($comments_stmt);
+        
+        // Delete from taskaccess table (foreign key constraint)
+        $delete_access = "DELETE FROM taskaccess WHERE TaskID = ?";
+        $access_stmt = mysqli_prepare($conn, $delete_access);
+        mysqli_stmt_bind_param($access_stmt, "i", $task_id);
+        mysqli_stmt_execute($access_stmt);
+        mysqli_stmt_close($access_stmt);
+        
+        // Finally delete from task table
+        $delete_task = "DELETE FROM task WHERE TaskID = ?";
+        $task_stmt = mysqli_prepare($conn, $delete_task);
+        mysqli_stmt_bind_param($task_stmt, "i", $task_id);
     
-    if (mysqli_stmt_execute($task_stmt)) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Task deleted successfully'
-        ]);
-    } else {
-        throw new Exception('Failed to delete task');
+        if (mysqli_stmt_execute($task_stmt)) {
+            // Commit transaction if all deletions succeeded
+            mysqli_commit($conn);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Task deleted successfully'
+            ]);
+        } else {
+            throw new Exception('Failed to delete task');
+        }
+        
+        mysqli_stmt_close($task_stmt);
+        
+    } catch (Exception $e) {
+        // Rollback transaction if any deletion failed
+        mysqli_rollback($conn);
+        throw $e; // Re-throw to be caught by outer catch block
     }
-    
-    mysqli_stmt_close($task_stmt);
     
 } catch (Exception $e) {
     echo json_encode([

@@ -146,7 +146,7 @@ function deleteTaskFromDatabase(taskID, taskItem) {
 
 /**
  * Delete workspace from database via API
- * Makes AJAX call to delete workspace and updates UI
+ * Makes AJAX call to delete workspace and redirects to home page
  */
 function deleteWorkspaceFromDatabase(workspaceID, workspaceItem) {
     fetch('../Navbar/navbar_api.php', {
@@ -159,23 +159,31 @@ function deleteWorkspaceFromDatabase(workspaceID, workspaceItem) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove workspace from UI
-            workspaceItem.remove();
-            
-            // Check if no workspaces remain
-            const remainingWorkspaces = document.querySelectorAll('.workspace-item');
-            if (remainingWorkspaces.length === 0) {
-                // Show "no workspace" message
-                const noWorkspaceHTML = `
-                    <div class="no-workspace-message">
-                        <p>You don't have any workspace yet.</p>
-                        <button class="create-first-workspace-btn" onclick="addNewWorkspace()">Create Workspace</button>
-                    </div>
-                `;
-                DOM.workspacesContainer.innerHTML = noWorkspaceHTML;
-            }
-            
             console.log('Workspace deleted successfully');
+            
+            // Show success message briefly before redirecting
+            const successMessage = document.createElement('div');
+            successMessage.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #4CAF50;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            successMessage.textContent = 'Workspace deleted successfully! Redirecting to home page...';
+            document.body.appendChild(successMessage);
+            
+            // Redirect to home page after a short delay
+            setTimeout(() => {
+                window.location.href = '../HomePage/home.php';
+            }, 1500);
+            
         } else {
             alert('Failed to delete workspace: ' + data.message);
         }
