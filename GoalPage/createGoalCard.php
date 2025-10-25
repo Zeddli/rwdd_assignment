@@ -21,10 +21,7 @@
         <label>Start</label>
         <input class="input" type="datetime-local" name="startTime" required />
       </div>
-      <div class="modal-row">
-        <label>End</label>
-        <input class="input" type="text" name="endTime" value="Auto when completed" disabled />
-      </div>
+      
       <div class="modal-row">
         <label>Deadline</label>
         <input class="input" type="datetime-local" name="deadline" />

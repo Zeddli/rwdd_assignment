@@ -1,11 +1,19 @@
-<!-- Calendar main view with To-Do Sidebar -->
 <?php
-session_start();
-// Check if user is logged in
-if (!isset($_SESSION['userInfo']['userID'])) {
-    header("Location: ../LoginSignup/landing/login/login.php");
-    exit();
-}
+// session_start();
+// // Check if user is logged in
+// if (!isset($_SESSION['userInfo']['userID'])) {
+//     header("Location: ../LoginSignup/landing/login/login.php");
+//     exit();
+// }
+    include "../Head/Head.php";
+ 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    // $_SESSION["workspaceID"] = 1; //CHANGEEEEEEEEEEEEE!!!!!!!!!!!!
+    if(!isset($_SESSION["workspaceID"])){
+        header("Location: ../HomePage/Home.php");
+    }
 ?>
 
 <!DOCTYPE html>
