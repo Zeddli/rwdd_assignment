@@ -66,6 +66,12 @@ if (!$type || !$title || !$start) {
     exit;
 }
 
+// Validate that deadline is after start time
+if ($start && $deadline && strtotime($deadline) <= strtotime($start)) {
+    echo json_encode([ 'ok' => false, 'message' => 'Deadline must be after the start time' ]);
+    exit;
+}
+
 // Access check
 $check = mysqli_prepare($conn, "SELECT 1 FROM workspacemember WHERE UserID = ? AND WorkSpaceID = ? LIMIT 1");
 mysqli_stmt_bind_param($check, 'ii', $userID, $workspaceId);

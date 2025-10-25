@@ -71,6 +71,12 @@ $fields = [];
 $params = [];
 $types = '';
 function add(&$fields, &$params, &$types, $field, $value, $typeChar='s') { if ($value !== null) { $fields[] = "$field = ?"; $params[] = $value; $types .= $typeChar; } }
+// Validate that deadline is after start time if both are provided
+if ($start && $deadline && strtotime($deadline) <= strtotime($start)) {
+    echo json_encode([ 'ok' => false, 'message' => 'Deadline must be after the start time' ]);
+    exit;
+}
+
 add($fields, $params, $types, 'Type', $type);
 add($fields, $params, $types, 'GoalTitle', $title);
 add($fields, $params, $types, 'Description', $description);
