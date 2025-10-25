@@ -134,7 +134,7 @@ function createTaskElement(task) {
             ${task.status === 'completed' ? 'checked' : ''}
             onchange="toggleTaskStatus(${task.id}, this.checked)"
         />
-        <div class="task-content">
+        <div class="task-content clickable-task" onclick="navigateToTask(${task.id})" title="Click to view task details">
             <div class="task-title">${escapeHtml(taskTitle)}</div>
             ${taskDate ? `<div class="task-date">${taskDate}</div>` : ''}
         </div>
@@ -481,6 +481,41 @@ async function deleteTask(taskId, userRole) {
     } catch (error) {
         console.error('Error deleting task:', error);
         alert('Error deleting task. Please try again.');
+    }
+}
+
+/**
+ * Navigate to task page when task is clicked
+ * @param {number} taskId - Task ID
+ */
+async function navigateToTask(taskId) {
+    // Prevent event bubbling to avoid conflicts with other click handlers
+    event.stopPropagation();
+    
+    try {
+        // Set task in session before navigating
+        const formData = new FormData();
+        formData.append('action', 'set_task_session');
+        formData.append('task_id', taskId);
+        
+        const response = await fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Navigate to task page without task_id in URL
+            window.location.href = '../TaskPage/Task.php';
+        } else {
+            console.error('Failed to set task session:', data.message);
+            alert('Error accessing task. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error setting task session:', error);
+        alert('Error accessing task. Please try again.');
     }
 }
 

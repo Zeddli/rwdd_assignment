@@ -201,6 +201,17 @@
     gap: 4px;
 }
 
+.task-content.clickable-task {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.task-content.clickable-task:hover {
+    background-color: #e8f0fe;
+}
+
 .task-title {
     font-size: 14px;
     color: #202124;
@@ -575,6 +586,19 @@
         gap: 8px;
         min-width: 0;
         overflow: hidden;
+    }
+    
+    .task-content.clickable-task {
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        margin: -8px;
+    }
+    
+    .task-content.clickable-task:hover {
+        background-color: #e8f0fe;
+        transform: translateY(-1px);
     }
     
     /* Mobile Task Title */
