@@ -63,7 +63,6 @@
                         <select id="statusSelect" class="attribute-input">
                             <option value="Pending">Pending</option>
                             <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
                         </select>
                     </div>
                 </div>
