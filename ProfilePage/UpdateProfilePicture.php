@@ -28,7 +28,8 @@
         $uploadDir = __DIR__ . "/../Assets/ProfilePic/";
         if($oldProfileName){
             $filepath = $uploadDir . $oldProfileName["PictureName"];
-            if (file_exists($filepath) && $oldProfileName["PictureName"] !== "anonymous.jpg") {
+            // if exists and not null
+            if (isset($oldProfileName["PictureName"]) && file_exists($filepath) && $oldProfileName["PictureName"] !== "anonymous.jpg") {
                 unlink($filepath);
             }
         }
