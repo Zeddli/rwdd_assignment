@@ -365,12 +365,12 @@ export function member(id, type){
             const popupContainer = document.createElement("div");
             popupContainer.className = "popup-container";
             popupContainer.style.placeSelf = "center";
-            popupContainer.style.width = "max(50%, 400px)";
+            popupContainer.style.width = "max(50%, 300px)";
             popupContainer.style.backgroundColor = "white";
             popupContainer.style.display = "flex";
             popupContainer.style.flexDirection = "column";
             popupContainer.style.gap = "15px";
-            popupContainer.style.padding = "20px 30px";
+            popupContainer.style.padding = "15px 20px";
             popupContainer.style.borderRadius = "8px";
             popupContainer.style.fontSize = "15px";
             popupContainer.style.animation = "fadeIn 0.5s";
@@ -408,6 +408,7 @@ export function member(id, type){
             inviteInput.style.padding = "5px";
             inviteInput.style.border = "1px solid #ccc";
             inviteInput.style.borderRadius = "4px";
+            inviteInput.style.minWidth = "30%";
             inviteInput.rows = 1;
 
             const roleSelect = document.createElement("select");
@@ -417,7 +418,8 @@ export function member(id, type){
             roleSelect.style.cursor = "pointer";
             roleSelect.style.background = "#fff";
             roleSelect.style.color = "#333";
-            roleSelect.style.fontSize = "14px";
+            roleSelect.style.fontSize = "clamp(12px, 1.5vw, 14px)";
+
             ["Employee", "Manager"].forEach(r => {
                 const option = document.createElement("option");
                 option.value = r;
