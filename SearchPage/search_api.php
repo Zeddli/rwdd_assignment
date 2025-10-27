@@ -20,7 +20,7 @@ $goalIDs = [];
 $workspaceIDs = [];
 
 // If query matches type, show all of that type
-if (stripos('task', $queryLower) !== false) {
+if (stripos($queryLower, 'task') !== false) {
     $stmt = $conn->prepare(
         "SELECT t.TaskID, t.Title, w.Name
          FROM task t
@@ -44,9 +44,9 @@ if (stripos('task', $queryLower) !== false) {
     $stmt->close();
 }
 
-if (stripos('goal', $queryLower) !== false) {
+if (stripos($queryLower, 'goal') !== false) {
     $stmt = $conn->prepare(
-        "SELECT g.GoalID, g.Description, w.Name, g.WorkSpaceID
+        "SELECT g.GoalID, g.GoalTitle, w.Name, g.WorkSpaceID
          FROM goal g
          JOIN workspace w ON g.WorkSpaceID = w.WorkSpaceID
          JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID
@@ -59,7 +59,7 @@ if (stripos('goal', $queryLower) !== false) {
         $results[] = [
             "type" => "goal",
             "id" => $row["GoalID"],
-            "name" => $row["Description"],
+            "name" => $row["GoalTitle"],
             "workspace" => $row["Name"],
             "workspaceid" => $row["WorkSpaceID"],
             "link" => "../GoalPage/Goal.php?goalid=" . $row["GoalID"]
@@ -69,7 +69,7 @@ if (stripos('goal', $queryLower) !== false) {
     $stmt->close();
 }
 
-if (stripos('workspace', $queryLower) !== false) {
+if (stripos($queryLower, 'workspace') !== false) {
     $stmt = $conn->prepare(
         "SELECT w.WorkSpaceID, w.Name
          FROM workspace w
@@ -118,11 +118,11 @@ $taskStmt->close();
 
 // GOALS
 $goalStmt = $conn->prepare(
-    "SELECT g.GoalID, g.Description, w.Name
+    "SELECT g.GoalID, g.WorkSpaceID, g.GoalTitle, w.Name
      FROM goal g
      JOIN workspace w ON g.WorkSpaceID = w.WorkSpaceID
      JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID
-     WHERE wm.UserID = ? AND LOWER(g.Description) LIKE CONCAT('%', ?, '%')"
+     WHERE wm.UserID = ? AND LOWER(g.GoalTitle) LIKE CONCAT('%', ?, '%')"
 );
 $goalStmt->bind_param("is", $userID, $queryLower);
 $goalStmt->execute();
@@ -132,7 +132,7 @@ while ($row = $goalRes->fetch_assoc()) {
         $results[] = [
             "type" => "goal",
             "id" => $row["GoalID"],
-            "name" => $row["Description"],
+            "name" => $row["GoalTitle"],
             "workspace" => $row["Name"],
             "workspaceid" => $row["WorkSpaceID"],
             "link" => "../GoalPage/Goal.php?goalid=" . $row["GoalID"]
