@@ -120,12 +120,11 @@ function deleteTaskFromDB($conn, $userID, $taskID) {
     }
     
     // Delete related records in correct order (respecting foreign key constraints)
+    // NOTE: We don't delete task notifications to preserve history (create/update notifications)
     $deleteQueries = [
         "DELETE FROM comment WHERE TaskID = ?",
         "DELETE FROM fileshared WHERE TaskID = ?", 
         "DELETE FROM taskaccess WHERE TaskID = ?",
-        "DELETE FROM receiver WHERE NotificationID IN (SELECT NotificationID FROM notification WHERE RelatedTable = 'task' AND RelatedID = ?)",
-        "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID = ?",
         "DELETE FROM task WHERE TaskID = ?"
     ];
     
@@ -226,13 +225,12 @@ function deleteWorkspaceFromDB($conn, $userID, $workspaceID) {
     mysqli_stmt_close($stmt);
     
     // Delete task-related records first (if any tasks exist)
+    // NOTE: We don't delete task/goal notifications to preserve history
     if (!empty($taskIDs)) {
         $taskDeleteQueries = [
             "DELETE FROM comment WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
             "DELETE FROM fileshared WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
             "DELETE FROM taskaccess WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
-            "DELETE FROM receiver WHERE NotificationID IN (SELECT NotificationID FROM notification WHERE RelatedTable = 'task' AND RelatedID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . "))",
-            "DELETE FROM notification WHERE RelatedTable = 'task' AND RelatedID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")",
             "DELETE FROM task WHERE TaskID IN (" . implode(',', array_fill(0, count($taskIDs), '?')) . ")"
         ];
         
@@ -254,10 +252,9 @@ function deleteWorkspaceFromDB($conn, $userID, $workspaceID) {
     }
     
     // Delete workspace-related records
+    // NOTE: We don't delete any notifications to preserve full history
     $workspaceDeleteQueries = [
         "DELETE FROM goal WHERE WorkSpaceID = ?",
-        "DELETE FROM receiver WHERE NotificationID IN (SELECT NotificationID FROM notification WHERE RelatedTable = 'workspace' AND RelatedID = ?)",
-        "DELETE FROM notification WHERE RelatedTable = 'workspace' AND RelatedID = ?",
         "DELETE FROM workspacemember WHERE WorkSpaceID = ?",
         "DELETE FROM workspace WHERE WorkSpaceID = ?"
     ];

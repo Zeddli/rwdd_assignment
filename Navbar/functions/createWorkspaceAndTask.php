@@ -43,6 +43,32 @@ function createWorkspace($userID, $workspaceName) {
         
         // Goals will be created only through the dedicated goal page
         
+        // Create notification for workspace creation
+        try {
+            // Prepare notification data
+            $relatedID = $workspaceID;
+            $relatedTable = "workspace";
+            $title = "Workspace created";
+            $desc = "A new workspace '$workspaceName' has been created.";
+            
+            // Insert notification
+            $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
+            mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+            mysqli_stmt_execute($insertNoti);
+            $notiID = mysqli_insert_id($conn);
+            mysqli_stmt_close($insertNoti);
+            
+            // Insert receiver for the workspace creator
+            $insertReceiver = mysqli_prepare($conn, "INSERT INTO receiver (NotificationID, UserID) VALUES (?, ?)");
+            mysqli_stmt_bind_param($insertReceiver, "ii", $notiID, $userID);
+            mysqli_stmt_execute($insertReceiver);
+            mysqli_stmt_close($insertReceiver);
+            
+        } catch (Exception $e) {
+            // Notification creation failed, but workspace was created successfully
+            error_log("Failed to create notification for workspace: " . $e->getMessage());
+        }
+        
         // commit the query
         mysqli_commit($conn);
         

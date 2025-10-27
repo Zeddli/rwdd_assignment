@@ -187,11 +187,13 @@
             
             <div class="team-grid">
                 <div class="team-member">
-                    <div class="team-avatar">
-                        <img src="assets/zhijian.png" alt="Sam Zhi Jian" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                    </div>
-                    <h4>Sam Zhi Jian</h4>
-                    <p class="role">Software Engineer</p>
+                    <a href="https://zhijian-portfolio.vercel.app/" target="_blank">
+                        <div class="team-avatar">
+                            <img src="assets/zhijian.png" alt="Sam Zhi Jian" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h4>Sam Zhi Jian</h4>
+                        <p class="role">Software Engineer</p>
+                    </a>
                 </div>
                 
                 <div class="team-member">

@@ -40,7 +40,7 @@ if ($workspaceId === null) {
     }
 }
 $type = $payload['type'] ?? '';
-$title = trim($payload['goalTitle'] ?? '');
+$goalTitle = trim($payload['goalTitle'] ?? ''); // Store goal title
 $description = trim($payload['description'] ?? '') ?: 'No description provided';
 $start = $payload['startTime'] ?? '';
 $end = null; // EndTime should be NULL until goal is marked as Completed
@@ -56,10 +56,10 @@ if (!$workspaceId) {
     exit;
 }
 
-if (!$type || !$title || !$start) {
+if (!$type || !$goalTitle || !$start) {
     echo json_encode([ 'ok' => false, 'message' => 'Missing required fields', 'debug' => [
         'type' => $type,
-        'title' => $title, 
+        'goalTitle' => $goalTitle, 
         'start' => $start,
         'workspaceId' => $workspaceId
     ]]);
@@ -90,7 +90,7 @@ if ($userRole !== 'Manager') {
 
 $sql = "INSERT INTO goal (WorkSpaceID, GoalTitle, Description, Type, StartTime, EndTime, Deadline, Progress) VALUES (?, ?, ?, ?, ?, NULL, ?, ?)";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, 'issssss', $workspaceId, $title, $description, $type, $start, $deadline, $progress);
+mysqli_stmt_bind_param($stmt, 'issssss', $workspaceId, $goalTitle, $description, $type, $start, $deadline, $progress);
 $ok = mysqli_stmt_execute($stmt);
 
 if (!$ok) {
@@ -112,12 +112,12 @@ if (!$ok) {
         // Prepare notification data
         $relatedID = $goalId;
         $relatedTable = "goal";
-        $title = "Goal created";
-        $desc = "A new goal '$title' has been created in workspace '$workspaceName'.";
+        $notiTitle = "Goal created";
+        $desc = "A new goal '$goalTitle' has been created in workspace '$workspaceName'.";
         
         // Insert notification
         $insertNoti = mysqli_prepare($conn, "INSERT INTO notification (RelatedID, RelatedTable, Title, Description) VALUES (?, ?, ?, ?)");
-        mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $title, $desc);
+        mysqli_stmt_bind_param($insertNoti, "isss", $relatedID, $relatedTable, $notiTitle, $desc);
         mysqli_stmt_execute($insertNoti);
         $notiID = mysqli_insert_id($conn);
         mysqli_stmt_close($insertNoti);

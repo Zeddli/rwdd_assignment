@@ -118,7 +118,7 @@ function handleDeleteWorkspace(workspaceItem) {
 
 /**
  * Delete task from database via API
- * Makes AJAX call to delete task and updates UI
+ * Makes AJAX call to delete task and redirects to home page
  */
 function deleteTaskFromDatabase(taskID, taskItem) {
     fetch('../Navbar/navbar_api.php', {
@@ -131,9 +131,15 @@ function deleteTaskFromDatabase(taskID, taskItem) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove task from UI
-            taskItem.remove();
             console.log('Task deleted successfully');
+            
+           
+            
+            // Redirect to home page after a short delay
+            setTimeout(() => {
+                window.location.href = '../HomePage/home.php';
+            }, 1500);
+            
         } else {
             alert('Failed to delete task: ' + data.message);
         }
