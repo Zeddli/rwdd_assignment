@@ -15,7 +15,7 @@
     <img src="../Assets/profilebg.jpg" alt="" class="profilebg">
     <!-- main content -->
     <div class="main-content">
-        <h2 class="profile-page" id="profile-page">Profile Page</h2>
+        <h2 class="profile-page" id="profile-page">Profile  </h2>
         <div class="details-container" id="details-container">
             <div class="profile-pic">
                 <img src="" alt="" class="profile-picture" id="profile-picture">
