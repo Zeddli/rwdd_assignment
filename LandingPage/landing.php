@@ -9,10 +9,13 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/rwdd_assignment/Assets/logo.png">
     <title>ProTask</title>
     <link rel="stylesheet" href="landing.css">
-<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Sticky Navbar -->
@@ -50,10 +53,7 @@
                 <p class="value-prop">The ultimate project management platform that brings your team together with real-time collaboration, seamless task management, and powerful integrations.</p>
                 <a href="../LoginSignup/landing/signup/signup.php" class="cta-button">Get Started Free</a>
                 <div class="hero-image">
-                    <div style="background: rgba(255,255,255,0.1); padding: 40px; border-radius: 15px; backdrop-filter: blur(10px);">
-                        <i class="fas fa-tasks" style="font-size: 4rem; margin-bottom: 20px;"></i>
-                        <img src="assets/Preview.png" alt="Dashboard Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
-                    </div>
+                    <img src="assets/Preview.png" alt="Dashboard Preview">
                 </div>
             </div>
         </div>
@@ -265,19 +265,45 @@
 
     <!-- js for interactive elements -->
     <script>
+        // Mobile menu toggle functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navbarNav = document.querySelector('.navbar-nav');
+        
+        if (mobileMenuToggle && navbarNav) {
+            mobileMenuToggle.addEventListener('click', function() {
+                navbarNav.classList.toggle('active');
+                // Change icon or text if needed
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                }
+            });
+            
+            // Close mobile menu when clicking on a link
+            document.querySelectorAll('.navbar-nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navbarNav.classList.remove('active');
+                    const icon = mobileMenuToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                });
+            });
+        }
+        
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                // e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
             });
-        });
-
-        // Demo button functionality
-        document.querySelector('.demo-image button').addEventListener('click', function() {
-            alert('Demo feature coming soon! Sign up to get early access.');
         });
 
         // Add animation on scroll
@@ -302,6 +328,18 @@
             el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
             observer.observe(el);
         });
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        if (navbar) {
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
     </script>
 </body>
 </html>
