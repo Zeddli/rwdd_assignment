@@ -12,13 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['timezone'])) {
 $userTimeZone = $_SESSION['timezone'] ?? 'UTC';
 date_default_timezone_set($userTimeZone);
 
-// Reminder Panel: Fetch tasks due within a week OR overdue for current user, only pending/in progress
+// Reminder Panel: Fetch tasks and goals due within a week OR overdue for current user, only pending/in progress
 $reminderTasks = [];
+$reminderGoals = [];
 if ($userID && isset($conn)) {
     $today = date('Y-m-d');
     $weekLater = date('Y-m-d', strtotime('+7 days'));
 
-    $reminderQuery = "
+    $taskReminderQuery = "
         SELECT t.TaskID, t.Title, t.Description, t.Deadline, t.Status
         FROM task t
         JOIN taskaccess ta ON t.TaskID = ta.TaskID
@@ -28,15 +29,33 @@ if ($userID && isset($conn)) {
         ORDER BY t.Deadline ASC
     ";
 
-    $stmt = $conn->prepare($reminderQuery);
+    $stmt = $conn->prepare($taskReminderQuery);
     $stmt->bind_param("is", $userID, $weekLater);
     $stmt->execute();
-    $reminderResult = $stmt->get_result();
+    $taskResult = $stmt->get_result();
 
-    while ($row = $reminderResult->fetch_assoc()) {
+    while ($row = $taskResult->fetch_assoc()) {
         $reminderTasks[] = $row;
     }
     $stmt->close();
+
+    $goalReminderQuery = "
+        SELECT g.GoalID, g.WorkSpaceID, g.GoalTitle, g.Description, g.Deadline, g.Progress
+        FROM goal g
+        JOIN workspacemember wm ON g.WorkSpaceID = wm.WorkSpaceID
+        WHERE wm.UserID = ?
+          AND g.Progress IN ('Pending', 'In Progress')
+          AND DATE(g.Deadline) <= ?
+        ORDER BY g.Deadline ASC
+    ";
+    $stmt2 = $conn->prepare($goalReminderQuery);
+    $stmt2->bind_param("is", $userID, $weekLater);
+    $stmt2->execute();
+    $goalResult = $stmt2->get_result();
+    while ($row = $goalResult->fetch_assoc()) {
+        $reminderGoals[] = $row;
+    }
+    $stmt2->close();
 }
 
 // Fetch notifications, but only show task notifications if user has access to the task
@@ -171,9 +190,37 @@ const notifications = <?= json_encode($notifications) ?>;
     <div class="reminder-panel">
         <h2>Reminder</h2>
         <div id="reminder-list">
-            <?php if (count($reminderTasks) === 0): ?>
-                <div class="no-reminder">No upcoming or overdue tasks (Pending/In rogress) due within a week</div>
+            <?php if (count($reminderTasks) === 0 && count($reminderGoals) === 0): ?>
+                <div class="no-reminder">No upcoming or overdue task/goal (Pending/In progress) due within a week</div>
             <?php else: ?>
+                <?php foreach ($reminderGoals as $goal): 
+                    $now = new DateTime('now');
+                    $deadline = new DateTime($goal['Deadline']);
+                    if ($deadline < $now) {
+                        $intervalText = "Overdue!";
+                    } else {
+                        $interval = $now->diff($deadline);
+                        $intervalText = sprintf(
+                            'Due in: %dd %dh %dm', 
+                            $interval->days, 
+                            $interval->h, 
+                            $interval->i
+                        );
+                    }
+                ?>
+                    <div class="reminder-card" 
+                        data-deadline="<?= htmlspecialchars($goal['Deadline']) ?>"
+                        data-goalid="<?= $goal['GoalID'] ?>"
+                        data-workspaceid="<?= $goal['WorkSpaceID'] ?? '' ?>">
+                        <strong><?= htmlspecialchars($goal['GoalTitle']) ?></strong><br>
+                        Type: Goal<br>
+                        Description: <?= empty($goal['Description']) || $goal['Description'] === "No description provided" 
+                            ? 'No description' 
+                            : htmlspecialchars($goal['Description']) ?><br>
+                        Status: <?= htmlspecialchars($goal['Progress']) ?><br>
+                        <span class="due-time">Calculating...</span>
+                    </div>
+                <?php endforeach; ?>
                 <?php foreach ($reminderTasks as $task): 
                     $now = new DateTime('now');
                     $deadline = new DateTime($task['Deadline']);
@@ -193,7 +240,10 @@ const notifications = <?= json_encode($notifications) ?>;
                         data-deadline="<?= htmlspecialchars($task['Deadline']) ?>" 
                         data-taskid="<?= $task['TaskID'] ?>">
                         <strong><?= htmlspecialchars($task['Title']) ?></strong><br>
-                        Description: <?= htmlspecialchars($task['Description']) ?><br>
+                        Type: Task<br>
+                        Description: <?= empty($task['Description']) || $task['Description'] === "No description provided" 
+                            ? 'No description' 
+                            : htmlspecialchars($task['Description']) ?><br>
                         Status: <?= htmlspecialchars($task['Status']) ?><br>
                         <span class="due-time">Calculating...</span>
                     </div>

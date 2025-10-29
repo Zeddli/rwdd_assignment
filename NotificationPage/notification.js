@@ -200,6 +200,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error opening task. Please try again.');
             });
         }
+        else if (card && card.dataset.goalid) {
+            const goalID = card.dataset.goalid;
+            const workspaceID = card.dataset.workspaceid;
+
+            if (!workspaceID) {
+            alert('Workspace for this goal not found!');
+            return;
+        }
+        
+        fetch('../Navbar/navbar_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=set_goal_session&goal_id=${goalID}&workspace_id=${workspaceID}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '../GoalPage/GoalPage.php';
+            } else {
+                alert('Failed to open goal: ' + (data.message || 'Unknown error'));
+            }
+        });
+        }
     });
 });
 

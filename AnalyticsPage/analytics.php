@@ -200,9 +200,9 @@ if ($selectedWorkspaceID) {
                 <div class="chart-title">Goal Distribution</div>
                 <canvas id="goalBar" width="320" height="180" style="margin:auto; display:block;"></canvas>
                 <div class="chart-legend chart-legend-center">
-                    <span class="legend-item"><span style="color:#f4b400;font-weight:600;">&#9632;</span> Pending (<?= $taskStatusCounts['Pending'] ?>)</span>
-                    <span class="legend-item"><span style="color:#2196f3;font-weight:600;">&#9632;</span> In Progress (<?= $taskStatusCounts['In Progress'] ?>)</span>
-                    <span class="legend-item"><span style="color:#4caf50;font-weight:600;">&#9632;</span> Completed (<?= $taskStatusCounts['Completed'] ?>)</span>
+                    <span class="legend-item"><span style="color:#f4b400;font-weight:600;">&#9632;</span> Pending (<?= $goalStatusCounts['Pending'] ?>)</span>
+                    <span class="legend-item"><span style="color:#2196f3;font-weight:600;">&#9632;</span> In Progress (<?= $goalStatusCounts['In Progress'] ?>)</span>
+                    <span class="legend-item"><span style="color:#4caf50;font-weight:600;">&#9632;</span> Completed (<?= $goalStatusCounts['Completed'] ?>)</span>
                 </div>
             </div>
         </div>
