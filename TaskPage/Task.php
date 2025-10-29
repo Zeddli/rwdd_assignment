@@ -247,24 +247,27 @@
                 dlIcon.src = "/rwdd_assignment/Assets/download-icon.png"
                 dlIcon.alt = "download-icon.png"
                 
-                // dlIcon.addEventListener("click", ()=>{
-                //     fetch(`CheckFile.php?id=${file.fileID}`)
-                //         .then(res => res.json())
-                //         .then(data => {
-                //             if (data.success){
-                //                 window.location.href = `DownloadFile.php?id=${file.FileID}`;
-                //             } else {
-                //                 alert(data.error || "File not found");
-                //             }
-                //         })
-                //         .catch(() => {
-                //             alert("An error occured when checking the file");
-                //         })
-                        
-                // });
                 dlIcon.addEventListener("click", ()=>{
-                    window.location.href = `DownloadFile.php?id=${file.FileID}`;
+                    fetch(`CheckFile.php?id=${file.FileID}`, {
+                        method: "GET",
+
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success){
+                            window.location.href = `DownloadFile.php?id=${file.FileID}`;
+                        } else {
+                            alert(data.error || "File not found");
+                        }
+                    })
+                    .catch(() => {
+                        alert("An error occured when checking the file");
+                    })
+                        
                 });
+                // dlIcon.addEventListener("click", ()=>{
+                //     window.location.href = `DownloadFile.php?id=${file.FileID}`;
+                // });
 
                 fileHead.appendChild(filename);
                 fileHead.appendChild(dlIcon);
