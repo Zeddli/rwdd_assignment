@@ -260,7 +260,7 @@
                                 return card;
                             };
 
-                            // Helper: display tasks
+                            // display tasks
                             const renderTasks = (tasks, container, layout) => {
                                 if (!tasks || tasks.length === 0) {
                                     const msg = document.createElement("p");
@@ -333,7 +333,6 @@
             label: "Rename", 
             onClick: () => {
                 // isEditing = true;
-                // renameWorkspace(<?php echo $_SESSION["workspaceID"] ?>);
                 
                 async function handleRename() {
                     try {
