@@ -72,7 +72,6 @@ p{
     color: black;
 }
 
-/* need js to generated the colour based on status type */
 .sub-header .status{
     font-size: 15px;
     align-self: center;
@@ -82,7 +81,6 @@ p{
     border-radius: 8px;
 }
 
-/* need js to generated the colour based on priority type */
 .sub-header .priority{
     font-size: 15px;
     align-self: center;
@@ -98,7 +96,6 @@ p{
     height: 100px;
 }
 
-/* do not display the text if @media too small */
 .description-text{
     font-size: 15px;
     width: 50%;

@@ -227,7 +227,6 @@ p{
     color: #777;
 }
 
-/* small-screen tweaks */
 @media (max-width: 480px) {
   .header-content {
     padding: 2rem 1rem;

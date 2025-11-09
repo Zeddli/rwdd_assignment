@@ -150,7 +150,7 @@ textarea:disabled {
     align-items: center;
     gap: 8px;
     padding: 5px 10px;
-    background-color: #007bff; /* blue */
+    background-color: #007bff; 
     color: white;
     font-size: 13px;
     font-weight: 500;
@@ -162,7 +162,7 @@ textarea:disabled {
 }
 
 .edit-name:hover {
-    background-color: #0056b3; /* darker blue */
+    background-color: #0056b3; 
     transform: translateY(-2px);
 }
 
@@ -175,7 +175,7 @@ textarea:disabled {
     width: 13px;
     height: 13px;
     object-fit: contain;
-    filter: brightness(0) invert(1); /* make icon white if it’s black */
+    filter: brightness(0) invert(1); 
 }
 
 .user-func {
@@ -207,8 +207,7 @@ textarea:disabled {
 .logout:hover {
     background: #b02a37;
 }
-/* --- Responsive Design --- */
-@media (max-width: 768px) {
+@media (max-width: 760px) {
     .main-content {
         padding: 25px;
         align-self: center;

@@ -459,7 +459,7 @@ export function member(id, type){
                     // alert(hasPermission);
                     if(hasPermission){
                         // have permission, proceed to invite
-                        inviteInput.value = inviteInput.value.trim(); //这里trim 了 下面的invite form 里面的email 也没有trim到，在report validity 不能detect到
+                        inviteInput.value = inviteInput.value.trim(); 
                         if(inviteForm.reportValidity()){
                             // alert(`Inviting ${inviteInput.value} as ${roleSelect.value}`);
                             fetch(inviteForm.action, {

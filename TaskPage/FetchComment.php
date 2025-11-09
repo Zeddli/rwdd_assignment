@@ -33,14 +33,6 @@ session_start();
 
     $result = mysqli_query($conn, $query);
 
-    // if ($result === false) {
-    //     // Send error as SSE event
-    //     echo "event: error\n";
-    //     echo "data: " . json_encode(["error" => mysqli_error($conn)]) . "\n\n";
-    //     flush();
-    //     sleep(2);
-    // }
-
     $comments = [];
     while($row = mysqli_fetch_assoc($result)) {
         $comments[] = $row;

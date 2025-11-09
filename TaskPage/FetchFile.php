@@ -42,8 +42,6 @@
         echo "data: []\n\n";
         flush();
     }
-    // sleep(2);
-
     $stmt->close();
     $conn->close();
 ?>
